@@ -15,10 +15,10 @@ From the repository root, install, build, and start the preview. `content/wraps/
 mkdir -p /tmp/wrap-workshop-verify
 npm ci
 npm run build
-npx astro preview --host 127.0.0.1 --port 4173
+node ./node_modules/astro/bin/astro.mjs preview --host 127.0.0.1 --port 4173
 ```
 
-Ready when the preview log prints `http://127.0.0.1:4173`. Write that process id to `/tmp/wrap-workshop-verify/preview.pid`.
+Ready when the preview log prints `http://127.0.0.1:4173`. Write the node process id to `/tmp/wrap-workshop-verify/preview.pid`. Start the command directly so that pid is the listener. `npx astro preview` leaves a child listening after the npm parent exits.
 
 ## Doctor
 
@@ -56,7 +56,7 @@ Copy the verify-site stdout to `/tmp/wrap-workshop-verify/download-sample.txt`. 
 
 ## Cleanup
 
-Kill the pid stored in `/tmp/wrap-workshop-verify/preview.pid`. Do not kill by process name. Delete the pid file after the process is gone. Leave the proof text files.
+Kill the pid stored in `/tmp/wrap-workshop-verify/preview.pid`. That pid is the node process started above. Do not kill by process name. Delete the pid file after the process is gone and port 4173 refuses connections. Leave the proof text files.
 
 ## Helpers
 
