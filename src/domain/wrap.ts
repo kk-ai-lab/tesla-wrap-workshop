@@ -21,7 +21,7 @@ function registryKeys<T extends Record<string, unknown>>(
 const ownProvenanceSchema = z
   .object({
     kind: z.literal("own"),
-    author: z.string().optional(),
+    author: z.string().refine((value) => value.trim() !== ""),
     createdWith: z.string().optional(),
   })
   .strict();

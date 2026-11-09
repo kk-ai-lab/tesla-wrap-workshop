@@ -27,7 +27,7 @@ it("prints a too-big line for a temp root", async () => {
       variant: "model3",
       file: "too-big.png",
       licence: "CC0-1.0",
-      provenance: [{ kind: "own" }],
+      provenance: [{ kind: "own", author: "kk-ai-lab" }],
       tags: ["sample"],
       addedOn: "2026-11-09",
     };

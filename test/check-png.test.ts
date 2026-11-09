@@ -26,7 +26,13 @@ it("rejects 1023x1024.png for model3", () => {
 });
 
 it("rejects renamed-jpeg.png", () => {
-  expect(checkPng(fixture("renamed-jpeg.png"), "renamed-jpeg.png", "model3")).toEqual([
+  const bytes = fixture("renamed-jpeg.png");
+  expect(bytes.byteLength).toBeGreaterThanOrEqual(24);
+  expect(checkPng(bytes, "renamed-jpeg.png", "model3")).toEqual([{ code: "not-png" }]);
+});
+
+it("rejects bad-signature.png", () => {
+  expect(checkPng(fixture("bad-signature.png"), "bad-signature.png", "model3")).toEqual([
     { code: "not-png" },
   ]);
 });

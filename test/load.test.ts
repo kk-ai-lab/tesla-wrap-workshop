@@ -37,7 +37,7 @@ function meta(id: string, overrides: Record<string, unknown> = {}) {
     variant: "model3",
     file: "wrap.png",
     licence: "CC0-1.0",
-    provenance: [{ kind: "own" }],
+    provenance: [{ kind: "own", author: "kk-ai-lab" }],
     tags: ["sample"],
     addedOn: "2026-11-09",
     ...overrides,
@@ -156,10 +156,34 @@ it("rejects width stored in meta.json", async () => {
   });
 });
 
+it("rejects own provenance with no author", async () => {
+  await withRoot(async (root) => {
+    await writeWrap(root, "own-no-author", {
+      meta: meta("own-no-author", { provenance: [{ kind: "own" }] }),
+      png: true,
+    });
+    const result = await loadCatalogue(root);
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(
+        result.violations.some(
+          (violation) =>
+            violation.code === "schema" &&
+            violation.path === "provenance.0.author" &&
+            violation.wrap === "own-no-author",
+        ),
+      ).toBe(true);
+    }
+  });
+});
+
 it("accepts CC-BY-4.0 with own provenance", async () => {
   await withRoot(async (root) => {
     await writeWrap(root, "by-own", {
-      meta: meta("by-own", { licence: "CC-BY-4.0", provenance: [{ kind: "own" }] }),
+      meta: meta("by-own", {
+        licence: "CC-BY-4.0",
+        provenance: [{ kind: "own", author: "kk-ai-lab" }],
+      }),
       png: true,
     });
     const result = await loadCatalogue(root);

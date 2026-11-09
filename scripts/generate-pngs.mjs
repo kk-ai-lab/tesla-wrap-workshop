@@ -59,8 +59,27 @@ async function writeBytes(file, bytes) {
   await rename(tmp, file);
 }
 
+function jpegBytes() {
+  const app0 = Buffer.concat([
+    Buffer.from([0xff, 0xe0, 0x00, 0x10]),
+    Buffer.from("JFIF\0", "ascii"),
+    Buffer.from([0x01, 0x01, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00]),
+  ]);
+  const comment = Buffer.from([0xff, 0xfe, 0x00, 0x04, 0x00, 0x00]);
+  return Buffer.concat([Buffer.from([0xff, 0xd8]), app0, comment, Buffer.from([0xff, 0xd9])]);
+}
+
+function badSignature(png) {
+  const out = Buffer.from(png);
+  out[0] ^= 0xff;
+  return out;
+}
+
 const square = greyPng(1024, 1024);
-const jpeg = Buffer.from("ffd8ffe000104a46494600010100000100010000ffd9", "hex");
+const jpeg = jpegBytes();
+if (jpeg.length < 24) {
+  throw new Error(`jpeg is ${jpeg.length} bytes`);
+}
 
 const outputs = [
   ["content/wraps/sample-solid-grey/Solid Grey.png", square],
@@ -68,6 +87,7 @@ const outputs = [
   ["test/fixtures/too-big.png", padded(square)],
   ["test/fixtures/1023x1024.png", greyPng(1023, 1024)],
   ["test/fixtures/renamed-jpeg.png", jpeg],
+  ["test/fixtures/bad-signature.png", badSignature(square)],
   ["test/fixtures/abcdefghijklmnopqrstuvwxyz1.png", square],
   ["test/fixtures/cybertruck-square.png", square],
 ];

@@ -4,7 +4,7 @@
   "variant": "model3",
   "file": "Solid Grey.png",
   "licence": "CC0-1.0",
-  "provenance": [{ "kind": "own" }],
+  "provenance": [{ "kind": "own", "author": "kk-ai-lab" }],
   "tags": ["sample"],
   "addedOn": "2026-11-09"
 }
