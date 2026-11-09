@@ -1,9 +1,30 @@
+---
+import path from "node:path";
+import { loadCatalogue } from "../../catalogue/load";
+
+const result = await loadCatalogue(path.resolve("content/wraps"));
+if (!result.ok) {
+  throw new Error("catalogue load failed");
+}
+const { wraps } = result.catalogue;
+---
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <title>tesla-wrap-workshop</title>
   </head>
   <body>
-    <p>tesla-wrap-workshop</p>
+    <ul>
+      {
+        wraps.map((wrap) => (
+          <li>
+            {wrap.title}{" "}
+            <a href={`/wraps/${wrap.id}/${encodeURIComponent(wrap.file)}`} download={wrap.file}>
+              {wrap.file}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
   </body>
 </html>
