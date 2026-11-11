@@ -3,7 +3,7 @@ import { createRequire } from "node:module";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { ErrorCodes, parse as parseHtml, type DefaultTreeAdapterMap, type ParserError } from "parse5";
+import { parse as parseHtml, parseFragment, type DefaultTreeAdapterMap, type ParserError } from "parse5";
 import postcss from "postcss";
 import { allowsComment } from "./comment-allowlist.js";
 
@@ -50,14 +50,28 @@ const nonJsScriptTypes = new Set([
   "speculationrules",
 ]);
 
-const toleratedHtmlParseErrors = new Set<ParserError["code"]>([ErrorCodes.missingDoctype]);
-
 const extensionLanguage = new Map<string, CommentLanguage>([
   [".html", "html"],
   [".css", "css"],
   [".js", "js"],
   [".mjs", "js"],
   [".cjs", "js"],
+]);
+
+const opaqueExtensions = new Set([
+  ".png",
+  ".jpg",
+  ".jpeg",
+  ".gif",
+  ".webp",
+  ".avif",
+  ".ico",
+  ".bmp",
+  ".woff",
+  ".woff2",
+  ".ttf",
+  ".otf",
+  ".eot",
 ]);
 
 function errorReason(error: unknown): string {
@@ -212,18 +226,30 @@ function walk(node: Node, file: string, findings: Finding[]) {
         findings.push(...scanJs(code, file, kind));
       }
     }
+    if (node.tagName === "noscript") {
+      findings.push(...scanHtmlFragment(elementText(node), file));
+    }
   }
   for (const child of children(node)) {
     walk(child, file, findings);
   }
 }
 
-function scanHtml(html: string, file: string): Finding[] {
+function recordParseErrors(errors: ParserError["code"][], file: string, findings: Finding[]) {
+  for (const code of errors) {
+    findings.push({ kind: "parse-error", file, reason: code });
+  }
+}
+
+function scanHtmlFragment(html: string, file: string): Finding[] {
+  if (html.trim() === "") {
+    return [];
+  }
   const errors: ParserError["code"][] = [];
-  let document: Node;
+  let fragment: Node;
   try {
-    document = parseHtml(html, {
-      scriptingEnabled: false,
+    fragment = parseFragment(html, {
+      scriptingEnabled: true,
       onParseError(error) {
         errors.push(error.code);
       },
@@ -232,11 +258,26 @@ function scanHtml(html: string, file: string): Finding[] {
     return [{ kind: "parse-error", file, reason: errorReason(error) }];
   }
   const findings: Finding[] = [];
-  for (const code of errors) {
-    if (!toleratedHtmlParseErrors.has(code)) {
-      findings.push({ kind: "parse-error", file, reason: code });
-    }
+  recordParseErrors(errors, file, findings);
+  walk(fragment, file, findings);
+  return findings;
+}
+
+function scanHtml(html: string, file: string): Finding[] {
+  const errors: ParserError["code"][] = [];
+  let document: Node;
+  try {
+    document = parseHtml(html, {
+      scriptingEnabled: true,
+      onParseError(error) {
+        errors.push(error.code);
+      },
+    });
+  } catch (error) {
+    return [{ kind: "parse-error", file, reason: errorReason(error) }];
   }
+  const findings: Finding[] = [];
+  recordParseErrors(errors, file, findings);
   walk(document, file, findings);
   return findings;
 }
@@ -284,8 +325,12 @@ export function scanRoot(root: string): Finding[] {
       findings.push({ kind: "parse-error", file: relative, reason: "symlink" });
       continue;
     }
-    const language = extensionLanguage.get(path.extname(entry.path).toLowerCase());
+    const extension = path.extname(entry.path).toLowerCase();
+    const language = extensionLanguage.get(extension);
     if (language === undefined) {
+      if (!opaqueExtensions.has(extension)) {
+        findings.push({ kind: "parse-error", file: relative, reason: "unknown extension" });
+      }
       continue;
     }
     let source: string;

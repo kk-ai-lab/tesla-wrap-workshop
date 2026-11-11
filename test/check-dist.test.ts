@@ -97,24 +97,31 @@ it("exits 1 when js cannot be parsed", () => {
 });
 
 it("exits 1 for an html comment inside noscript", () => {
-  expectExit("test/lint-fixtures/check-dist/noscript-comment", 1, "html comment");
+  const result = expectExit("test/lint-fixtures/check-dist/noscript-comment", 1, "html comment");
+  expect(result.stdout).toContain("index.html");
 });
 
 it("exits 1 for a css comment inside noscript", () => {
-  expectExit("test/lint-fixtures/check-dist/noscript-style", 1, "css comment");
+  const result = expectExit("test/lint-fixtures/check-dist/noscript-style", 1, "css comment");
+  expect(result.stdout).toContain("index.html");
 });
 
 it("exits 1 for a comment in an event handler", () => {
-  expectExit("test/lint-fixtures/check-dist/event-handler", 1, "js comment");
+  const result = expectExit("test/lint-fixtures/check-dist/event-handler", 1, "js comment");
+  expect(result.stdout).toContain("index.html");
 });
 
 it("exits 0 for a return in an event handler", () => {
   expectExit("test/lint-fixtures/check-dist/event-handler-return", 0, "");
 });
 
+it("exits 0 when an event handler string contains a block comment", () => {
+  expectExit("test/lint-fixtures/check-dist/event-handler-string", 0, "");
+});
+
 it("exits 1 when html ends inside a tag", () => {
-  const result = expectExit("test/lint-fixtures/check-dist/malformed-html", 1, "parse error");
-  expect(result.stdout).toContain("eof-in-tag");
+  const result = expectExit("test/lint-fixtures/check-dist/malformed-html", 1, "eof-in-tag");
+  expect(result.stdout).toContain("index.html");
 });
 
 it("exits 1 for comments in mjs, cjs, and uppercase extensions", () => {
@@ -124,6 +131,11 @@ it("exits 1 for comments in mjs, cjs, and uppercase extensions", () => {
   expect(result.stdout).toContain("js comment in probe.JS");
   expect(result.stdout).toContain("js comment in probe.mjs");
   expect(result.stdout).toContain("js comment in probe.cjs");
+});
+
+it("exits 1 for an unknown extension", () => {
+  const result = expectExit("test/lint-fixtures/check-dist/unknown-extension", 1, "unknown extension");
+  expect(result.stdout).toContain("x.weird");
 });
 
 it("exits 1 for a directory symlink", () => {
