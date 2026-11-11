@@ -3,7 +3,7 @@ import { createRequire } from "node:module";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { parse as parseHtml, type DefaultTreeAdapterMap } from "parse5";
+import { ErrorCodes, parse as parseHtml, type DefaultTreeAdapterMap, type ParserError } from "parse5";
 import postcss from "postcss";
 import { allowsComment } from "./comment-allowlist.js";
 
@@ -50,7 +50,15 @@ const nonJsScriptTypes = new Set([
   "speculationrules",
 ]);
 
-const scannedExtensions = new Set([".html", ".css", ".js"]);
+const toleratedHtmlParseErrors = new Set<ParserError["code"]>([ErrorCodes.missingDoctype]);
+
+const extensionLanguage = new Map<string, CommentLanguage>([
+  [".html", "html"],
+  [".css", "css"],
+  [".js", "js"],
+  [".mjs", "js"],
+  [".cjs", "js"],
+]);
 
 function errorReason(error: unknown): string {
   if (error instanceof Error) {
@@ -109,6 +117,14 @@ function jsCommentBodies(code: string, sourceType: SourceType): string[] {
     },
   });
   return bodies;
+}
+
+function scanEventHandler(code: string, file: string): Finding[] {
+  return scanJs(`function onEvent(){\n${code}\n}`, file, "script");
+}
+
+function isEventHandler(name: string): boolean {
+  return name.startsWith("on") && name.length > 2;
 }
 
 function scanJs(code: string, file: string, preferred: SourceType): Finding[] {
@@ -173,8 +189,11 @@ function walk(node: Node, file: string, findings: Finding[]) {
   }
   if (isElement(node)) {
     for (const attribute of node.attrs) {
-      if (attribute.name === "style") {
+      const name = attribute.name.toLowerCase();
+      if (name === "style") {
         findings.push(...scanCss(attribute.value, file));
+      } else if (isEventHandler(name)) {
+        findings.push(...scanEventHandler(attribute.value, file));
       }
     }
     if (node.tagName === "style") {
@@ -200,30 +219,51 @@ function walk(node: Node, file: string, findings: Finding[]) {
 }
 
 function scanHtml(html: string, file: string): Finding[] {
+  const errors: ParserError["code"][] = [];
+  let document: Node;
   try {
-    const findings: Finding[] = [];
-    walk(parseHtml(html), file, findings);
-    return findings;
+    document = parseHtml(html, {
+      scriptingEnabled: false,
+      onParseError(error) {
+        errors.push(error.code);
+      },
+    });
   } catch (error) {
     return [{ kind: "parse-error", file, reason: errorReason(error) }];
   }
+  const findings: Finding[] = [];
+  for (const code of errors) {
+    if (!toleratedHtmlParseErrors.has(code)) {
+      findings.push({ kind: "parse-error", file, reason: code });
+    }
+  }
+  walk(document, file, findings);
+  return findings;
 }
 
 function relativeFile(root: string, file: string): string {
   return path.relative(root, file).split(path.sep).join("/");
 }
 
-function listFiles(dir: string): string[] {
-  const files: string[] = [];
+type ListedEntry = { kind: "file" | "symlink"; path: string };
+
+function listEntries(dir: string): ListedEntry[] {
+  const entries: ListedEntry[] = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
+    if (entry.isSymbolicLink()) {
+      entries.push({ kind: "symlink", path: full });
+      continue;
+    }
     if (entry.isDirectory()) {
-      files.push(...listFiles(full));
-    } else if (entry.isFile()) {
-      files.push(full);
+      entries.push(...listEntries(full));
+      continue;
+    }
+    if (entry.isFile()) {
+      entries.push({ kind: "file", path: full });
     }
   }
-  return files;
+  return entries;
 }
 
 export function scanRoot(root: string): Finding[] {
@@ -237,23 +277,27 @@ export function scanRoot(root: string): Finding[] {
     return [{ kind: "parse-error", file: root, reason: "not a directory" }];
   }
   const findings: Finding[] = [];
-  const files = listFiles(root).sort();
-  for (const file of files) {
-    const extension = path.extname(file);
-    if (!scannedExtensions.has(extension)) {
+  const entries = listEntries(root).sort((left, right) => left.path.localeCompare(right.path));
+  for (const entry of entries) {
+    const relative = relativeFile(root, entry.path);
+    if (entry.kind === "symlink") {
+      findings.push({ kind: "parse-error", file: relative, reason: "symlink" });
       continue;
     }
-    const relative = relativeFile(root, file);
+    const language = extensionLanguage.get(path.extname(entry.path).toLowerCase());
+    if (language === undefined) {
+      continue;
+    }
     let source: string;
     try {
-      source = fs.readFileSync(file, "utf8");
+      source = fs.readFileSync(entry.path, "utf8");
     } catch (error) {
       findings.push({ kind: "parse-error", file: relative, reason: errorReason(error) });
       continue;
     }
-    if (extension === ".html") {
+    if (language === "html") {
       findings.push(...scanHtml(source, relative));
-    } else if (extension === ".css") {
+    } else if (language === "css") {
       findings.push(...scanCss(source, relative));
     } else {
       findings.push(...scanJs(source, relative, "module"));

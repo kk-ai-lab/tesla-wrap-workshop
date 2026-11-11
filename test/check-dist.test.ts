@@ -1,8 +1,9 @@
 import { spawnSync } from "node:child_process";
+import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, it } from "vitest";
-import { readFileSync } from "node:fs";
 import { scanRoot } from "../scripts/check-dist.ts";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
@@ -95,8 +96,53 @@ it("exits 1 when js cannot be parsed", () => {
   expect(result.stdout).toContain("main.js");
 });
 
+it("exits 1 for an html comment inside noscript", () => {
+  expectExit("test/lint-fixtures/check-dist/noscript-comment", 1, "html comment");
+});
+
+it("exits 1 for a css comment inside noscript", () => {
+  expectExit("test/lint-fixtures/check-dist/noscript-style", 1, "css comment");
+});
+
+it("exits 1 for a comment in an event handler", () => {
+  expectExit("test/lint-fixtures/check-dist/event-handler", 1, "js comment");
+});
+
+it("exits 0 for a return in an event handler", () => {
+  expectExit("test/lint-fixtures/check-dist/event-handler-return", 0, "");
+});
+
+it("exits 1 when html ends inside a tag", () => {
+  const result = expectExit("test/lint-fixtures/check-dist/malformed-html", 1, "parse error");
+  expect(result.stdout).toContain("eof-in-tag");
+});
+
+it("exits 1 for comments in mjs, cjs, and uppercase extensions", () => {
+  const result = expectExit("test/lint-fixtures/check-dist/extensions", 1, "comment");
+  expect(result.stdout).toContain("html comment in probe.HTML");
+  expect(result.stdout).toContain("css comment in probe.CSS");
+  expect(result.stdout).toContain("js comment in probe.JS");
+  expect(result.stdout).toContain("js comment in probe.mjs");
+  expect(result.stdout).toContain("js comment in probe.cjs");
+});
+
+it("exits 1 for a directory symlink", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "check-dist-"));
+  const outside = fs.mkdtempSync(path.join(os.tmpdir(), "check-dist-target-"));
+  fs.writeFileSync(path.join(outside, "probe.js"), "/* hack */\n");
+  fs.symlinkSync(outside, path.join(dir, "linked"), "dir");
+  try {
+    const result = runScan(dir);
+    expect(result.status).toBe(1);
+    expect(result.stdout).toContain("symlink");
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+    fs.rmSync(outside, { recursive: true, force: true });
+  }
+});
+
 it("runs check:dist after build in ci", () => {
-  const ci = readFileSync(path.join(root, ".github/workflows/ci.yml"), "utf8");
+  const ci = fs.readFileSync(path.join(root, ".github/workflows/ci.yml"), "utf8");
   const buildAt = ci.indexOf("npm run build");
   const checkAt = ci.indexOf("npm run check:dist");
   expect(buildAt).toBeGreaterThan(-1);
