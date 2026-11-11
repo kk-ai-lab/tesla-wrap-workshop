@@ -9,4 +9,5 @@ Every stage's output for this repo lives here, so the trail is visible on GitHub
 - [Reviews](reviews/): Eng Review reports, one file per PR round.
   - [PR #2 round 1](reviews/pr-2-round-1.md)
   - [PR #2 round 2](reviews/pr-2-round-2.md)
+  - [PR #7 round 1](reviews/pr-7-round-1.md)
 - [Decisions](decisions.md): Kai's decisions, dated.
