@@ -81,6 +81,13 @@ it("fails lint for set:html on a style element", async () => {
   );
 });
 
+it("fails lint for set:text on a style element", async () => {
+  const result = await lintFixture("test/lint-fixtures/style-set-text.astro");
+  expect(result.messages.map((message) => message.ruleId)).toContain(
+    "astro-comments/ban-style-set-directive",
+  );
+});
+
 it("fails lint for a static style attribute comment", async () => {
   const result = await lintFixture("test/lint-fixtures/style-attr-static.astro");
   expect(result.messages.map((message) => message.ruleId)).toContain(
@@ -95,8 +102,29 @@ it("fails lint for a dynamic style attribute comment", async () => {
   );
 });
 
+it("fails lint for a template literal style attribute comment", async () => {
+  const result = await lintFixture("test/lint-fixtures/style-attr-template.astro");
+  expect(result.messages.map((message) => message.ruleId)).toContain(
+    "astro-comments/ban-style-attribute-comment",
+  );
+});
+
 it("fails lint for a style element with lang scss", async () => {
   const result = await lintFixture("test/lint-fixtures/style-lang-scss.astro");
+  expect(result.messages.map((message) => message.ruleId)).toContain(
+    "astro-comments/ban-uninspected-style",
+  );
+});
+
+it("fails lint for lang SCSS", async () => {
+  const result = await lintFixture("test/lint-fixtures/style-lang-scss-upper.astro");
+  expect(result.messages.map((message) => message.ruleId)).toContain(
+    "astro-comments/ban-uninspected-style",
+  );
+});
+
+it("fails lint for lang CSS", async () => {
+  const result = await lintFixture("test/lint-fixtures/style-lang-css-upper.astro");
   expect(result.messages.map((message) => message.ruleId)).toContain(
     "astro-comments/ban-uninspected-style",
   );

@@ -1,6 +1,6 @@
 ---
 name: verify-wrap-workshop
-description: Prove the tesla-wrap-workshop static site lists the sample wrap and serves its PNG, and that the spec-check CLI reports one wrap and zero violations. Use after changing the catalogue, the index page, or the checker.
+description: Prove the tesla-wrap-workshop static site lists the sample wrap and serves its PNG, that the spec-check CLI reports one wrap and zero violations, and that the built dist has no HTML, CSS, or JS comments. Use after changing the catalogue, the index page, the checker, or the dist comment scan.
 ---
 
 # Verify tesla-wrap-workshop
@@ -15,6 +15,7 @@ From the repository root, install, build, and start the preview. `content/wraps/
 mkdir -p /tmp/wrap-workshop-verify
 npm ci
 npm run build
+npm run check:dist
 node ./node_modules/astro/bin/astro.mjs preview --host 127.0.0.1 --port 4173
 ```
 
@@ -50,9 +51,17 @@ npm run check
 
 The exit code is 0. Stdout includes the line `check: 1 wrap, 0 violations`.
 
+The dist comment scan also does not need the preview. Run it after the build, before or after the checker:
+
+```bash
+npm run check:dist
+```
+
+The exit code is 0. The scanner prints nothing.
+
 ## Evidence
 
-Copy the verify-site stdout to `/tmp/wrap-workshop-verify/download-sample.txt`. Copy the checker stdout and exit code to `/tmp/wrap-workshop-verify/check-cli.txt`. Those files are the proof. Cleanup does not delete them.
+Copy the verify-site stdout to `/tmp/wrap-workshop-verify/download-sample.txt`. Copy the checker stdout and exit code to `/tmp/wrap-workshop-verify/check-cli.txt`. Copy the dist comment scan stdout and exit code to `/tmp/wrap-workshop-verify/check-dist.txt`. Those files are the proof. Cleanup does not delete them.
 
 ## Cleanup
 
