@@ -177,6 +177,48 @@ it("rejects own provenance with no author", async () => {
   });
 });
 
+it("reports a schema violation when the own author is empty", async () => {
+  await withRoot(async (root) => {
+    await writeWrap(root, "own-empty-author", {
+      meta: meta("own-empty-author", { provenance: [{ kind: "own", author: "" }] }),
+      png: true,
+    });
+    const result = await loadCatalogue(root);
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(
+        result.violations.some(
+          (violation) =>
+            violation.code === "schema" &&
+            violation.path === "provenance.0.author" &&
+            violation.wrap === "own-empty-author",
+        ),
+      ).toBe(true);
+    }
+  });
+});
+
+it("reports a schema violation when the own author is whitespace", async () => {
+  await withRoot(async (root) => {
+    await writeWrap(root, "own-blank-author", {
+      meta: meta("own-blank-author", { provenance: [{ kind: "own", author: "   " }] }),
+      png: true,
+    });
+    const result = await loadCatalogue(root);
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(
+        result.violations.some(
+          (violation) =>
+            violation.code === "schema" &&
+            violation.path === "provenance.0.author" &&
+            violation.wrap === "own-blank-author",
+        ),
+      ).toBe(true);
+    }
+  });
+});
+
 it("accepts CC-BY-4.0 with own provenance", async () => {
   await withRoot(async (root) => {
     await writeWrap(root, "by-own", {
