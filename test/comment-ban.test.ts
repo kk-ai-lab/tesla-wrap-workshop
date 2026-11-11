@@ -57,6 +57,42 @@ it("fails lint for // SPDX-License-Identifier: MIT hack", async () => {
   expect(result.messages.map((message) => message.ruleId)).toContain("ban-comments/ban-comments");
 });
 
+it("fails lint for a file-wide eslint-disable around // hack", async () => {
+  const result = await lintFixture("test/lint-fixtures/eslint-disable-file.ts");
+  expect(result.messages.map((message) => message.ruleId)).toContain("ban-comments/ban-comments");
+});
+
+it("fails lint for // eslint-disable-line ban-comments/ban-comments -- hack workaround", async () => {
+  const result = await lintFixture("test/lint-fixtures/eslint-disable-line.ts");
+  expect(result.messages.map((message) => message.ruleId)).toContain("ban-comments/ban-comments");
+});
+
+it("fails lint for an astro eslint-disable around an html comment", async () => {
+  const result = await lintFixture("test/lint-fixtures/eslint-disable-astro.astro");
+  const ruleIds = result.messages.map((message) => message.ruleId);
+  expect(ruleIds).toContain("ban-comments/ban-comments");
+  expect(ruleIds).toContain("astro-comments/ban-html-comments");
+});
+
+it("fails lint for a css comment in an astro style block", async () => {
+  const result = await lintFixture("test/lint-fixtures/style-comment.astro");
+  expect(result.messages.map((message) => message.ruleId)).toContain(
+    "astro-comments/ban-style-comments",
+  );
+});
+
+it("fails lint for a wrapped SPDX comment in ts", async () => {
+  const result = await lintFixture("test/lint-fixtures/spdx-wrapped.ts");
+  expect(result.messages.map((message) => message.ruleId)).toContain("ban-comments/ban-comments");
+});
+
+it("fails lint for a wrapped SPDX comment in astro html", async () => {
+  const result = await lintFixture("test/lint-fixtures/spdx-wrapped.astro");
+  expect(result.messages.map((message) => message.ruleId)).toContain(
+    "astro-comments/ban-html-comments",
+  );
+});
+
 it("passes lint for a bare issue URL comment", async () => {
   const result = await lintFixture("test/lint-fixtures/bare-issue-url.ts");
   expect(result.errorCount).toBe(0);
@@ -65,6 +101,12 @@ it("passes lint for a bare issue URL comment", async () => {
 
 it("passes lint for an SPDX line", async () => {
   const result = await lintFixture("test/lint-fixtures/spdx-line.ts");
+  expect(result.errorCount).toBe(0);
+  expect(result.messages).toEqual([]);
+});
+
+it("passes lint for an astro html SPDX line", async () => {
+  const result = await lintFixture("test/lint-fixtures/spdx-line.astro");
   expect(result.errorCount).toBe(0);
   expect(result.messages).toEqual([]);
 });
