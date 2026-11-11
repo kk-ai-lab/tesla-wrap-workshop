@@ -74,6 +74,41 @@ it("fails lint for an astro eslint-disable around an html comment", async () => 
   expect(ruleIds).toContain("astro-comments/ban-html-comments");
 });
 
+it("fails lint for set:html on a style element", async () => {
+  const result = await lintFixture("test/lint-fixtures/style-set-html.astro");
+  expect(result.messages.map((message) => message.ruleId)).toContain(
+    "astro-comments/ban-style-set-directive",
+  );
+});
+
+it("fails lint for a static style attribute comment", async () => {
+  const result = await lintFixture("test/lint-fixtures/style-attr-static.astro");
+  expect(result.messages.map((message) => message.ruleId)).toContain(
+    "astro-comments/ban-style-attribute-comment",
+  );
+});
+
+it("fails lint for a dynamic style attribute comment", async () => {
+  const result = await lintFixture("test/lint-fixtures/style-attr-dynamic.astro");
+  expect(result.messages.map((message) => message.ruleId)).toContain(
+    "astro-comments/ban-style-attribute-comment",
+  );
+});
+
+it("fails lint for a style element with lang scss", async () => {
+  const result = await lintFixture("test/lint-fixtures/style-lang-scss.astro");
+  expect(result.messages.map((message) => message.ruleId)).toContain(
+    "astro-comments/ban-uninspected-style",
+  );
+});
+
+it("fails lint for a scss line comment in a style element", async () => {
+  const result = await lintFixture("test/lint-fixtures/style-lang-scss-line.astro");
+  expect(result.messages.map((message) => message.ruleId)).toContain(
+    "astro-comments/ban-uninspected-style",
+  );
+});
+
 it("fails lint for a css comment in an astro style block", async () => {
   const result = await lintFixture("test/lint-fixtures/style-comment.astro");
   expect(result.messages.map((message) => message.ruleId)).toContain(
@@ -101,6 +136,18 @@ it("passes lint for a bare issue URL comment", async () => {
 
 it("passes lint for an SPDX line", async () => {
   const result = await lintFixture("test/lint-fixtures/spdx-line.ts");
+  expect(result.errorCount).toBe(0);
+  expect(result.messages).toEqual([]);
+});
+
+it("passes lint for a plain style block", async () => {
+  const result = await lintFixture("test/lint-fixtures/style-plain.astro");
+  expect(result.errorCount).toBe(0);
+  expect(result.messages).toEqual([]);
+});
+
+it("passes lint for a normal style attribute", async () => {
+  const result = await lintFixture("test/lint-fixtures/style-attr-plain.astro");
   expect(result.errorCount).toBe(0);
   expect(result.messages).toEqual([]);
 });

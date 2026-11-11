@@ -34,6 +34,61 @@ function jsxName(node) {
   return undefined;
 }
 
+function attributeName(attr) {
+  const name = attr?.name;
+  if (name?.type === "JSXIdentifier") {
+    return { local: name.name };
+  }
+  if (name?.type === "JSXNamespacedName") {
+    return { ns: name.namespace?.name, local: name.name?.name };
+  }
+  return {};
+}
+
+function literalValue(node) {
+  if (node?.type === "Literal" && typeof node.value === "string") {
+    return node.value;
+  }
+  if (node?.type === "JSXExpressionContainer" && node.expression?.type === "Literal") {
+    return typeof node.expression.value === "string" ? node.expression.value : undefined;
+  }
+  return undefined;
+}
+
+function textHasBlockComment(value) {
+  return typeof value === "string" && value.includes("/*");
+}
+
+function expressionHasBlockComment(node, seen = new Set()) {
+  if (!node || typeof node !== "object" || seen.has(node)) {
+    return false;
+  }
+  seen.add(node);
+  if (node.type === "Literal" && textHasBlockComment(node.value)) {
+    return true;
+  }
+  if (node.type === "TemplateElement") {
+    const cooked = node.value?.cooked ?? node.value?.raw;
+    if (textHasBlockComment(cooked)) {
+      return true;
+    }
+  }
+  for (const key of Object.keys(node)) {
+    if (key === "parent" || key === "loc" || key === "range") {
+      continue;
+    }
+    const value = node[key];
+    if (Array.isArray(value)) {
+      if (value.some((item) => expressionHasBlockComment(item, seen))) {
+        return true;
+      }
+    } else if (value && typeof value === "object" && expressionHasBlockComment(value, seen)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function reportCssComments(context, textNode) {
   let root;
   try {
@@ -77,6 +132,102 @@ const astroHtmlCommentBan = {
         const value = typeof node.value === "string" ? node.value : "";
         if (!allowsComment(value)) {
           context.report({ node, messageId: "noComments" });
+        }
+      },
+    };
+  },
+};
+
+const astroStyleSetDirectiveBan = {
+  meta: {
+    type: "problem",
+    schema: [],
+    messages: {
+      setDirective: "set:html and set:text are not allowed on style.",
+    },
+  },
+  create(context) {
+    return {
+      JSXElement(node) {
+        if (jsxName(node) !== "style") {
+          return;
+        }
+        for (const attr of node.openingElement?.attributes ?? []) {
+          const { ns, local } = attributeName(attr);
+          if (ns === "set" && (local === "html" || local === "text")) {
+            context.report({ node: attr, messageId: "setDirective" });
+          }
+        }
+      },
+    };
+  },
+};
+
+const astroStyleAttributeCommentBan = {
+  meta: {
+    type: "problem",
+    schema: [],
+    messages: {
+      attribute: "Comments are not allowed in a style attribute.",
+    },
+  },
+  create(context) {
+    return {
+      JSXAttribute(node) {
+        if (attributeName(node).local !== "style" || attributeName(node).ns !== undefined) {
+          return;
+        }
+        const value = node.value;
+        if (value?.type === "Literal" && textHasBlockComment(value.value)) {
+          context.report({ node, messageId: "attribute" });
+          return;
+        }
+        if (value?.type === "JSXExpressionContainer" && expressionHasBlockComment(value.expression)) {
+          context.report({ node, messageId: "attribute" });
+        }
+      },
+    };
+  },
+};
+
+function styleCanBeInspected(node) {
+  const children = (node.children ?? []).filter(
+    (child) => !(child.type === "JSXText" && typeof child.value === "string" && child.value.trim() === ""),
+  );
+  if (children.length === 0 || children.some((child) => child.type !== "AstroRawText")) {
+    return false;
+  }
+  for (const child of children) {
+    try {
+      postcss.parse(child.value);
+    } catch {
+      return false;
+    }
+  }
+  return true;
+}
+
+const astroUninspectedStyleBan = {
+  meta: {
+    type: "problem",
+    schema: [],
+    messages: {
+      uninspected: "Style content cannot be inspected.",
+    },
+  },
+  create(context) {
+    return {
+      JSXElement(node) {
+        if (jsxName(node) !== "style") {
+          return;
+        }
+        for (const attr of node.openingElement?.attributes ?? []) {
+          if (attributeName(attr).local === "lang" && literalValue(attr.value) !== "css") {
+            context.report({ node: attr, messageId: "uninspected" });
+          }
+        }
+        if (!styleCanBeInspected(node)) {
+          context.report({ node, messageId: "uninspected" });
         }
       },
     };
@@ -132,6 +283,9 @@ export default tseslint.config(
         rules: {
           "ban-html-comments": astroHtmlCommentBan,
           "ban-style-comments": astroStyleCommentBan,
+          "ban-style-set-directive": astroStyleSetDirectiveBan,
+          "ban-style-attribute-comment": astroStyleAttributeCommentBan,
+          "ban-uninspected-style": astroUninspectedStyleBan,
         },
       },
     },
@@ -153,6 +307,9 @@ export default tseslint.config(
     rules: {
       "astro-comments/ban-html-comments": "error",
       "astro-comments/ban-style-comments": "error",
+      "astro-comments/ban-style-set-directive": "error",
+      "astro-comments/ban-style-attribute-comment": "error",
+      "astro-comments/ban-uninspected-style": "error",
     },
   },
 );
