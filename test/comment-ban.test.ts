@@ -42,6 +42,21 @@ it("fails lint for // Licence: this is a hack", async () => {
   expect(result.messages.map((message) => message.ruleId)).toContain("ban-comments/ban-comments");
 });
 
+it("fails lint for // Copyright 2026 this is a hack", async () => {
+  const result = await lintFixture("test/lint-fixtures/copyright-hack.ts");
+  expect(result.messages.map((message) => message.ruleId)).toContain("ban-comments/ban-comments");
+});
+
+it("fails lint for // All rights reserved hack", async () => {
+  const result = await lintFixture("test/lint-fixtures/rights-reserved-hack.ts");
+  expect(result.messages.map((message) => message.ruleId)).toContain("ban-comments/ban-comments");
+});
+
+it("fails lint for // SPDX-License-Identifier: MIT hack", async () => {
+  const result = await lintFixture("test/lint-fixtures/spdx-hack.ts");
+  expect(result.messages.map((message) => message.ruleId)).toContain("ban-comments/ban-comments");
+});
+
 it("passes lint for a bare issue URL comment", async () => {
   const result = await lintFixture("test/lint-fixtures/bare-issue-url.ts");
   expect(result.errorCount).toBe(0);

@@ -3,15 +3,11 @@ import banComments from "eslint-plugin-ban-comments";
 import eslintPluginAstro from "eslint-plugin-astro";
 import tseslint from "typescript-eslint";
 
-const noticeLine = String.raw`(?:Copyright(?:\s+\([cC]\))?\s+\d{4}(?:\s*-\s*\d{4})?(?:\s*,\s*\d{4})*\s+\S(?:[^\n]*\S)?|SPDX-License-Identifier:\s+[A-Za-z0-9][A-Za-z0-9.\-+]*|Licensed under the [0-9A-Za-z.\-+]+ License\.?|All rights reserved\.?)`;
-const contentLine = String.raw`[ \t]*\*?[ \t]*${noticeLine}[ \t]*`;
-const blankLine = String.raw`[ \t]*\*?[ \t]*`;
-
 const allowedCommentSources = [
   String.raw`^https://github\.com/[\w.-]+/[\w.-]+/(?:issues|pull)/\d+$`,
   String.raw`^https://www\.rfc-editor\.org/rfc/rfc\d+$`,
   String.raw`^https://datatracker\.ietf\.org/doc/html/rfc\d+$`,
-  String.raw`^${contentLine}(?:\r?\n(?:${contentLine}|${blankLine}))*$`,
+  String.raw`^SPDX-License-Identifier:\s+[A-Za-z0-9][A-Za-z0-9.\-+]*$`,
 ];
 
 const allowedCommentPatterns = allowedCommentSources.map((source) => new RegExp(source));
