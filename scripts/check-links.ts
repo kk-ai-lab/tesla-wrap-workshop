@@ -11,6 +11,7 @@ export type LinkFinding =
   | { code: "missing-template-link"; variant: VariantId; file: string }
   | { code: "wrong-template-link"; variant: VariantId; file: string; href: string }
   | { code: "duplicate-template-link"; variant: VariantId; file: string; count: number }
+  | { code: "bad-template-link"; file: string; href: string }
   | { code: "tesla-hotlink"; file: string; tag: "a" | "img"; url: string }
   | { code: "parse-error"; file: string; reason: string };
 
@@ -19,6 +20,7 @@ export type LinkCheckResult =
   | { ok: false; findings: LinkFinding[] };
 
 const templateMarker = "data-template-link";
+const teslaTemplatePrefix = "https://github.com/teslamotors/custom-wraps/";
 
 function errorReason(error: unknown): string {
   if (error instanceof Error) {
@@ -193,13 +195,19 @@ export function checkLinks(root: string): LinkCheckResult {
     templateLinks += 1;
   }
 
-  const hotlinkFindings: LinkFinding[] = [];
+  const globalFindings: LinkFinding[] = [];
   for (const file of files) {
     const document = documents.get(file);
     if (document === undefined) {
       continue;
     }
     walk(document, (element) => {
+      if (element.tagName === "a" && attribute(element, templateMarker) !== undefined) {
+        const href = attribute(element, "href") ?? "";
+        if (!href.startsWith(teslaTemplatePrefix)) {
+          globalFindings.push({ code: "bad-template-link", file, href });
+        }
+      }
       if (element.tagName !== "a" && element.tagName !== "img") {
         return;
       }
@@ -208,11 +216,11 @@ export function checkLinks(root: string): LinkCheckResult {
       if (url === undefined || !isTeslaRawHotlink(url)) {
         return;
       }
-      hotlinkFindings.push({ code: "tesla-hotlink", file, tag, url });
+      globalFindings.push({ code: "tesla-hotlink", file, tag, url });
     });
   }
 
-  const findings = [...variantFindings, ...parseFindings, ...hotlinkFindings];
+  const findings = [...variantFindings, ...parseFindings, ...globalFindings];
   if (findings.length > 0) {
     return { ok: false, findings };
   }

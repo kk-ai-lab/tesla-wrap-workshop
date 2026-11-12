@@ -156,3 +156,21 @@ it("allows a github template folder link and a relative link", async () => {
     expect(checkLinks(root)).toEqual({ ok: true, templateLinks: 12 });
   });
 });
+
+it("reports a template marker outside the Tesla repo", async () => {
+  await withDist(async (root) => {
+    const href = "https://example.com/templates";
+    await writePage(root, "index.html", `<a data-template-link href="${href}">templates</a>`);
+    expect(checkLinks(root)).toEqual({
+      ok: false,
+      findings: [{ code: "bad-template-link", file: "index.html", href }],
+    });
+  });
+});
+
+it("allows a template marker outside a model page when it points at the Tesla repo", async () => {
+  await withDist(async (root) => {
+    await writePage(root, "index.html", templateAnchor("model3"));
+    expect(checkLinks(root)).toEqual({ ok: true, templateLinks: 12 });
+  });
+});

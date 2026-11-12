@@ -16,6 +16,8 @@ function message(finding: LinkFinding): string {
       return `links: ${finding.file} has template link ${finding.href} for variant ${finding.variant}`;
     case "duplicate-template-link":
       return `links: ${finding.file} has ${finding.count} template links for variant ${finding.variant}`;
+    case "bad-template-link":
+      return `links: ${finding.file} template link ${finding.href} is not a Tesla template folder`;
     case "tesla-hotlink":
       return `links: ${finding.file} ${finding.tag} hotlinks ${finding.url}`;
     case "parse-error":
