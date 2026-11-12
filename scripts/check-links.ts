@@ -20,7 +20,6 @@ export type LinkCheckResult =
   | { ok: false; findings: LinkFinding[] };
 
 const templateMarker = "data-template-link";
-const teslaTemplatePrefix = "https://github.com/teslamotors/custom-wraps/";
 
 function errorReason(error: unknown): string {
   if (error instanceof Error) {
@@ -110,10 +109,12 @@ function listHtml(root: string): string[] {
 }
 
 const documentOrigin = "https://document.invalid/";
+const teslaTemplateHost = "github.com";
+const teslaTemplatePath = "/teslamotors/custom-wraps/";
 
 function firstBaseHref(document: Node): string | undefined {
   let href: string | undefined;
-  walk(document, (element) => {
+  walkOutsideNoscript(document, (element) => {
     if (href === undefined && element.tagName === "base") {
       const value = attribute(element, "href");
       if (value !== undefined) {
@@ -192,6 +193,23 @@ function elementHotlinks(element: ElementNode): { tag: "a" | "img" | "source"; u
     }
   }
   return links;
+}
+
+function isTeslaTemplateHref(value: string, base: URL): boolean {
+  let url: URL;
+  try {
+    url = new URL(value.trim(), base);
+  } catch {
+    return false;
+  }
+  if (url.protocol !== "http:" && url.protocol !== "https:") {
+    return false;
+  }
+  const host = url.hostname.toLowerCase().replace(/\.$/, "");
+  if (host !== teslaTemplateHost) {
+    return false;
+  }
+  return url.pathname.toLowerCase().startsWith(teslaTemplatePath);
 }
 
 function variantFile(variant: VariantId): string {
@@ -285,7 +303,7 @@ export function checkLinks(root: string): LinkCheckResult {
     walk(document, (element) => {
       if (element.tagName === "a" && attribute(element, templateMarker) !== undefined) {
         const href = attribute(element, "href") ?? "";
-        if (!href.toLowerCase().startsWith(teslaTemplatePrefix)) {
+        if (!isTeslaTemplateHref(href, base)) {
           globalFindings.push({ code: "bad-template-link", file, href });
         }
       }

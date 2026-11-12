@@ -399,7 +399,7 @@ it("allows an invalid base and a valid non-Tesla base", async () => {
       root,
       "index.html",
       `<img src="x.png" alt="template">`,
-      `<base href="::::">`,
+      `<base href="::::"><base href="https://raw.githubusercontent.com/teslamotors/">`,
     );
     await writePage(
       root,
@@ -408,5 +408,27 @@ it("allows an invalid base and a valid non-Tesla base", async () => {
       `<base href="https://example.com/templates/">`,
     );
     expect(checkLinks(root)).toEqual({ ok: true, templateLinks: 12 });
+  });
+});
+
+it("ignores a base element inside noscript", async () => {
+  await withDist(async (root) => {
+    await writePage(
+      root,
+      "index.html",
+      `<noscript><base href="https://raw.githubusercontent.com/teslamotors/"></noscript><img src="x.png" alt="template">`,
+    );
+    expect(checkLinks(root)).toEqual({ ok: true, templateLinks: 12 });
+  });
+});
+
+it("reports a template marker whose resolved path leaves the Tesla folder", async () => {
+  await withDist(async (root) => {
+    const href = "https://github.com/teslamotors/custom-wraps/../../evil";
+    await writePage(root, "index.html", `<a data-template-link href="${href}">templates</a>`);
+    expect(checkLinks(root)).toEqual({
+      ok: false,
+      findings: [{ code: "bad-template-link", file: "index.html", href }],
+    });
   });
 });
