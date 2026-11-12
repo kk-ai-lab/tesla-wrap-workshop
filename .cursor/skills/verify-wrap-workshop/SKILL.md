@@ -66,7 +66,7 @@ The gallery check also does not need the preview. Run it after the build:
 npm run verify:gallery
 ```
 
-The exit code is 0. Stdout includes `verify-gallery: 12 variant pages, 1 wrap pages, 1 thumbnails, 12 index links ok`. It fails when a variant page, a wrap page, a download target, a WebP thumbnail, or an index variant link is missing.
+The exit code is 0. Stdout includes `verify-gallery: 12 variant pages, 1 wrap page, 1 thumbnail, 12 index links ok`. It fails when a variant page, a wrap page, a download target, a WebP thumbnail, or an index variant link is missing.
 
 ## Evidence
 

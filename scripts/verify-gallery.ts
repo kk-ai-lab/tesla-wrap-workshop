@@ -1,8 +1,10 @@
 import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import sharp from "sharp";
 import { loadCatalogue } from "../src/catalogue/load.ts";
-import { VARIANTS, type VariantId } from "../src/domain/variants.ts";
+import { VARIANTS, templateUrl, type VariantId } from "../src/domain/variants.ts";
+import type { Wrap } from "../src/domain/wrap.ts";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
@@ -24,19 +26,20 @@ function hrefs(html: string): string[] {
   return [...html.matchAll(/href="([^"]*)"/g)].map((match) => match[1] ?? "");
 }
 
-function downloadHrefs(html: string): string[] {
-  const found: string[] = [];
+type DownloadLink = { href: string; download: string | undefined };
+
+function downloadLinks(html: string): DownloadLink[] {
+  const links: DownloadLink[] = [];
   for (const match of html.matchAll(/<a\b[^>]*>/g)) {
     const tag = match[0] ?? "";
-    if (!/\bdownload\b/.test(tag)) {
+    const href = /\bhref="([^"]*)"/.exec(tag);
+    if (href?.[1] === undefined) {
       continue;
     }
-    const href = /\bhref="([^"]*)"/.exec(tag);
-    if (href?.[1] !== undefined) {
-      found.push(href[1]);
-    }
+    const download = /\sdownload(?:="([^"]*)")?(?=[\s>])/.exec(tag);
+    links.push({ href: href[1], download: download?.[1] });
   }
-  return found;
+  return links;
 }
 
 function distRelative(href: string, wrapId: string): string {
@@ -54,6 +57,61 @@ function distRelative(href: string, wrapId: string): string {
   return rel;
 }
 
+function expectedDownload(wrap: Wrap): string {
+  return path.join("wraps", wrap.id, wrap.file);
+}
+
+function findDownload(html: string, wrap: Wrap, label: string): string {
+  for (const link of downloadLinks(html)) {
+    if (link.download !== wrap.file) {
+      continue;
+    }
+    const rel = distRelative(link.href, wrap.id);
+    if (rel === expectedDownload(wrap)) {
+      return rel;
+    }
+  }
+  return fail(`${label} has no download link for ${wrap.file} with download="${wrap.file}"`);
+}
+
+async function assertSameBytes(wrap: Wrap, target: string): Promise<void> {
+  const source = path.resolve("content/wraps", wrap.id, wrap.file);
+  const file = path.resolve(dist, target);
+  if (file !== dist && !file.startsWith(dist + path.sep)) {
+    fail(`wrap ${wrap.id} download link escapes dist: ${target}`);
+  }
+  let isFile = false;
+  try {
+    isFile = (await stat(file)).isFile();
+  } catch {
+    fail(`wrap ${wrap.id} download target is missing: ${target}`);
+  }
+  if (!isFile) {
+    fail(`wrap ${wrap.id} download target is not a file: ${target}`);
+  }
+  const [sourceBytes, distBytes] = await Promise.all([readFile(source), readFile(file)]);
+  if (!sourceBytes.equals(distBytes)) {
+    fail(`wrap ${wrap.id} download target differs from ${path.relative(root, source)}`);
+  }
+}
+
+async function assertThumbnail(wrap: Wrap): Promise<void> {
+  const thumb = path.join(dist, "thumbs", `${wrap.id}.webp`);
+  let metadata: { format?: string; width?: number; height?: number };
+  try {
+    metadata = await sharp(thumb).metadata();
+  } catch {
+    fail(`thumbnail is missing for ${wrap.id} at ${path.relative(root, thumb)}`);
+  }
+  const width = Math.min(wrap.width, 512);
+  const height = Math.round((wrap.height * width) / wrap.width);
+  if (metadata.format !== "webp" || metadata.width !== width || metadata.height !== height) {
+    fail(
+      `thumbnail for ${wrap.id} is ${metadata.format ?? "unknown"} ${metadata.width ?? "?"}x${metadata.height ?? "?"}, want webp ${width}x${height}`,
+    );
+  }
+}
+
 const result = await loadCatalogue(path.resolve("content/wraps"));
 if (!result.ok) {
   fail("catalogue load failed");
@@ -64,10 +122,25 @@ const variantIds = Object.keys(VARIANTS) as VariantId[];
 const variantPages = new Map<VariantId, string>();
 
 for (const variant of variantIds) {
-  variantPages.set(
-    variant,
-    await readText(path.join(dist, "models", variant, "index.html"), `variant page ${variant}`),
+  const html = await readText(
+    path.join(dist, "models", variant, "index.html"),
+    `variant page ${variant}`,
   );
+  const template = templateUrl(variant);
+  if (!html.includes(template)) {
+    fail(`variant page ${variant} does not link to ${template}`);
+  }
+  variantPages.set(variant, html);
+}
+
+const indexHtml = await readText(path.join(dist, "index.html"), "index page");
+const indexHrefs = hrefs(indexHtml);
+
+for (const variant of variantIds) {
+  const wanted = `/models/${variant}/`;
+  if (!indexHrefs.includes(wanted)) {
+    fail(`index page does not link to ${wanted}`);
+  }
 }
 
 for (const wrap of wraps) {
@@ -78,74 +151,33 @@ for (const wrap of wraps) {
   if (!hrefs(variantHtml).includes(`/wraps/${wrap.id}/`)) {
     fail(`variant page ${wrap.variant} does not list wrap ${wrap.id}`);
   }
+  if (!indexHrefs.includes(`/wraps/${wrap.id}/`)) {
+    fail(`index page does not link to /wraps/${wrap.id}/`);
+  }
+  const detailHtml = await readText(
+    path.join(dist, "wraps", wrap.id, "index.html"),
+    `wrap page ${wrap.id}`,
+  );
+  const target = findDownload(detailHtml, wrap, `wrap page ${wrap.id}`);
+  findDownload(variantHtml, wrap, `variant page ${wrap.variant}`);
+  findDownload(indexHtml, wrap, "index page");
+  await assertSameBytes(wrap, target);
+  await assertThumbnail(wrap);
 }
 
-for (const wrap of wraps) {
-  const page = path.join(dist, "wraps", wrap.id, "index.html");
-  const html = await readText(page, `wrap page ${wrap.id}`);
-  const candidates = downloadHrefs(html);
-  if (candidates.length === 0) {
-    fail(`wrap page ${wrap.id} has no download link`);
-  }
-  let target: string | undefined;
-  for (const href of candidates) {
-    const rel = distRelative(href, wrap.id);
-    if (path.basename(rel) === wrap.file) {
-      target = rel;
-      break;
+for (const variant of variantIds) {
+  const page = variantPages.get(variant) ?? "";
+  if (!hrefs(page).some((href) => href.startsWith(`/wraps/`))) {
+    const empty = "There are no wraps yet for this variant.";
+    if (!page.includes(empty)) {
+      fail(`empty variant page ${variant} does not show "${empty}"`);
     }
   }
-  if (target === undefined) {
-    fail(`wrap page ${wrap.id} has no download link for ${wrap.file}`);
-  }
-  const file = path.resolve(dist, target);
-  if (file !== dist && !file.startsWith(dist + path.sep)) {
-    fail(`wrap page ${wrap.id} download link escapes dist: ${target}`);
-  }
-  let isFile = false;
-  try {
-    isFile = (await stat(file)).isFile();
-  } catch {
-    fail(`wrap page ${wrap.id} download target is missing: ${target}`);
-  }
-  if (!isFile) {
-    fail(`wrap page ${wrap.id} download target is not a file: ${target}`);
-  }
 }
 
-for (const wrap of wraps) {
-  const thumb = path.join(dist, "thumbs", `${wrap.id}.webp`);
-  let bytes: Buffer;
-  try {
-    bytes = await readFile(thumb);
-  } catch {
-    fail(`thumbnail is missing for ${wrap.id} at ${path.relative(root, thumb)}`);
-  }
-  if (
-    bytes.length < 12 ||
-    bytes.toString("latin1", 0, 4) !== "RIFF" ||
-    bytes.toString("latin1", 8, 12) !== "WEBP"
-  ) {
-    fail(`thumbnail for ${wrap.id} is not a WebP file`);
-  }
-}
-
-const indexHtml = await readText(path.join(dist, "index.html"), "index page");
-const indexHrefs = hrefs(indexHtml);
-for (const variant of variantIds) {
-  const wanted = `/models/${variant}/`;
-  if (!indexHrefs.includes(wanted)) {
-    fail(`index page does not link to ${wanted}`);
-  }
-}
-
-for (const wrap of wraps) {
-  const wanted = `/wraps/${wrap.id}/`;
-  if (!indexHrefs.includes(wanted)) {
-    fail(`index page does not link to ${wanted}`);
-  }
-}
+const plural = (count: number, one: string, many: string): string =>
+  `${count} ${count === 1 ? one : many}`;
 
 console.log(
-  `verify-gallery: ${variantIds.length} variant pages, ${wraps.length} wrap pages, ${wraps.length} thumbnails, ${variantIds.length} index links ok`,
+  `verify-gallery: ${plural(variantIds.length, "variant page", "variant pages")}, ${plural(wraps.length, "wrap page", "wrap pages")}, ${plural(wraps.length, "thumbnail", "thumbnails")}, ${plural(variantIds.length, "index link", "index links")} ok`,
 );
