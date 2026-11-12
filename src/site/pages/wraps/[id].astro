@@ -1,0 +1,96 @@
+---
+import path from "node:path";
+import { loadCatalogue } from "../../../catalogue/load";
+import { LICENCES } from "../../../domain/licences";
+import type { Wrap } from "../../../domain/wrap";
+import { VARIANTS } from "../../../domain/variants";
+import Base from "../../layouts/Base.astro";
+
+export async function getStaticPaths() {
+  const result = await loadCatalogue(path.resolve("content/wraps"));
+  if (!result.ok) {
+    throw new Error("catalogue load failed");
+  }
+  return result.catalogue.wraps.map((wrap) => ({
+    params: { id: wrap.id },
+    props: { wrap },
+  }));
+}
+
+type Props = { wrap: Wrap };
+
+const { wrap } = Astro.props;
+const variant = VARIANTS[wrap.variant];
+const licence = LICENCES[wrap.licence];
+const downloadHref = `/wraps/${wrap.id}/${encodeURIComponent(wrap.file)}`;
+const thumbWidth = Math.min(wrap.width, 512);
+const thumbHeight = Math.round((wrap.height * thumbWidth) / wrap.width);
+---
+
+<Base title={wrap.title}>
+  <p><a href="/">Back to all wraps</a></p>
+  <div class="wrap-detail">
+    <img
+      class="thumb"
+      src={`/thumbs/${wrap.id}.webp`}
+      alt={`${wrap.title} thumbnail`}
+      width={thumbWidth}
+      height={thumbHeight}
+    />
+    <div>
+      <h1>{wrap.title}</h1>
+      <dl class="meta">
+        <dt>Variant</dt>
+        <dd><a href={`/models/${wrap.variant}/`}>{variant.label}</a></dd>
+        <dt>Dimensions</dt>
+        <dd>{wrap.width} x {wrap.height}</dd>
+        <dt>File size</dt>
+        <dd>{wrap.bytes} bytes</dd>
+        <dt>Licence</dt>
+        <dd><a href={licence.url}>{wrap.licence}</a></dd>
+        <dt>Added</dt>
+        <dd>{wrap.addedOn}</dd>
+        <dt>Tags</dt>
+        <dd>
+          {
+            wrap.tags.length === 0 ? (
+              <span class="variant">none</span>
+            ) : (
+              <ul class="tags">
+                {wrap.tags.map((tag) => (
+                  <li>{tag}</li>
+                ))}
+              </ul>
+            )
+          }
+        </dd>
+        <dt>Provenance</dt>
+        <dd>
+          <ul class="provenance">
+            {
+              wrap.provenance.map((entry) => (
+                <li>
+                  {entry.kind === "own" ? "Own design" : "Third-party"}
+                  {entry.author === undefined ? null : <span> by {entry.author}</span>}
+                  {entry.sourceUrl === undefined ? null : (
+                    <span>
+                      {" "}
+                      (<a href={entry.sourceUrl}>source</a>)
+                    </span>
+                  )}
+                  {entry.kind === "third-party" && entry.sourceLicenceUrl !== undefined ? (
+                    <span>
+                      {" "}
+                      (<a href={entry.sourceLicenceUrl}>source licence</a>)
+                    </span>
+                  ) : null}
+                </li>
+              ))
+            }
+          </ul>
+        </dd>
+      </dl>
+      <a class="download" href={downloadHref} download={wrap.file}>Download {wrap.file}</a>
+    </div>
+  </div>
+</Base>

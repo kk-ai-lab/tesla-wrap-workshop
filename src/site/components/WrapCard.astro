@@ -1,0 +1,27 @@
+---
+import { VARIANTS } from "../../domain/variants";
+import type { Wrap } from "../../domain/wrap";
+
+type Props = { wrap: Wrap };
+
+const { wrap } = Astro.props;
+const pageHref = `/wraps/${wrap.id}/`;
+const downloadHref = `${pageHref}${encodeURIComponent(wrap.file)}`;
+const thumbWidth = Math.min(wrap.width, 512);
+const thumbHeight = Math.round((wrap.height * thumbWidth) / wrap.width);
+---
+
+<article class="wrap-card">
+  <a class="thumb" href={pageHref}>
+    <img
+      src={`/thumbs/${wrap.id}.webp`}
+      alt={`${wrap.title} thumbnail`}
+      width={thumbWidth}
+      height={thumbHeight}
+      loading="lazy"
+    />
+  </a>
+  <h3><a href={pageHref}>{wrap.title}</a></h3>
+  <p class="variant">{VARIANTS[wrap.variant].label}</p>
+  <a class="download" href={downloadHref} download={wrap.file}>Download PNG</a>
+</article>

@@ -11,7 +11,8 @@
     "test": "vitest run",
     "check": "tsx src/cli/check.ts",
     "build": "astro build",
-    "check:dist": "tsx scripts/check-dist.ts"
+    "check:dist": "tsx scripts/check-dist.ts",
+    "verify:gallery": "tsx scripts/verify-gallery.ts"
   },
   "dependencies": {
     "astro": "^7.4.7",
@@ -25,6 +26,7 @@
     "eslint-plugin-ban-comments": "^1.0.3",
     "parse5": "7.3.0",
     "postcss": "8.5.32",
+    "sharp": "^0.35.5",
     "tsx": "^4.23.15",
     "typescript": "^5.9.0",
     "typescript-eslint": "^8.72.2",

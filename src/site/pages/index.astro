@@ -1,30 +1,54 @@
 ---
 import path from "node:path";
 import { loadCatalogue } from "../../catalogue/load";
+import { VARIANTS, type VariantId } from "../../domain/variants";
+import WrapCard from "../components/WrapCard.astro";
+import Base from "../layouts/Base.astro";
 
 const result = await loadCatalogue(path.resolve("content/wraps"));
 if (!result.ok) {
   throw new Error("catalogue load failed");
 }
-const { wraps } = result.catalogue;
+const { wraps, byVariant } = result.catalogue;
+const variants = (Object.keys(VARIANTS) as VariantId[]).map((variant) => ({
+  id: variant,
+  label: VARIANTS[variant].label,
+  count: byVariant.get(variant)?.length ?? 0,
+}));
 ---
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>tesla-wrap-workshop</title>
-  </head>
-  <body>
-    <ul>
+
+<Base title="tesla-wrap-workshop">
+  <h1>Wrap gallery</h1>
+  <p>Browse curated wrap designs by vehicle variant and download the exact PNG.</p>
+
+  <section id="vehicles">
+    <h2>Vehicles</h2>
+    <ul class="variant-list">
       {
-        wraps.map((wrap) => (
+        variants.map((variant) => (
           <li>
-            {wrap.title}{" "}
-            <a href={`/wraps/${wrap.id}/${encodeURIComponent(wrap.file)}`} download={wrap.file}>
-              {wrap.file}
-            </a>
+            <a href={`/models/${variant.id}/`}>{variant.label}</a>
+            <span class="count">{variant.count === 1 ? "1 wrap" : `${variant.count} wraps`}</span>
           </li>
         ))
       }
     </ul>
-  </body>
-</html>
+  </section>
+
+  <section id="wraps">
+    <h2>All wraps</h2>
+    {
+      wraps.length === 0 ? (
+        <p>No wraps yet.</p>
+      ) : (
+        <ul class="wrap-grid">
+          {wraps.map((wrap) => (
+            <li>
+              <WrapCard wrap={wrap} />
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
+</Base>
