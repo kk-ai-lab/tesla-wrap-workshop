@@ -25,16 +25,19 @@ const info = VARIANTS[variant];
 ---
 
 <Base title={`${info.label} wraps`}>
-  <p><a href="/">Back to all wraps</a></p>
-  <h1>{info.label}</h1>
-  <p class="variant">Template size: {info.w} x {info.h}</p>
+  <p class="back-link"><a href="/#vehicles">Back to all vehicles</a></p>
+  <div class="page-heading">
+  <h1 class="model-title">{info.label}</h1>
+  <p class="variant">PNG template / {info.w} × {info.h}</p>
   <p>
-    Looking for the vehicle template? <TemplateLink variant={variant} />.
+    <TemplateLink variant={variant} />. Official templates stay in Tesla's repository.
   </p>
 
+  </div>
+  <div class="section-heading"><h2>Available designs</h2><span class="micro-label">{wraps.length} {wraps.length === 1 ? "design" : "designs"}</span></div>
   {
     wraps.length === 0 ? (
-      <p>There are no wraps yet for this variant.</p>
+      <div class="empty-state"><p>There are no wraps yet for this variant.</p><a href="/#vehicles">Browse another vehicle</a></div>
     ) : (
       <ul class="wrap-grid">
         {wraps.map((wrap) => (

@@ -1,8 +1,12 @@
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { checkLinks, type LinkFinding } from "./check-links.ts";
+import { checkPagePolicy, type PageCheck } from "./check-page-policy.ts";
+import { checkRepository } from "../src/guards/repository.ts";
+import { launchMode } from "../src/domain/launch.ts";
 
-const usageLine = "usage: npm run postbuild:check -- [--only links]";
+const usageLine = "usage: npm run postbuild:check -- [--only links|disclaimer|budget|launch|assets]";
+type CheckName = "links" | PageCheck | "assets";
 
 export type CliResult = { exitCode: number; stdout: string[]; stderr: string[] };
 
@@ -25,11 +29,16 @@ function message(finding: LinkFinding): string {
   }
 }
 
-function parseOnly(argv: string[]): { ok: true; only: string | undefined } | { ok: false } {
+function isCheck(value: string): value is CheckName {
+  return ["links", "disclaimer", "budget", "launch", "assets"].includes(value);
+}
+
+function parseOnly(argv: string[]): { ok: true; only: CheckName | undefined } | { ok: false } {
   let only: string | undefined;
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
     if (arg === "--only") {
+      if (only !== undefined) return { ok: false };
       const value = argv[index + 1];
       if (value === undefined) {
         return { ok: false };
@@ -39,31 +48,45 @@ function parseOnly(argv: string[]): { ok: true; only: string | undefined } | { o
       continue;
     }
     if (arg?.startsWith("--only=")) {
+      if (only !== undefined) return { ok: false };
       only = arg.slice("--only=".length);
       continue;
     }
     return { ok: false };
   }
-  if (only !== undefined && only !== "links") {
-    return { ok: false };
-  }
-  return { ok: true, only };
+  if (only === undefined) return { ok: true, only };
+  return isCheck(only) ? { ok: true, only } : { ok: false };
 }
 
-export function run(argv: string[], root: string): CliResult {
+export function run(argv: string[], root: string, launchValue = process.env.PUBLIC_LAUNCH): CliResult {
   const parsed = parseOnly(argv);
   if (!parsed.ok) {
     return { exitCode: 2, stdout: [], stderr: [usageLine] };
   }
-  const result = checkLinks(root);
-  if (result.ok) {
-    return {
-      exitCode: 0,
-      stdout: [`links: ${result.templateLinks} template links ok, 0 tesla hotlinks`],
-      stderr: [],
-    };
+  const stdout: string[] = [];
+  const findings: string[] = [];
+  if (parsed.only === undefined || parsed.only === "links") {
+    const result = checkLinks(root);
+    if (result.ok) stdout.push(`links: ${result.templateLinks} template links ok, 0 tesla hotlinks`);
+    else findings.push(...result.findings.map(message));
   }
-  return { exitCode: 1, stdout: result.findings.map(message), stderr: [] };
+  if (parsed.only === undefined || ["disclaimer", "budget", "launch"].includes(parsed.only)) {
+    try {
+      const mode = launchMode(launchValue);
+      const only = parsed.only === "disclaimer" || parsed.only === "budget" || parsed.only === "launch" ? parsed.only : undefined;
+      const result = checkPagePolicy(root, only, mode);
+      findings.push(...result.findings);
+      stdout.push(...result.summaries);
+    } catch (error) {
+      findings.push(`launch: ${error instanceof Error ? error.message : "invalid launch mode"}`);
+    }
+  }
+  if (parsed.only === undefined || parsed.only === "assets") {
+    const result = checkRepository(process.cwd(), root);
+    findings.push(...result.map((finding) => `${finding.rule}: ${finding.file} ${finding.reason}`));
+    if (result.length === 0) stdout.push("assets: no Tesla source copies or denied brand assets");
+  }
+  return { exitCode: findings.length === 0 ? 0 : 1, stdout: findings.length === 0 ? stdout : findings, stderr: [] };
 }
 
 function main(): void {

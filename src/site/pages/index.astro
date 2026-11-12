@@ -17,38 +17,32 @@ const variants = (Object.keys(VARIANTS) as VariantId[]).map((variant) => ({
 }));
 ---
 
-<Base title="tesla-wrap-workshop">
-  <h1>Wrap gallery</h1>
-  <p>Browse curated wrap designs by vehicle variant and download the exact PNG.</p>
+<Base title="Community wrap gallery">
+  <section class="hero" aria-labelledby="gallery-heading">
+    <div class="hero-copy">
+      <h1 id="gallery-heading">A different<br />kind of <span>paint.</span></h1>
+      <p class="intro">Community designs for your Tesla's on-screen look. Find your vehicle, explore the PNGs and make Paint Shop your own.</p>
+      <div class="hero-actions"><a class="download" href="#wraps">Explore the gallery</a><a class="text-link" href="/about/#installation">How to install</a></div>
+    </div>
+    <div class="archive-summary" aria-label="Gallery summary">
+      <div><span class="stat">{String(wraps.length).padStart(2, "0")}</span><span class="micro-label">{wraps.length === 1 ? "Available design" : "Available designs"}</span></div>
+      <div><span class="stat">{String(variants.length).padStart(2, "0")}</span><span class="micro-label">Vehicle variants</span></div>
+      <p>Flat PNG previews.<br />Exact files. Source details.</p>
+    </div>
+  </section>
 
-  <section id="vehicles">
-    <h2>Vehicles</h2>
+  <section id="vehicles" class="section-block" aria-labelledby="vehicles-heading">
+    <div class="section-heading"><h2 id="vehicles-heading">Choose your vehicle</h2><span class="micro-label">Browse by fit</span></div>
     <ul class="variant-list">
-      {
-        variants.map((variant) => (
-          <li>
-            <a href={`/models/${variant.id}/`}>{variant.label}</a>
-            <span class="count">{variant.count === 1 ? "1 wrap" : `${variant.count} wraps`}</span>
-          </li>
-        ))
-      }
+      {variants.map((variant) => (
+        <li><a href={`/models/${variant.id}/`}><span>{variant.label}</span><span class="count">{String(variant.count).padStart(2, "0")}<span class="sr-only"> {variant.count === 1 ? "wrap" : "wraps"}</span></span></a></li>
+      ))}
     </ul>
   </section>
 
-  <section id="wraps">
-    <h2>All wraps</h2>
-    {
-      wraps.length === 0 ? (
-        <p>No wraps yet.</p>
-      ) : (
-        <ul class="wrap-grid">
-          {wraps.map((wrap) => (
-            <li>
-              <WrapCard wrap={wrap} />
-            </li>
-          ))}
-        </ul>
-      )
-    }
+  <section id="wraps" class="section-block" aria-labelledby="wraps-heading">
+    <div class="section-heading"><h2 id="wraps-heading">The gallery</h2><span class="micro-label">{wraps.length} {wraps.length === 1 ? "design" : "designs"} / PNG downloads</span></div>
+    <p class="section-note">Preview the image, check its source and download the original PNG. File validation does not confirm how a wrap looks in a vehicle.</p>
+    {wraps.length === 0 ? <p class="empty-state">No wraps yet.</p> : <ul class="wrap-grid">{wraps.map((wrap) => <li><WrapCard wrap={wrap} /></li>)}</ul>}
   </section>
 </Base>

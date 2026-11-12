@@ -326,6 +326,7 @@ export function scanRoot(root: string): Finding[] {
       continue;
     }
     const extension = path.extname(entry.path).toLowerCase();
+    if (relative === "robots.txt") continue;
     const language = extensionLanguage.get(extension);
     if (language === undefined) {
       if (!opaqueExtensions.has(extension)) {

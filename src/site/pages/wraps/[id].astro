@@ -28,24 +28,25 @@ const thumbHeight = Math.round((wrap.height * thumbWidth) / wrap.width);
 ---
 
 <Base title={wrap.title}>
-  <p><a href="/">Back to all wraps</a></p>
+  <p class="back-link"><a href="/#wraps">Back to the gallery</a></p>
   <div class="wrap-detail">
-    <img
+    <figure class="detail-preview"><img
       class="thumb"
       src={`/thumbs/${wrap.id}.webp`}
-      alt={`${wrap.title} thumbnail`}
+      alt={`${wrap.title}, flat PNG preview`}
       width={thumbWidth}
       height={thumbHeight}
-    />
+    /><figcaption class="micro-label">Flat PNG preview / not a 3D vehicle render</figcaption></figure>
     <div>
+      <p class="micro-label">{variant.label}</p>
       <h1>{wrap.title}</h1>
       <dl class="meta">
         <dt>Variant</dt>
         <dd><a href={`/models/${wrap.variant}/`}>{variant.label}</a></dd>
         <dt>Dimensions</dt>
-        <dd>{wrap.width} x {wrap.height}</dd>
+        <dd>{wrap.width} × {wrap.height} px</dd>
         <dt>File size</dt>
-        <dd>{wrap.bytes} bytes</dd>
+        <dd>{wrap.bytes.toLocaleString("en-IE")} bytes</dd>
         <dt>Licence</dt>
         <dd><a href={licence.url}>{wrap.licence}</a></dd>
         <dt>Added</dt>
@@ -78,6 +79,8 @@ const thumbHeight = Math.round((wrap.height * thumbWidth) / wrap.width);
                       (<a href={entry.sourceUrl}>source</a>)
                     </span>
                   )}
+                  {entry.kind === "own" && entry.createdWith !== undefined ? <span class="provenance-detail">Created with {entry.createdWith}</span> : null}
+                  {entry.kind === "third-party" && entry.retrievedOn !== undefined ? <span class="provenance-detail">Retrieved {entry.retrievedOn}</span> : null}
                   {entry.kind === "third-party" && entry.sourceLicenceUrl !== undefined ? (
                     <span>
                       {" "}
@@ -91,6 +94,8 @@ const thumbHeight = Math.round((wrap.height * thumbWidth) / wrap.width);
         </dd>
       </dl>
       <a class="download" href={downloadHref} download={wrap.file}>Download {wrap.file}</a>
+      <p class="download-note">Original PNG. File checks do not confirm in-car appearance or compatibility.</p>
+      <a class="text-link" href="/about/#installation">Installation instructions</a>
     </div>
   </div>
 </Base>

@@ -1,6 +1,7 @@
 import path from "node:path";
 import { loadCatalogue } from "../catalogue/load";
 import type { Violation } from "../domain/spec";
+import { checkRepository } from "../guards/repository";
 
 type Reported = Violation & { wrap: string };
 
@@ -37,8 +38,12 @@ function formatViolation(violation: Reported): string {
 
 const root = process.argv[2] ?? path.join(process.cwd(), "content/wraps");
 const result = await loadCatalogue(root);
+const guardFindings = checkRepository(process.cwd());
+for (const finding of guardFindings) {
+  process.stdout.write(`${finding.rule}: ${finding.file} ${finding.reason}\n`);
+}
 
-if (result.ok) {
+if (result.ok && guardFindings.length === 0) {
   const count = result.catalogue.wraps.length;
   process.stdout.write(
     `check: ${plural(count, "wrap", "wraps")}, ${plural(0, "violation", "violations")}\n`,
@@ -46,7 +51,9 @@ if (result.ok) {
   process.exit(0);
 }
 
-for (const violation of result.violations) {
-  process.stdout.write(`${formatViolation(violation)}\n`);
+if (!result.ok) {
+  for (const violation of result.violations) {
+    process.stdout.write(`${formatViolation(violation)}\n`);
+  }
 }
 process.exit(1);

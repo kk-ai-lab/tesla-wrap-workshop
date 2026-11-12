@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { defineConfig } from "astro/config";
 import sharp from "sharp";
 import { loadCatalogue } from "./src/catalogue/load.ts";
+import { assertReleaseAllowed } from "./scripts/release-gate.ts";
 
 export default defineConfig({
   srcDir: "./src/site",
@@ -13,6 +14,7 @@ export default defineConfig({
     {
       name: "copy-wrap-pngs",
       hooks: {
+        "astro:build:start": () => assertReleaseAllowed(process.cwd(), process.env.PUBLIC_LAUNCH),
         "astro:build:done": async ({ dir }) => {
           const result = await loadCatalogue(path.resolve("content/wraps"));
           if (!result.ok) {

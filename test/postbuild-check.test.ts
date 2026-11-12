@@ -4,12 +4,13 @@ import path from "node:path";
 import { expect, it } from "vitest";
 import { run } from "../scripts/postbuild-check.ts";
 import { VARIANTS, templateUrl, type VariantId } from "../src/domain/variants.ts";
+import { DISCLAIMER } from "../scripts/check-page-policy.ts";
 
 const variantIds = Object.keys(VARIANTS) as VariantId[];
 const successLine = "links: 12 template links ok, 0 tesla hotlinks";
 
 function page(body: string): string {
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>test</title></head><body>${body}</body></html>`;
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><title>test</title></head><body>${body}<footer><p data-testid="disclaimer">${DISCLAIMER}</p></footer></body></html>`;
 }
 
 function anchor(variant: VariantId): string {
@@ -28,6 +29,7 @@ async function withDist(work: (root: string) => Promise<void>): Promise<void> {
     for (const variant of variantIds) {
       await writePage(root, `models/${variant}/index.html`, anchor(variant));
     }
+    await writeFile(path.join(root, "robots.txt"), "User-agent: *\nDisallow: /\n");
     await work(root);
   } finally {
     await rm(root, { recursive: true, force: true });
@@ -36,7 +38,12 @@ async function withDist(work: (root: string) => Promise<void>): Promise<void> {
 
 it("passes with no arguments", async () => {
   await withDist(async (root) => {
-    expect(run([], root)).toEqual({ exitCode: 0, stdout: [successLine], stderr: [] });
+    const result = run([], root);
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain(successLine);
+    expect(result.stdout).toContain("disclaimer: 12/12 pages ok");
+    expect(result.stdout).toContain("launch: preview policy checked on 12 pages");
+    expect(result.stdout).toContain("assets: no Tesla source copies or denied brand assets");
   });
 });
 

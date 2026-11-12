@@ -12,16 +12,14 @@ const thumbHeight = Math.round((wrap.height * thumbWidth) / wrap.width);
 ---
 
 <article class="wrap-card">
-  <a class="thumb" href={pageHref}>
-    <img
-      src={`/thumbs/${wrap.id}.webp`}
-      alt={`${wrap.title} thumbnail`}
-      width={thumbWidth}
-      height={thumbHeight}
-      loading="lazy"
-    />
+  <a class="thumb" href={pageHref} aria-label={`View ${wrap.title}`}>
+    <img src={`/thumbs/${wrap.id}.webp`} alt={`${wrap.title}, flat PNG preview`} width={thumbWidth} height={thumbHeight} loading="lazy" />
+    <span class="preview-label">Flat PNG preview</span>
   </a>
-  <h3><a href={pageHref}>{wrap.title}</a></h3>
-  <p class="variant">{VARIANTS[wrap.variant].label}</p>
-  <a class="download" href={downloadHref} download={wrap.file}>Download PNG</a>
+  <div class="card-info">
+    <p class="micro-label">{wrap.licence} <span aria-hidden="true">/</span> {wrap.width} × {wrap.height}</p>
+    <h3><a href={pageHref}>{wrap.title}</a></h3>
+    <p class="variant">{VARIANTS[wrap.variant].label}</p>
+    <div class="card-actions"><a class="text-link" href={pageHref}>View details</a><a class="download" href={downloadHref} download={wrap.file}>Download PNG</a></div>
+  </div>
 </article>

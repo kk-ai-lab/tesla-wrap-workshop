@@ -1,0 +1,4 @@
+{
+  "deniedFonts": ["Gotham", "Tesla T", "TeslaFont", "TESLA"],
+  "deniedLogoNames": ["tesla-logo", "tesla_logo", "teslalogo", "tesla-wordmark", "tesla_wordmark"]
+}
