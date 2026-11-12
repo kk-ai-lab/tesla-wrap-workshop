@@ -61,9 +61,23 @@ if (!result.ok) {
 const { wraps } = result.catalogue;
 
 const variantIds = Object.keys(VARIANTS) as VariantId[];
+const variantPages = new Map<VariantId, string>();
 
 for (const variant of variantIds) {
-  await readText(path.join(dist, "models", variant, "index.html"), `variant page ${variant}`);
+  variantPages.set(
+    variant,
+    await readText(path.join(dist, "models", variant, "index.html"), `variant page ${variant}`),
+  );
+}
+
+for (const wrap of wraps) {
+  const variantHtml = variantPages.get(wrap.variant);
+  if (variantHtml === undefined) {
+    fail(`wrap ${wrap.id} has unknown variant ${wrap.variant}`);
+  }
+  if (!hrefs(variantHtml).includes(`/wraps/${wrap.id}/`)) {
+    fail(`variant page ${wrap.variant} does not list wrap ${wrap.id}`);
+  }
 }
 
 for (const wrap of wraps) {
@@ -120,6 +134,13 @@ const indexHtml = await readText(path.join(dist, "index.html"), "index page");
 const indexHrefs = hrefs(indexHtml);
 for (const variant of variantIds) {
   const wanted = `/models/${variant}/`;
+  if (!indexHrefs.includes(wanted)) {
+    fail(`index page does not link to ${wanted}`);
+  }
+}
+
+for (const wrap of wraps) {
+  const wanted = `/wraps/${wrap.id}/`;
   if (!indexHrefs.includes(wanted)) {
     fail(`index page does not link to ${wanted}`);
   }
