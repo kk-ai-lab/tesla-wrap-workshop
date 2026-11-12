@@ -9,6 +9,7 @@ export const SPEC = {
 
 export type Violation =
   | { code: "not-png" }
+  | { code: "invalid-png" }
   | { code: "bad-name"; name: string }
   | { code: "too-big"; bytes: number }
   | { code: "wrong-dims"; got: [number, number]; want: [number, number] }

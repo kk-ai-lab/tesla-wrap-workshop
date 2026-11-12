@@ -1,8 +1,9 @@
 import { createHash } from "node:crypto";
-import { readdir, readFile } from "node:fs/promises";
+import { lstat, readdir, readFile } from "node:fs/promises";
 import path from "node:path";
-import { checkPng, readIhdr, type Violation } from "../domain/spec";
+import { checkPng, readIhdr, SPEC, type Violation } from "../domain/spec";
 import { VARIANTS, type VariantId } from "../domain/variants";
+import { verifyPngIntegrity } from "./png-integrity";
 import { checkProvenance, wrapMetaSchema, type Catalogue, type Wrap } from "../domain/wrap";
 
 function isVariantId(value: string): value is VariantId {
@@ -12,9 +13,16 @@ function isVariantId(value: string): value is VariantId {
 export async function loadCatalogue(
   root: string,
 ): Promise<{ ok: true; catalogue: Catalogue } | { ok: false; violations: (Violation & { wrap: string })[] }> {
-  const entries = await readdir(root, { withFileTypes: true });
+  let entries;
+  try {
+    const rootStat = await lstat(root);
+    if (!rootStat.isDirectory() || rootStat.isSymbolicLink()) throw new Error();
+    entries = await readdir(root, { withFileTypes: true });
+  } catch {
+    return { ok: false, violations: [{ code: "schema", path: "root", msg: "missing or invalid content root", wrap: "<root>" }] };
+  }
   const folders = entries
-    .filter((entry) => entry.isDirectory() && !entry.name.startsWith("."))
+    .filter((entry) => (entry.isDirectory() || entry.isSymbolicLink()) && !entry.name.startsWith("."))
     .map((entry) => entry.name)
     .sort();
   const violations: (Violation & { wrap: string })[] = [];
@@ -22,9 +30,19 @@ export async function loadCatalogue(
   const hashes = new Map<string, string[]>();
 
   for (const folder of folders) {
-    const metaPath = path.join(root, folder, "meta.json");
+    const folderPath = path.join(root, folder);
+    const metaPath = path.join(folderPath, "meta.json");
+    try {
+      const stat = await lstat(folderPath);
+      if (!stat.isDirectory() || stat.isSymbolicLink()) throw new Error();
+    } catch {
+      violations.push({ code: "schema", path: "folder", msg: "invalid wrap folder", wrap: folder });
+      continue;
+    }
     let text: string;
     try {
+      const stat = await lstat(metaPath);
+      if (!stat.isFile() || stat.isSymbolicLink()) throw new Error();
       text = await readFile(metaPath, "utf8");
     } catch {
       violations.push({ code: "schema", path: "meta.json", msg: "missing meta.json", wrap: folder });
@@ -57,9 +75,16 @@ export async function loadCatalogue(
     for (const violation of provenanceViolations) {
       violations.push({ ...violation, wrap: folder });
     }
+    if (!SPEC.fileName.test(meta.file)) {
+      violations.push({ code: "bad-name", name: meta.file, wrap: folder });
+      continue;
+    }
     let fileBytes: Buffer;
     try {
-      fileBytes = await readFile(path.join(root, folder, meta.file));
+      const imagePath = path.join(folderPath, meta.file);
+      const stat = await lstat(imagePath);
+      if (!stat.isFile() || stat.isSymbolicLink()) throw new Error();
+      fileBytes = await readFile(imagePath);
     } catch {
       violations.push({ code: "schema", path: "file", msg: "missing file", wrap: folder });
       continue;
@@ -67,6 +92,13 @@ export async function loadCatalogue(
     const pngViolations = checkPng(fileBytes, meta.file, meta.variant);
     for (const violation of pngViolations) {
       violations.push({ ...violation, wrap: folder });
+    }
+    if (pngViolations.length === 0) {
+      const { width, height } = readIhdr(fileBytes);
+      if (!(await verifyPngIntegrity(fileBytes, width * height))) {
+        pngViolations.push({ code: "invalid-png" });
+        violations.push({ code: "invalid-png", wrap: folder });
+      }
     }
     const sha256 = createHash("sha256").update(fileBytes).digest("hex");
     const group = hashes.get(sha256);

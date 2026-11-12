@@ -10,6 +10,8 @@ function plural(count: number, one: string, many: string): string {
 
 function formatViolation(violation: Reported): string {
   switch (violation.code) {
+    case "invalid-png":
+      return `invalid-png ${violation.wrap}`;
     case "not-png":
       return `not-png ${violation.wrap}`;
     case "bad-name":

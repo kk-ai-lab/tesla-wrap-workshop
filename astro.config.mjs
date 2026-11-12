@@ -1,4 +1,5 @@
-import { copyFile, mkdir } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "astro/config";
@@ -24,8 +25,12 @@ export default defineConfig({
             const from = path.resolve("content/wraps", wrap.id, wrap.file);
             const toDir = path.join(destRoot, "wraps", wrap.id);
             await mkdir(toDir, { recursive: true });
-            await copyFile(from, path.join(toDir, wrap.file));
-            await sharp(from)
+            const bytes = await readFile(from);
+            if (createHash("sha256").update(bytes).digest("hex") !== wrap.sha256) {
+              throw new Error(`wrap changed during build: ${wrap.id}`);
+            }
+            await writeFile(path.join(toDir, wrap.file), bytes);
+            await sharp(bytes)
               .resize({ width: 512, withoutEnlargement: true })
               .webp({ quality: 80 })
               .toFile(path.join(thumbDir, `${wrap.id}.webp`));

@@ -1,8 +1,9 @@
 import { createHash } from "node:crypto";
-import { cp, mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { cp, mkdtemp, mkdir, readFile, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { expect, it } from "vitest";
+import sharp from "sharp";
 import { loadCatalogue } from "../src/catalogue/load.ts";
 
 const validPng = path.resolve("test/fixtures/valid.png");
@@ -368,4 +369,77 @@ it("rejects two wraps that share a sha256", async () => {
       expect(dup.ids).toEqual(["alpha", "beta"]);
     }
   });
+});
+
+
+it("accepts a fully decoded Cybertruck PNG", async () => {
+  await withRoot(async (root) => {
+    await writeWrap(root, "cyber-test", { meta: meta("cyber-test", { variant: "cybertruck" }) });
+    const image = await sharp({ create: { width: 1024, height: 768, channels: 3, background: "#808080" } }).png().toBuffer();
+    await writeFile(path.join(root, "cyber-test", "wrap.png"), image);
+    expect((await loadCatalogue(root)).ok).toBe(true);
+  });
+});
+
+it("rejects corrupt PNG chunks, incomplete files, and corrupt compressed pixels", async () => {
+  const original = await readFile(validPng);
+  const badCrc = Buffer.from(original);
+  badCrc[29] ^= 1;
+  const noEnd = original.subarray(0, original.length - 12);
+  const trailing = Buffer.concat([original, Buffer.from([0])]);
+  const corruptData = Buffer.from(original);
+  let offset = 8;
+  while (corruptData.toString("ascii", offset + 4, offset + 8) !== "IDAT") offset += 12 + corruptData.readUInt32BE(offset);
+  const length = corruptData.readUInt32BE(offset);
+  corruptData[offset + 8] ^= 0xff;
+  let crc = 0xffffffff;
+  for (const byte of corruptData.subarray(offset + 4, offset + 8 + length)) {
+    crc ^= byte;
+    for (let bit = 0; bit < 8; bit += 1) crc = (crc >>> 1) ^ (0xedb88320 & -(crc & 1));
+  }
+  corruptData.writeUInt32BE((crc ^ 0xffffffff) >>> 0, offset + 8 + length);
+  for (const image of [original.subarray(0, 24), badCrc, noEnd, trailing, corruptData]) {
+    await withRoot(async (root) => {
+      await writeWrap(root, "bad-image", { meta: meta("bad-image") });
+      await writeFile(path.join(root, "bad-image", "wrap.png"), image);
+      const result = await loadCatalogue(root);
+      expect(result.ok).toBe(false);
+      if (!result.ok) expect(result.violations).toContainEqual({ code: "invalid-png", wrap: "bad-image" });
+    });
+  }
+});
+
+it("rejects unsafe paths and symlinked content", async () => {
+  await withRoot(async (root) => {
+    await writeWrap(root, "bad-path", { meta: meta("bad-path", { file: "../secret.png" }) });
+    await writeWrap(root, "bad-meta", {});
+    await symlink(path.join(root, "bad-path", "meta.json"), path.join(root, "bad-meta", "meta.json"));
+    await writeWrap(root, "bad-image", { meta: meta("bad-image") });
+    await symlink(validPng, path.join(root, "bad-image", "wrap.png"));
+    await symlink(path.join(root, "bad-image"), path.join(root, "bad-folder"));
+    const result = await loadCatalogue(root);
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.violations).toContainEqual({ code: "bad-name", name: "../secret.png", wrap: "bad-path" });
+      for (const wrap of ["bad-meta", "bad-image", "bad-folder"]) expect(result.violations.some((v) => v.wrap === wrap)).toBe(true);
+    }
+    expect((await loadCatalogue(path.join(root, "missing"))).ok).toBe(false);
+  });
+});
+
+it("rejects blank titles, impossible dates, and unsafe provenance URLs", async () => {
+  const cases = [
+    { title: "   " },
+    { addedOn: "2026-02-30" },
+    { provenance: [{ kind: "own", author: "Ada", sourceUrl: "javascript:alert(1)" }] },
+    { provenance: [{ ...thirdParty, sourceUrl: "javascript:alert(1)" }] },
+    { provenance: [{ ...thirdParty, sourceLicenceUrl: "https://user:pass@example.com/" }] },
+    { provenance: [{ ...thirdParty, retrievedOn: "2026-02-30" }] },
+  ];
+  for (const overrides of cases) {
+    await withRoot(async (root) => {
+      await writeWrap(root, "bad-meta", { meta: meta("bad-meta", overrides), png: true });
+      expect((await loadCatalogue(root)).ok).toBe(false);
+    });
+  }
 });

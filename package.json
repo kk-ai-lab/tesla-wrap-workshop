@@ -14,7 +14,8 @@
     "check:dist": "tsx scripts/check-dist.ts",
     "postbuild:check": "tsx scripts/postbuild-check.ts",
     "verify:gallery": "tsx scripts/verify-gallery.ts",
-    "check:template-links": "tsx scripts/check-template-links.ts"
+    "check:template-links": "tsx scripts/check-template-links.ts",
+    "verify:provenance": "tsx scripts/verify-provenance.ts"
   },
   "dependencies": {
     "astro": "^7.4.7",
