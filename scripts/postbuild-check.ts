@@ -1,10 +1,10 @@
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { checkLinks, type LinkFinding } from "./check-links.ts";
 
-function usage(): never {
-  console.error("usage: npm run postbuild:check -- [--only links]");
-  process.exit(2);
-}
+const usageLine = "usage: npm run postbuild:check -- [--only links]";
+
+export type CliResult = { exitCode: number; stdout: string[]; stderr: string[] };
 
 function message(finding: LinkFinding): string {
   switch (finding.code) {
@@ -25,16 +25,14 @@ function message(finding: LinkFinding): string {
   }
 }
 
-function main(): void {
-  const args = process.argv.slice(2);
+function parseOnly(argv: string[]): { ok: true; only: string | undefined } | { ok: false } {
   let only: string | undefined;
-
-  for (let index = 0; index < args.length; index += 1) {
-    const arg = args[index];
+  for (let index = 0; index < argv.length; index += 1) {
+    const arg = argv[index];
     if (arg === "--only") {
-      const value = args[index + 1];
+      const value = argv[index + 1];
       if (value === undefined) {
-        usage();
+        return { ok: false };
       }
       only = value;
       index += 1;
@@ -44,23 +42,42 @@ function main(): void {
       only = arg.slice("--only=".length);
       continue;
     }
-    usage();
+    return { ok: false };
   }
-
   if (only !== undefined && only !== "links") {
-    usage();
+    return { ok: false };
   }
-
-  const root = path.resolve("dist");
-  const result = checkLinks(root);
-  if (result.ok) {
-    console.log(`links: ${result.templateLinks} template links ok, 0 tesla hotlinks`);
-    return;
-  }
-  for (const finding of result.findings) {
-    console.log(message(finding));
-  }
-  process.exitCode = 1;
+  return { ok: true, only };
 }
 
-main();
+export function run(argv: string[], root: string): CliResult {
+  const parsed = parseOnly(argv);
+  if (!parsed.ok) {
+    return { exitCode: 2, stdout: [], stderr: [usageLine] };
+  }
+  const result = checkLinks(root);
+  if (result.ok) {
+    return {
+      exitCode: 0,
+      stdout: [`links: ${result.templateLinks} template links ok, 0 tesla hotlinks`],
+      stderr: [],
+    };
+  }
+  return { exitCode: 1, stdout: result.findings.map(message), stderr: [] };
+}
+
+function main(): void {
+  const result = run(process.argv.slice(2), path.resolve("dist"));
+  for (const line of result.stdout) {
+    console.log(line);
+  }
+  for (const line of result.stderr) {
+    console.error(line);
+  }
+  process.exitCode = result.exitCode;
+}
+
+const entry = process.argv[1];
+if (entry !== undefined && import.meta.url === pathToFileURL(entry).href) {
+  main();
+}

@@ -35,9 +35,6 @@ function isElement(node: Node): node is ElementNode {
 }
 
 function children(node: Node): Node[] {
-  if (node.nodeName === "template") {
-    return [];
-  }
   if ("childNodes" in node) {
     return node.childNodes;
   }
@@ -100,23 +97,52 @@ function listHtml(root: string): string[] {
   return files.sort((left, right) => left.localeCompare(right));
 }
 
-function isTeslaRawHotlink(value: string): boolean {
-  const trimmed = value.trim();
-  const normalized = trimmed.startsWith("//") ? `https:${trimmed}` : trimmed;
+const documentOrigin = "https://document.invalid/";
+
+function firstBaseHref(document: Node): string {
+  let href = "";
+  walk(document, (element) => {
+    if (href.length === 0 && element.tagName === "base") {
+      href = attribute(element, "href") ?? "";
+    }
+  });
+  return href;
+}
+
+function documentBase(document: Node): URL {
+  const href = firstBaseHref(document);
+  if (href.length === 0) {
+    return new URL(documentOrigin);
+  }
+  try {
+    return new URL(href, documentOrigin);
+  } catch {
+    return new URL(documentOrigin);
+  }
+}
+
+function isTeslaRawHotlink(value: string, base: URL): boolean {
   let url: URL;
   try {
-    url = new URL(normalized);
+    url = new URL(value.trim(), base);
   } catch {
     return false;
   }
   if (url.protocol !== "http:" && url.protocol !== "https:") {
     return false;
   }
-  if (url.hostname.toLowerCase() !== "raw.githubusercontent.com") {
+  const host = url.hostname.toLowerCase().replace(/\.$/, "");
+  if (host !== "raw.githubusercontent.com") {
     return false;
   }
-  const pathname = url.pathname.toLowerCase();
-  return pathname === "/teslamotors" || pathname.startsWith("/teslamotors/");
+  const segment = url.pathname.split("/")[1] ?? "";
+  let owner = segment;
+  try {
+    owner = decodeURIComponent(segment);
+  } catch {
+    owner = segment;
+  }
+  return owner.toLowerCase() === "teslamotors";
 }
 
 function srcsetUrls(value: string): string[] {
@@ -242,6 +268,7 @@ export function checkLinks(root: string): LinkCheckResult {
     if (document === undefined) {
       continue;
     }
+    const base = documentBase(document);
     walk(document, (element) => {
       if (element.tagName === "a" && attribute(element, templateMarker) !== undefined) {
         const href = attribute(element, "href") ?? "";
@@ -250,7 +277,7 @@ export function checkLinks(root: string): LinkCheckResult {
         }
       }
       for (const link of elementHotlinks(element)) {
-        if (!isTeslaRawHotlink(link.url)) {
+        if (!isTeslaRawHotlink(link.url, base)) {
           continue;
         }
         globalFindings.push({ code: "tesla-hotlink", file, tag: link.tag, url: link.url });

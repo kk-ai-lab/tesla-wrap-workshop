@@ -7,18 +7,18 @@ import { VARIANTS, templateUrl, type VariantId } from "../src/domain/variants.ts
 
 const variantIds = Object.keys(VARIANTS) as VariantId[];
 
-function page(body: string): string {
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>test</title></head><body>${body}</body></html>`;
+function page(body: string, head = ""): string {
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>test</title>${head}</head><body>${body}</body></html>`;
 }
 
 function templateAnchor(variant: VariantId): string {
   return `<a data-template-link href="${templateUrl(variant)}">Open the Tesla template folder</a>`;
 }
 
-async function writePage(root: string, relative: string, body: string): Promise<void> {
+async function writePage(root: string, relative: string, body: string, head = ""): Promise<void> {
   const file = path.join(root, relative);
   await mkdir(path.dirname(file), { recursive: true });
-  await writeFile(file, page(body));
+  await writeFile(file, page(body, head));
 }
 
 async function withDist(run: (root: string) => Promise<void>): Promise<void> {
@@ -256,5 +256,56 @@ it("allows an uppercase Tesla template host on a template marker", async () => {
     const href = "https://GitHub.com/teslamotors/custom-wraps/tree/master/model3";
     await writePage(root, "index.html", `<a data-template-link href="${href}">templates</a>`);
     expect(checkLinks(root)).toEqual({ ok: true, templateLinks: 12 });
+  });
+});
+
+it("reports a backslash tesla raw hotlink", async () => {
+  await withDist(async (root) => {
+    const url = String.raw`\\raw.githubusercontent.com\teslamotors\custom-wraps\master\model3\template.png`;
+    await writePage(root, "index.html", `<img src="${url}" alt="template">`);
+    expect(checkLinks(root)).toEqual({
+      ok: false,
+      findings: [{ code: "tesla-hotlink", file: "index.html", tag: "img", url }],
+    });
+  });
+});
+
+it("reports a tesla raw hotlink resolved through a base element", async () => {
+  await withDist(async (root) => {
+    const url = "custom-wraps/master/model3/template.png";
+    await writePage(
+      root,
+      "index.html",
+      `<img src="${url}" alt="template">`,
+      `<base href="https://raw.githubusercontent.com/teslamotors/">`,
+    );
+    expect(checkLinks(root)).toEqual({
+      ok: false,
+      findings: [{ code: "tesla-hotlink", file: "index.html", tag: "img", url }],
+    });
+  });
+});
+
+it("reports a trailing-dot tesla raw host", async () => {
+  await withDist(async (root) => {
+    const url =
+      "https://raw.githubusercontent.com./teslamotors/custom-wraps/master/model3/template.png";
+    await writePage(root, "index.html", `<img src="${url}" alt="template">`);
+    expect(checkLinks(root)).toEqual({
+      ok: false,
+      findings: [{ code: "tesla-hotlink", file: "index.html", tag: "img", url }],
+    });
+  });
+});
+
+it("reports a percent-encoded tesla raw owner", async () => {
+  await withDist(async (root) => {
+    const url =
+      "https://raw.githubusercontent.com/%74eslamotors/custom-wraps/master/model3/template.png";
+    await writePage(root, "index.html", `<img src="${url}" alt="template">`);
+    expect(checkLinks(root)).toEqual({
+      ok: false,
+      findings: [{ code: "tesla-hotlink", file: "index.html", tag: "img", url }],
+    });
   });
 });
