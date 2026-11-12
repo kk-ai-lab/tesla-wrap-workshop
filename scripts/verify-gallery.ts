@@ -62,16 +62,20 @@ function expectedDownload(wrap: Wrap): string {
 }
 
 function findDownload(html: string, wrap: Wrap, label: string): string {
+  const wanted = expectedDownload(wrap);
+  const seen: string[] = [];
   for (const link of downloadLinks(html)) {
     if (link.download !== wrap.file) {
       continue;
     }
     const rel = distRelative(link.href, wrap.id);
-    if (rel === expectedDownload(wrap)) {
+    if (rel === wanted) {
       return rel;
     }
+    seen.push(link.href);
   }
-  return fail(`${label} has no download link for ${wrap.file} with download="${wrap.file}"`);
+  const detail = seen.length === 0 ? "" : ` (saw ${seen.join(", ")})`;
+  return fail(`${label} has no download link for ${wrap.file} at ${wanted}${detail}`);
 }
 
 async function assertSameBytes(wrap: Wrap, target: string): Promise<void> {
@@ -97,11 +101,20 @@ async function assertSameBytes(wrap: Wrap, target: string): Promise<void> {
 
 async function assertThumbnail(wrap: Wrap): Promise<void> {
   const thumb = path.join(dist, "thumbs", `${wrap.id}.webp`);
-  let metadata: { format?: string; width?: number; height?: number };
+  let bytes: Buffer;
   try {
-    metadata = await sharp(thumb).metadata();
+    bytes = await readFile(thumb);
   } catch {
     fail(`thumbnail is missing for ${wrap.id} at ${path.relative(root, thumb)}`);
+  }
+  if (bytes.length === 0) {
+    fail(`thumbnail for ${wrap.id} is empty at ${path.relative(root, thumb)}`);
+  }
+  let metadata: { format?: string; width?: number; height?: number };
+  try {
+    metadata = await sharp(bytes).metadata();
+  } catch {
+    fail(`thumbnail for ${wrap.id} is not a readable image at ${path.relative(root, thumb)}`);
   }
   const width = Math.min(wrap.width, 512);
   const height = Math.round((wrap.height * width) / wrap.width);
@@ -127,7 +140,7 @@ for (const variant of variantIds) {
     `variant page ${variant}`,
   );
   const template = templateUrl(variant);
-  if (!html.includes(template)) {
+  if (!hrefs(html).includes(template)) {
     fail(`variant page ${variant} does not link to ${template}`);
   }
   variantPages.set(variant, html);
