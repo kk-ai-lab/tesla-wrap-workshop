@@ -54,6 +54,18 @@ function attribute(element: ElementNode, name: string): string | undefined {
   return element.attrs.find((attr) => attr.name.toLowerCase() === name)?.value;
 }
 
+function walkOutsideNoscript(node: Node, visit: (element: ElementNode) => void): void {
+  if (isElement(node)) {
+    if (node.tagName === "noscript") {
+      return;
+    }
+    visit(node);
+  }
+  for (const child of children(node)) {
+    walkOutsideNoscript(child, visit);
+  }
+}
+
 type Parsed = { ok: true; document: Node } | { ok: false; reason: string };
 
 function parseDocument(html: string): Parsed {
@@ -99,11 +111,14 @@ function listHtml(root: string): string[] {
 
 const documentOrigin = "https://document.invalid/";
 
-function firstBaseHref(document: Node): string {
-  let href = "";
+function firstBaseHref(document: Node): string | undefined {
+  let href: string | undefined;
   walk(document, (element) => {
-    if (href.length === 0 && element.tagName === "base") {
-      href = attribute(element, "href") ?? "";
+    if (href === undefined && element.tagName === "base") {
+      const value = attribute(element, "href");
+      if (value !== undefined) {
+        href = value;
+      }
     }
   });
   return href;
@@ -111,7 +126,7 @@ function firstBaseHref(document: Node): string {
 
 function documentBase(document: Node): URL {
   const href = firstBaseHref(document);
-  if (href.length === 0) {
+  if (href === undefined) {
     return new URL(documentOrigin);
   }
   try {
@@ -135,13 +150,13 @@ function isTeslaRawHotlink(value: string, base: URL): boolean {
   if (host !== "raw.githubusercontent.com") {
     return false;
   }
-  const segment = url.pathname.split("/")[1] ?? "";
-  let owner = segment;
+  let pathname = url.pathname;
   try {
-    owner = decodeURIComponent(segment);
+    pathname = decodeURIComponent(pathname);
   } catch {
-    owner = segment;
+    pathname = url.pathname;
   }
+  const owner = pathname.split("/").find((segment) => segment.length > 0) ?? "";
   return owner.toLowerCase() === "teslamotors";
 }
 
@@ -164,13 +179,11 @@ function elementHotlinks(element: ElementNode): { tag: "a" | "img" | "source"; u
       links.push({ tag: "a", url: href });
     }
   }
-  if (element.tagName === "img") {
+  if (element.tagName === "img" || element.tagName === "source") {
     const src = attribute(element, "src");
     if (src !== undefined) {
-      links.push({ tag: "img", url: src });
+      links.push({ tag: element.tagName, url: src });
     }
-  }
-  if (element.tagName === "img" || element.tagName === "source") {
     const srcset = attribute(element, "srcset");
     if (srcset !== undefined) {
       for (const url of srcsetUrls(srcset)) {
@@ -232,7 +245,7 @@ export function checkLinks(root: string): LinkCheckResult {
       continue;
     }
     const links: string[] = [];
-    walk(document, (element) => {
+    walkOutsideNoscript(document, (element) => {
       if (element.tagName !== "a") {
         return;
       }

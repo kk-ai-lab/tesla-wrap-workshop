@@ -309,3 +309,104 @@ it("reports a percent-encoded tesla raw owner", async () => {
     });
   });
 });
+
+it("reports a tesla raw owner after a doubled slash", async () => {
+  await withDist(async (root) => {
+    const url =
+      "https://raw.githubusercontent.com//teslamotors/custom-wraps/master/model3/template.png";
+    await writePage(root, "index.html", `<img src="${url}" alt="template">`);
+    expect(checkLinks(root)).toEqual({
+      ok: false,
+      findings: [{ code: "tesla-hotlink", file: "index.html", tag: "img", url }],
+    });
+  });
+});
+
+it("reports an encoded slash in the tesla raw owner", async () => {
+  await withDist(async (root) => {
+    const url =
+      "https://raw.githubusercontent.com/teslamotors%2Fcustom-wraps/master/model3/template.png";
+    await writePage(root, "index.html", `<img src="${url}" alt="template">`);
+    expect(checkLinks(root)).toEqual({
+      ok: false,
+      findings: [{ code: "tesla-hotlink", file: "index.html", tag: "img", url }],
+    });
+  });
+});
+
+it("reports a tesla raw hotlink on a video source", async () => {
+  await withDist(async (root) => {
+    const url =
+      "https://raw.githubusercontent.com/teslamotors/custom-wraps/master/model3/template.png";
+    await writePage(root, "index.html", `<video><source src="${url}" type="image/png"></video>`);
+    expect(checkLinks(root)).toEqual({
+      ok: false,
+      findings: [{ code: "tesla-hotlink", file: "index.html", tag: "source", url }],
+    });
+  });
+});
+
+it("does not count a template link inside noscript", async () => {
+  await withDist(async (root) => {
+    await writePage(
+      root,
+      "models/model3/index.html",
+      `<noscript>${templateAnchor("model3")}</noscript>`,
+    );
+    expect(checkLinks(root)).toEqual({
+      ok: false,
+      findings: [
+        {
+          code: "missing-template-link",
+          variant: "model3",
+          file: "models/model3/index.html",
+        },
+      ],
+    });
+  });
+});
+
+it("resolves a base element in the body", async () => {
+  await withDist(async (root) => {
+    const url = "custom-wraps/master/model3/template.png";
+    await writePage(
+      root,
+      "index.html",
+      `<base href="https://raw.githubusercontent.com/teslamotors/"><img src="${url}" alt="template">`,
+    );
+    expect(checkLinks(root)).toEqual({
+      ok: false,
+      findings: [{ code: "tesla-hotlink", file: "index.html", tag: "img", url }],
+    });
+  });
+});
+
+it("keeps the first base element even when its href is empty", async () => {
+  await withDist(async (root) => {
+    await writePage(
+      root,
+      "index.html",
+      `<img src="x.png" alt="template">`,
+      `<base href=""><base href="https://raw.githubusercontent.com/teslamotors/">`,
+    );
+    expect(checkLinks(root)).toEqual({ ok: true, templateLinks: 12 });
+  });
+});
+
+it("allows an invalid base and a valid non-Tesla base", async () => {
+  await withDist(async (root) => {
+    await writePage(
+      root,
+      "index.html",
+      `<img src="x.png" alt="template">`,
+      `<base href="::::">`,
+    );
+    await writePage(
+      root,
+      "other/index.html",
+      `<img src="custom-wraps/master/model3/template.png" alt="template">`,
+      `<base href="https://example.com/templates/">`,
+    );
+    expect(checkLinks(root)).toEqual({ ok: true, templateLinks: 12 });
+  });
+});
