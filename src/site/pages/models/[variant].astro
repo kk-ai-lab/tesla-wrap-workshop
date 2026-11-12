@@ -2,7 +2,8 @@
 import path from "node:path";
 import { loadCatalogue } from "../../../catalogue/load";
 import type { Wrap } from "../../../domain/wrap";
-import { VARIANTS, templateUrl, type VariantId } from "../../../domain/variants";
+import { VARIANTS, type VariantId } from "../../../domain/variants";
+import TemplateLink from "../../components/TemplateLink.astro";
 import WrapCard from "../../components/WrapCard.astro";
 import Base from "../../layouts/Base.astro";
 
@@ -28,7 +29,7 @@ const info = VARIANTS[variant];
   <h1>{info.label}</h1>
   <p class="variant">Template size: {info.w} x {info.h}</p>
   <p>
-    Looking for the vehicle template? <a href={templateUrl(variant)}>Open the Tesla template folder</a>.
+    Looking for the vehicle template? <TemplateLink variant={variant} />.
   </p>
 
   {
