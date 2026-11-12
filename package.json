@@ -11,7 +11,8 @@
     "test": "vitest run",
     "check": "tsx src/cli/check.ts",
     "build": "astro build",
-    "check:dist": "tsx scripts/check-dist.ts"
+    "check:dist": "tsx scripts/check-dist.ts",
+    "verify:gallery": "tsx scripts/verify-gallery.ts"
   },
   "dependencies": {
     "astro": "^7.4.7",
