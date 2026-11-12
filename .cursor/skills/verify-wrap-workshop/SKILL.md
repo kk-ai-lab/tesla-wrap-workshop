@@ -75,7 +75,7 @@ The link guard also does not need the preview. Run it after the build:
 npm run postbuild:check -- --only links
 ```
 
-The exit code is 0. Stdout is `links: 12 template links ok, 0 tesla hotlinks`. It fails when a variant page has a missing, wrong, or duplicate template link, when a template-marked link leaves the Tesla repo, or when an `<a>` or `<img>` points at `raw.githubusercontent.com/teslamotors`.
+The exit code is 0. Stdout is `links: 12 template links ok, 0 tesla hotlinks`. It fails when a variant page has a missing, wrong, or duplicate template link, when a template-marked link leaves the Tesla repo, or when an `<a>` href, an `<img>` src or srcset, or a `<source>` srcset points at `raw.githubusercontent.com/teslamotors`. Hotlinks inside `<noscript>` count, and an inert `<template>` marker does not.
 
 ## Evidence
 

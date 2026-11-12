@@ -174,3 +174,87 @@ it("allows a template marker outside a model page when it points at the Tesla re
     expect(checkLinks(root)).toEqual({ ok: true, templateLinks: 12 });
   });
 });
+
+it("reports a tesla raw hotlink in an img srcset", async () => {
+  await withDist(async (root) => {
+    const url =
+      "https://raw.githubusercontent.com/teslamotors/custom-wraps/master/model3/template.png";
+    await writePage(
+      root,
+      "index.html",
+      `<img src="/thumbs/example.webp" srcset="/thumbs/example.webp 1x, ${url} 2x" alt="template">`,
+    );
+    expect(checkLinks(root)).toEqual({
+      ok: false,
+      findings: [{ code: "tesla-hotlink", file: "index.html", tag: "img", url }],
+    });
+  });
+});
+
+it("reports a tesla raw hotlink in a picture source srcset", async () => {
+  await withDist(async (root) => {
+    const url =
+      "//raw.githubusercontent.com/teslamotors/custom-wraps/master/model3/template.png";
+    await writePage(
+      root,
+      "index.html",
+      `<picture><source srcset="${url}" type="image/png"><img src="/thumbs/example.webp" alt="template"></picture>`,
+    );
+    expect(checkLinks(root)).toEqual({
+      ok: false,
+      findings: [{ code: "tesla-hotlink", file: "index.html", tag: "source", url }],
+    });
+  });
+});
+
+it("reports a tesla raw hotlink inside noscript", async () => {
+  await withDist(async (root) => {
+    const url =
+      "https://raw.githubusercontent.com/teslamotors/custom-wraps/master/model3/template.png";
+    await writePage(root, "index.html", `<noscript><img src="${url}" alt="template"></noscript>`);
+    expect(checkLinks(root)).toEqual({
+      ok: false,
+      findings: [{ code: "tesla-hotlink", file: "index.html", tag: "img", url }],
+    });
+  });
+});
+
+it("reports a tesla raw hotlink in an htm file", async () => {
+  await withDist(async (root) => {
+    const url =
+      "https://raw.githubusercontent.com/teslamotors/custom-wraps/master/model3/template.png";
+    await writePage(root, "hotlink.htm", `<a href="${url}">template</a>`);
+    expect(checkLinks(root)).toEqual({
+      ok: false,
+      findings: [{ code: "tesla-hotlink", file: "hotlink.htm", tag: "a", url }],
+    });
+  });
+});
+
+it("does not count a template link inside inert template content", async () => {
+  await withDist(async (root) => {
+    await writePage(
+      root,
+      "models/model3/index.html",
+      `<template>${templateAnchor("model3")}</template>`,
+    );
+    expect(checkLinks(root)).toEqual({
+      ok: false,
+      findings: [
+        {
+          code: "missing-template-link",
+          variant: "model3",
+          file: "models/model3/index.html",
+        },
+      ],
+    });
+  });
+});
+
+it("allows an uppercase Tesla template host on a template marker", async () => {
+  await withDist(async (root) => {
+    const href = "https://GitHub.com/teslamotors/custom-wraps/tree/master/model3";
+    await writePage(root, "index.html", `<a data-template-link href="${href}">templates</a>`);
+    expect(checkLinks(root)).toEqual({ ok: true, templateLinks: 12 });
+  });
+});

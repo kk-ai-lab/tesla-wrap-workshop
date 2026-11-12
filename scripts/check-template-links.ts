@@ -10,6 +10,7 @@ async function checkVariant(variant: VariantId): Promise<Outcome> {
     const response = await fetch(url, {
       redirect: "follow",
       headers: { "user-agent": userAgent },
+      signal: AbortSignal.timeout(30_000),
     });
     return {
       variant,

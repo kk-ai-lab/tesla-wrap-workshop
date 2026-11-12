@@ -12,7 +12,7 @@ export type LinkFinding =
   | { code: "wrong-template-link"; variant: VariantId; file: string; href: string }
   | { code: "duplicate-template-link"; variant: VariantId; file: string; count: number }
   | { code: "bad-template-link"; file: string; href: string }
-  | { code: "tesla-hotlink"; file: string; tag: "a" | "img"; url: string }
+  | { code: "tesla-hotlink"; file: string; tag: "a" | "img" | "source"; url: string }
   | { code: "parse-error"; file: string; reason: string };
 
 export type LinkCheckResult =
@@ -35,8 +35,8 @@ function isElement(node: Node): node is ElementNode {
 }
 
 function children(node: Node): Node[] {
-  if (node.nodeName === "template" && "content" in node) {
-    return node.content.childNodes;
+  if (node.nodeName === "template") {
+    return [];
   }
   if ("childNodes" in node) {
     return node.childNodes;
@@ -63,7 +63,7 @@ function parseDocument(html: string): Parsed {
   const errors: ParserError["code"][] = [];
   try {
     const document = parseHtml(html, {
-      scriptingEnabled: true,
+      scriptingEnabled: false,
       onParseError(error) {
         errors.push(error.code);
       },
@@ -77,6 +77,11 @@ function parseDocument(html: string): Parsed {
   }
 }
 
+function isHtmlFile(name: string): boolean {
+  const extension = path.extname(name).toLowerCase();
+  return extension === ".html" || extension === ".htm" || extension === ".xhtml";
+}
+
 function listHtml(root: string): string[] {
   const files: string[] = [];
   const visit = (dir: string) => {
@@ -86,7 +91,7 @@ function listHtml(root: string): string[] {
         visit(full);
         continue;
       }
-      if (entry.isFile() && path.extname(entry.name).toLowerCase() === ".html") {
+      if (entry.isFile() && isHtmlFile(entry.name)) {
         files.push(path.relative(root, full).split(path.sep).join("/"));
       }
     }
@@ -112,6 +117,42 @@ function isTeslaRawHotlink(value: string): boolean {
   }
   const pathname = url.pathname.toLowerCase();
   return pathname === "/teslamotors" || pathname.startsWith("/teslamotors/");
+}
+
+function srcsetUrls(value: string): string[] {
+  const urls: string[] = [];
+  for (const candidate of value.split(",")) {
+    const url = candidate.trim().split(/\s+/)[0];
+    if (url !== undefined && url.length > 0) {
+      urls.push(url);
+    }
+  }
+  return urls;
+}
+
+function elementHotlinks(element: ElementNode): { tag: "a" | "img" | "source"; url: string }[] {
+  const links: { tag: "a" | "img" | "source"; url: string }[] = [];
+  if (element.tagName === "a") {
+    const href = attribute(element, "href");
+    if (href !== undefined) {
+      links.push({ tag: "a", url: href });
+    }
+  }
+  if (element.tagName === "img") {
+    const src = attribute(element, "src");
+    if (src !== undefined) {
+      links.push({ tag: "img", url: src });
+    }
+  }
+  if (element.tagName === "img" || element.tagName === "source") {
+    const srcset = attribute(element, "srcset");
+    if (srcset !== undefined) {
+      for (const url of srcsetUrls(srcset)) {
+        links.push({ tag: element.tagName, url });
+      }
+    }
+  }
+  return links;
 }
 
 function variantFile(variant: VariantId): string {
@@ -204,19 +245,16 @@ export function checkLinks(root: string): LinkCheckResult {
     walk(document, (element) => {
       if (element.tagName === "a" && attribute(element, templateMarker) !== undefined) {
         const href = attribute(element, "href") ?? "";
-        if (!href.startsWith(teslaTemplatePrefix)) {
+        if (!href.toLowerCase().startsWith(teslaTemplatePrefix)) {
           globalFindings.push({ code: "bad-template-link", file, href });
         }
       }
-      if (element.tagName !== "a" && element.tagName !== "img") {
-        return;
+      for (const link of elementHotlinks(element)) {
+        if (!isTeslaRawHotlink(link.url)) {
+          continue;
+        }
+        globalFindings.push({ code: "tesla-hotlink", file, tag: link.tag, url: link.url });
       }
-      const tag = element.tagName;
-      const url = attribute(element, tag === "a" ? "href" : "src");
-      if (url === undefined || !isTeslaRawHotlink(url)) {
-        return;
-      }
-      globalFindings.push({ code: "tesla-hotlink", file, tag, url });
     });
   }
 
