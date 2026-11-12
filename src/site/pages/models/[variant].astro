@@ -1,0 +1,47 @@
+---
+import path from "node:path";
+import { loadCatalogue } from "../../../catalogue/load";
+import type { Wrap } from "../../../domain/wrap";
+import { VARIANTS, templateUrl, type VariantId } from "../../../domain/variants";
+import WrapCard from "../../components/WrapCard.astro";
+import Base from "../../layouts/Base.astro";
+
+export async function getStaticPaths() {
+  const result = await loadCatalogue(path.resolve("content/wraps"));
+  if (!result.ok) {
+    throw new Error("catalogue load failed");
+  }
+  return (Object.keys(VARIANTS) as VariantId[]).map((variant) => ({
+    params: { variant },
+    props: { variant, wraps: result.catalogue.byVariant.get(variant) ?? [] },
+  }));
+}
+
+type Props = { variant: VariantId; wraps: readonly Wrap[] };
+
+const { variant, wraps } = Astro.props;
+const info = VARIANTS[variant];
+---
+
+<Base title={`${info.label} wraps`}>
+  <p><a href="/">Back to all wraps</a></p>
+  <h1>{info.label}</h1>
+  <p class="variant">Template size: {info.w} x {info.h}</p>
+  <p>
+    Looking for the vehicle template? <a href={templateUrl(variant)}>Open the Tesla template folder</a>.
+  </p>
+
+  {
+    wraps.length === 0 ? (
+      <p>There are no wraps yet for this variant.</p>
+    ) : (
+      <ul class="wrap-grid">
+        {wraps.map((wrap) => (
+          <li>
+            <WrapCard wrap={wrap} />
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</Base>
