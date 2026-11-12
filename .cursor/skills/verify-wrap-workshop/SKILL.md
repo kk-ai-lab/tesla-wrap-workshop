@@ -1,6 +1,6 @@
 ---
 name: verify-wrap-workshop
-description: Prove the tesla-wrap-workshop static site lists the sample wrap and serves its PNG, that every variant and wrap page exists with a WebP thumbnail, that the spec-check CLI reports one wrap and zero violations, and that the built dist has no HTML, CSS, or JS comments. Use after changing the catalogue, a page, the checker, the dist comment scan, or the thumbnail build.
+description: Prove the tesla-wrap-workshop static site lists the sample wrap and serves its PNG, that every variant and wrap page exists with a WebP thumbnail, that every variant page links to Tesla's template folder and no page hotlinks a Tesla file, that the spec-check CLI reports one wrap and zero violations, and that the built dist has no HTML, CSS, or JS comments. Use after changing the catalogue, a page, the checker, the link guard, the dist comment scan, or the thumbnail build.
 ---
 
 # Verify tesla-wrap-workshop
@@ -17,6 +17,7 @@ npm ci
 npm run build
 npm run check:dist
 npm run verify:gallery
+npm run postbuild:check -- --only links
 node ./node_modules/astro/bin/astro.mjs preview --host 127.0.0.1 --port 4173
 ```
 
@@ -68,9 +69,17 @@ npm run verify:gallery
 
 The exit code is 0. Stdout includes `verify-gallery: 12 variant pages, 1 wrap page, 1 thumbnail, 12 index links ok`. It fails when a variant page, a wrap page, a download target, a WebP thumbnail, or an index variant link is missing.
 
+The link guard also does not need the preview. Run it after the build:
+
+```bash
+npm run postbuild:check -- --only links
+```
+
+The exit code is 0. Stdout is `links: 12 template links ok, 0 tesla hotlinks`. It fails when a variant page has a missing, wrong, or duplicate template link, when a template-marked link leaves the Tesla repo, or when an `<a>` or `<img>` points at `raw.githubusercontent.com/teslamotors`.
+
 ## Evidence
 
-Copy the verify-site stdout to `/tmp/wrap-workshop-verify/download-sample.txt`. Copy the checker stdout and exit code to `/tmp/wrap-workshop-verify/check-cli.txt`. Copy the dist comment scan stdout and exit code to `/tmp/wrap-workshop-verify/check-dist.txt`. Copy the gallery check stdout and exit code to `/tmp/wrap-workshop-verify/verify-gallery.txt`. Those files are the proof. Cleanup does not delete them.
+Copy the verify-site stdout to `/tmp/wrap-workshop-verify/download-sample.txt`. Copy the checker stdout and exit code to `/tmp/wrap-workshop-verify/check-cli.txt`. Copy the dist comment scan stdout and exit code to `/tmp/wrap-workshop-verify/check-dist.txt`. Copy the gallery check stdout and exit code to `/tmp/wrap-workshop-verify/verify-gallery.txt`. Copy the link guard stdout and exit code to `/tmp/wrap-workshop-verify/check-links.txt`. Those files are the proof. Cleanup does not delete them.
 
 ## Cleanup
 
