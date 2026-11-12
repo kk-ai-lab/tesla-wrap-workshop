@@ -1,0 +1,9 @@
+---
+import { templateUrl, type VariantId } from "../../domain/variants";
+
+type Props = { variant: VariantId };
+
+const { variant } = Astro.props;
+---
+
+<a data-template-link href={templateUrl(variant)}>Open the Tesla template folder</a>

@@ -12,7 +12,9 @@
     "check": "tsx src/cli/check.ts",
     "build": "astro build",
     "check:dist": "tsx scripts/check-dist.ts",
-    "verify:gallery": "tsx scripts/verify-gallery.ts"
+    "postbuild:check": "tsx scripts/postbuild-check.ts",
+    "verify:gallery": "tsx scripts/verify-gallery.ts",
+    "check:template-links": "tsx scripts/check-template-links.ts"
   },
   "dependencies": {
     "astro": "^7.4.7",
