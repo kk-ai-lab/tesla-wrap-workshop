@@ -20,6 +20,7 @@ export async function getStaticPaths() {
 type Props = { wrap: Wrap };
 
 const { wrap } = Astro.props;
+const candidate = wrap.tags.includes("candidate");
 const variant = VARIANTS[wrap.variant];
 const licence = LICENCES[wrap.licence];
 const downloadHref = `/wraps/${wrap.id}/${encodeURIComponent(wrap.file)}`;
@@ -48,7 +49,7 @@ const thumbHeight = Math.round((wrap.height * thumbWidth) / wrap.width);
         <dt>File size</dt>
         <dd>{wrap.bytes.toLocaleString("en-IE")} bytes</dd>
         <dt>Licence</dt>
-        <dd><a href={licence.url}>{wrap.licence}</a></dd>
+        <dd>{candidate ? "Candidate · licence pending review; no reuse rights granted" : <a href={licence.url}>{wrap.licence}</a>}</dd>
         <dt>Added</dt>
         <dd>{wrap.addedOn}</dd>
         <dt>Tags</dt>

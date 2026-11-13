@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
 import { VARIANTS } from "../src/domain/variants.ts";
+import { LICENCES } from "../src/domain/licences.ts";
 import { loadCatalogue } from "../src/catalogue/load.ts";
 
 const disclaimer = "Not affiliated with, endorsed by or sponsored by Tesla, Inc.";
@@ -58,4 +59,53 @@ test("browses by vehicle, reads provenance and downloads exact PNG bytes", async
   await expect(page).toHaveURL(/\/about\/$/);
   await expect(page.getByRole("heading", { name: "With the mobile app" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "With a USB drive" })).toBeVisible();
+});
+
+
+test("shows each design’s rights status and serves original files for every vehicle", async ({ page, request }) => {
+  const result = await loadCatalogue("content/wraps");
+  if (!result.ok) throw new Error("browser checks require a valid catalogue");
+  await page.goto("/");
+  for (const wrap of result.catalogue.wraps.filter((item) => item.tags.includes("candidate"))) {
+    const card = page.locator(".wrap-card").filter({ has: page.locator(`a[href="/wraps/${wrap.id}/"]`) });
+    await expect(card).toContainText("Candidate · licence pending review; no reuse rights granted");
+  }
+  for (const variant of Object.keys(VARIANTS)) {
+    const expected = result.catalogue.wraps.filter((wrap) => wrap.variant === variant);
+    await page.goto(`/models/${variant}/`);
+    await expect(page.locator(".wrap-card")).toHaveCount(expected.length);
+    for (const wrap of expected) {
+      const card = page.locator(".wrap-card").filter({ has: page.locator(`a[href="/wraps/${wrap.id}/"]`) });
+      await expect(card).toContainText(wrap.title);
+      if (wrap.tags.includes("candidate")) {
+        await expect(card).toContainText("Candidate · licence pending review; no reuse rights granted");
+      } else {
+        await expect(card.locator(".micro-label")).toContainText(wrap.licence);
+        await expect(card).not.toContainText("licence pending review");
+      }
+      await card.getByRole("link", { name: "View details" }).click();
+      await expect(page.locator("h1")).toHaveText(wrap.title);
+      if (wrap.tags.includes("candidate")) {
+        await expect(page.locator(".meta")).toContainText("Candidate · licence pending review; no reuse rights granted");
+        await expect(page.locator(".meta").getByRole("link", { name: wrap.licence, exact: true })).toHaveCount(0);
+      } else {
+        const licence = page.locator(".meta").getByRole("link", { name: wrap.licence, exact: true });
+        await expect(licence).toHaveAttribute("href", LICENCES[wrap.licence].url);
+        await expect(page.locator(".meta")).not.toContainText("licence pending review");
+      }
+      const link = page.getByRole("link", { name: `Download ${wrap.file}`, exact: true });
+      await expect(link).toHaveAttribute("download", wrap.file);
+      const href = await link.getAttribute("href");
+      if (href === null) throw new Error("download link must have a URL");
+      const response = await request.get(href);
+      expect(response.status()).toBe(200);
+      expect(response.headers()["content-type"]).toContain("image/png");
+      expect(await response.body()).toEqual(await readFile(`content/wraps/${wrap.id}/${wrap.file}`));
+      await page.goto(`/models/${variant}/`);
+    }
+  }
+  await page.goto("/wraps/sample-solid-grey/");
+  await expect(page.locator(".meta").getByRole("link", { name: "CC0-1.0" })).toBeVisible();
+  await page.goto("/about/");
+  await expect(page.locator("#sources")).toContainText("their proposed CC0 designation does not grant reuse rights");
 });

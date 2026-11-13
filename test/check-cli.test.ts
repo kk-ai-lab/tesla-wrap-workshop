@@ -13,7 +13,7 @@ it("checks the workspace catalogue", () => {
     encoding: "utf8",
   });
   expect(result.status).toBe(0);
-  expect(result.stdout).toBe("check: 1 wrap, 0 violations\n");
+  expect(result.stdout).toMatch(/^check: [1-9]\d* wraps?, 0 violations\n$/);
 }, 60_000);
 
 it("prints a too-big line for a temp root", async () => {

@@ -5,6 +5,7 @@ import type { Wrap } from "../../domain/wrap";
 type Props = { wrap: Wrap };
 
 const { wrap } = Astro.props;
+const candidate = wrap.tags.includes("candidate");
 const pageHref = `/wraps/${wrap.id}/`;
 const downloadHref = `${pageHref}${encodeURIComponent(wrap.file)}`;
 const thumbWidth = Math.min(wrap.width, 512);
@@ -17,7 +18,7 @@ const thumbHeight = Math.round((wrap.height * thumbWidth) / wrap.width);
     <span class="preview-label">Flat PNG preview</span>
   </a>
   <div class="card-info">
-    <p class="micro-label">{wrap.licence} <span aria-hidden="true">/</span> {wrap.width} × {wrap.height}</p>
+    <p class="micro-label">{candidate ? "Candidate · licence pending review; no reuse rights granted" : wrap.licence} <span aria-hidden="true">/</span> {wrap.width} × {wrap.height}</p>
     <h3><a href={pageHref}>{wrap.title}</a></h3>
     <p class="variant">{VARIANTS[wrap.variant].label}</p>
     <div class="card-actions"><a class="text-link" href={pageHref}>View details</a><a class="download" href={downloadHref} download={wrap.file}>Download PNG</a></div>
