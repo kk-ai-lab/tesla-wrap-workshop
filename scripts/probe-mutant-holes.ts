@@ -8,7 +8,7 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".."
 
 const killName = "test/hole.test.ts > shared failure";
 
-export const holeScenarios = ["stale", "empty", "missing-m6"] as const;
+export const holeScenarios = ["stale", "empty", "missing-m6", "exit-zero"] as const;
 
 export type HoleScenario = (typeof holeScenarios)[number];
 
@@ -30,16 +30,28 @@ function mutant(id: string, replace: string): MutantEntry {
   return { id, file: "sample.txt", search: "KEEP", replace, kills: killName };
 }
 
+const present = [
+  mutant("M1", "ONE"),
+  mutant("M2", "TWO"),
+  mutant("M3", "THREE"),
+  mutant("M4", "FOUR"),
+  mutant("M5", "FIVE"),
+  mutant("M6", "SIX"),
+  mutant("M7", "SEVEN"),
+];
+
 const lists: Record<HoleScenario, MutantEntry[]> = {
-  stale: [mutant("M1", "ONE"), mutant("M6", "TWO"), mutant("M7", "THREE")],
+  stale: present,
   empty: [],
-  "missing-m6": [mutant("M1", "ONE"), mutant("M7", "THREE")],
+  "missing-m6": present.filter((entry) => entry.id !== "M6"),
+  "exit-zero": present,
 };
 
 const modes: Record<HoleScenario, string> = {
   stale: "stale",
   empty: "silent",
   "missing-m6": "write",
+  "exit-zero": "exit-zero",
 };
 
 function fakeVitest(): string {
@@ -63,6 +75,7 @@ function fakeVitest(): string {
     "const work = path.dirname(out);",
     'const report = { testResults: [{ name: path.join(work, "test/hole.test.ts"), assertionResults: [{ title: "shared failure", status: "failed" }] }] };',
     "writeFileSync(out, JSON.stringify(report));",
+    'if (mode === "exit-zero") process.exit(0);',
     "process.exit(1);",
     "",
   ].join("\n");
@@ -101,7 +114,7 @@ function isHoleScenario(value: string): value is HoleScenario {
 function main(): number {
   const scenario = process.argv[2] ?? "";
   if (!isHoleScenario(scenario)) {
-    console.error("usage: tsx scripts/probe-mutant-holes.ts stale|empty|missing-m6");
+    console.error(`usage: tsx scripts/probe-mutant-holes.ts ${holeScenarios.join("|")}`);
     return 1;
   }
   const result = runHoleProbe(scenario);
