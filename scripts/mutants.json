@@ -1,0 +1,5 @@
+[
+{"id":"M1","file":"src/catalogue/png-integrity.ts","search":"    if (!/^[A-Za-z]{4}$/.test(type) || crc32(bytes.subarray(offset + 4, end - 4)) !== bytes.readUInt32BE(end - 4)) return false;","replace":"    if (!/^[A-Za-z]{4}$/.test(type)) return false;","kills":"test/load.test.ts > rejects a PNG whose only defect is a bad IEND CRC"},
+{"id":"M6","file":"scripts/release-gate.ts","search":"  if (inventory !== rendered || approvedHash !== actualHash) {","replace":"  if (inventory !== rendered) {","kills":"test/page-policy.test.ts > blocks a public build when the inventory was regenerated but the approved hash is old"},
+{"id":"M7","file":"scripts/release-gate.ts","search":"  if (!/^LEGAL_SIGNOFF:[ \\t]*\\S[^\\r\\n]*$/m.test(packet)) {","replace":"  if (false) {","kills":"test/page-policy.test.ts > blocks a public build when legal sign-off is empty and the catalogue hash is current"}
+]

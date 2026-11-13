@@ -22,6 +22,7 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
+      - run: npm run check:mutants
       - run: npm run check
       - run: npm run verify:provenance
       - run: npm run build
