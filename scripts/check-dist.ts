@@ -6,15 +6,62 @@ import { fileURLToPath } from "node:url";
 import { parse as parseHtml, parseFragment, type DefaultTreeAdapterMap, type ParserError } from "parse5";
 import postcss from "postcss";
 import { allowsComment } from "./comment-allowlist.js";
+import { requiredMutantIds } from "./check-mutants.ts";
 
 type Node = DefaultTreeAdapterMap["node"];
 type ElementNode = DefaultTreeAdapterMap["element"];
 type CommentLanguage = "html" | "css" | "js";
 type SourceType = "script" | "module";
 
+export const findingReasons = {
+  symlink: "symlink",
+  "unknown-extension": "unknown extension",
+  "duplicate-json-key": "duplicate json key",
+  "srcdoc-too-deep": "srcdoc nested too deep",
+  "unsupported-script-type": "unsupported script type",
+  "unsupported-json-value": "unsupported json value",
+  "not-a-directory": "not a directory",
+  "parse-error": "parse error",
+} as const;
+
+export type FindingReasonId = keyof typeof findingReasons;
+export type FindingReason = (typeof findingReasons)[FindingReasonId];
+
+type ReasonMutantMap = {
+  [Id in FindingReasonId]: (typeof requiredMutantIds)[number];
+};
+
+type UniqueReasonMutants<T extends ReasonMutantMap> = {
+  [Id in keyof T]: T[Id] extends T[Exclude<keyof T, Id>] ? never : T[Id];
+};
+
+function exactReasonMutants<T extends ReasonMutantMap>(map: T & UniqueReasonMutants<T>): T {
+  return map;
+}
+
+export const reasonMutants = exactReasonMutants({
+  symlink: "M20",
+  "unknown-extension": "M21",
+  "duplicate-json-key": "M22",
+  "srcdoc-too-deep": "M17",
+  "unsupported-script-type": "M12",
+  "unsupported-json-value": "M24",
+  "not-a-directory": "M23",
+  "parse-error": "M25",
+});
+
 export type Finding =
   | { kind: "comment"; language: CommentLanguage; file: string }
-  | { kind: "parse-error"; file: string; reason: string };
+  | { kind: "parse-error"; file: string; reason: FindingReason }
+  | { kind: "parse-error"; file: string; reason: "parser"; detail: string };
+
+function staticFinding(file: string, id: FindingReasonId): Finding {
+  return { kind: "parse-error", file, reason: findingReasons[id] };
+}
+
+function parserFinding(file: string, detail: string): Finding {
+  return { kind: "parse-error", file, reason: "parser", detail };
+}
 
 type CssToken = [string, string, ...number[]];
 
@@ -35,54 +82,267 @@ const tokenize = require(path.join(postcssDir, "lib/tokenize.js")) as (
 ) => CssTokenizer;
 const CssInput = require(path.join(postcssDir, "lib/input.js")) as new (css: string) => CssInput;
 
-const classicScriptTypes = new Set([
-  "",
-  "text/javascript",
-  "application/javascript",
-  "text/ecmascript",
-  "application/ecmascript",
-]);
+export const scannerInputKinds = {
+  "script-classic": {
+    group: "script-type",
+    scan: "script",
+    types: ["", "text/javascript", "application/javascript", "text/ecmascript", "application/ecmascript"],
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/inline-script",
+    needle: "js comment",
+  },
+  "script-module": {
+    group: "script-type",
+    scan: "module",
+    types: ["module"],
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/script-module",
+    needle: "js comment",
+  },
+  "script-json": {
+    group: "script-type",
+    scan: "json",
+    types: ["application/json", "application/ld+json", "importmap", "speculationrules"],
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/json-forbidden",
+    needle: "html comment",
+  },
+  "script-unknown": {
+    group: "script-type",
+    scan: "reject",
+    types: [],
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/unknown-script-type",
+    needle: "unsupported script type",
+  },
+  "attr-style": {
+    group: "attribute",
+    action: "style",
+    name: "style",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/style-attr",
+    needle: "css comment",
+  },
+  "attr-event": {
+    group: "attribute",
+    action: "event",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/event-handler",
+    needle: "js comment",
+  },
+  "attr-srcdoc": {
+    group: "attribute",
+    action: "srcdoc",
+    name: "srcdoc",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/srcdoc-comment",
+    needle: "html comment",
+  },
+  "json-key": {
+    group: "json",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/json-key-comment",
+    needle: "html comment",
+  },
+  "json-value": {
+    group: "json",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/json-forbidden",
+    needle: "html comment",
+  },
+  "json-duplicate-key": {
+    group: "json",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/json-duplicate-key",
+    needle: "duplicate json key",
+  },
+  "json-invalid": {
+    group: "json",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/ld-json-invalid",
+    needle: "in JSON",
+  },
+  "extension-html": {
+    group: "extension",
+    extension: ".html",
+    language: "html",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/extensions",
+    needle: "html comment in probe.HTML",
+  },
+  "extension-css": {
+    group: "extension",
+    extension: ".css",
+    language: "css",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/extensions",
+    needle: "css comment in probe.CSS",
+  },
+  "extension-js": {
+    group: "extension",
+    extension: ".js",
+    language: "js",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/extensions",
+    needle: "js comment in probe.JS",
+  },
+  "extension-mjs": {
+    group: "extension",
+    extension: ".mjs",
+    language: "js",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/extensions",
+    needle: "js comment in probe.mjs",
+  },
+  "extension-cjs": {
+    group: "extension",
+    extension: ".cjs",
+    language: "js",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/extensions",
+    needle: "js comment in probe.cjs",
+  },
+  "extension-unknown": {
+    group: "extension",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/unknown-extension",
+    needle: "unknown extension",
+  },
+  "tag-style": {
+    group: "tag",
+    tag: "style",
+    action: "style",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/style-set-html",
+    needle: "css comment",
+  },
+  "tag-script": {
+    group: "tag",
+    tag: "script",
+    action: "script",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/inline-script",
+    needle: "js comment",
+  },
+  noscript: {
+    group: "tag",
+    tag: "noscript",
+    action: "noscript",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/noscript-comment",
+    needle: "html comment",
+  },
+  "svg-inline": {
+    group: "witness",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/svg-inline",
+    needle: "html comment",
+  },
+  "svg-file": {
+    group: "witness",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/svg-file",
+    needle: "unknown extension",
+  },
+  "script-extra-attr": {
+    group: "witness",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/script-inert",
+    needle: "js comment",
+  },
+  "opaque-png": { group: "opaque", extension: ".png", coverage: "skip", fixture: "test/lint-fixtures/check-dist/opaque", needle: "" },
+  "opaque-jpg": { group: "opaque", extension: ".jpg", coverage: "skip", fixture: "test/lint-fixtures/check-dist/opaque", needle: "" },
+  "opaque-jpeg": { group: "opaque", extension: ".jpeg", coverage: "skip", fixture: "test/lint-fixtures/check-dist/opaque", needle: "" },
+  "opaque-gif": { group: "opaque", extension: ".gif", coverage: "skip", fixture: "test/lint-fixtures/check-dist/opaque", needle: "" },
+  "opaque-webp": { group: "opaque", extension: ".webp", coverage: "skip", fixture: "test/lint-fixtures/check-dist/opaque", needle: "" },
+  "opaque-avif": { group: "opaque", extension: ".avif", coverage: "skip", fixture: "test/lint-fixtures/check-dist/opaque", needle: "" },
+  "opaque-ico": { group: "opaque", extension: ".ico", coverage: "skip", fixture: "test/lint-fixtures/check-dist/opaque", needle: "" },
+  "opaque-bmp": { group: "opaque", extension: ".bmp", coverage: "skip", fixture: "test/lint-fixtures/check-dist/opaque", needle: "" },
+  "opaque-woff": { group: "opaque", extension: ".woff", coverage: "skip", fixture: "test/lint-fixtures/check-dist/opaque", needle: "" },
+  "opaque-woff2": { group: "opaque", extension: ".woff2", coverage: "skip", fixture: "test/lint-fixtures/check-dist/opaque", needle: "" },
+  "opaque-ttf": { group: "opaque", extension: ".ttf", coverage: "skip", fixture: "test/lint-fixtures/check-dist/opaque", needle: "" },
+  "opaque-otf": { group: "opaque", extension: ".otf", coverage: "skip", fixture: "test/lint-fixtures/check-dist/opaque", needle: "" },
+  "opaque-eot": { group: "opaque", extension: ".eot", coverage: "skip", fixture: "test/lint-fixtures/check-dist/opaque", needle: "" },
+  "robots-txt": {
+    group: "root-skip",
+    name: "robots.txt",
+    coverage: "skip",
+    fixture: "test/lint-fixtures/check-dist/robots",
+    needle: "",
+  },
+  symlink: {
+    group: "entry",
+    coverage: "symlink",
+    fixture: "",
+    needle: "symlink",
+  },
+  "parse-error": {
+    group: "parse-error",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/malformed-html",
+    needle: "eof-in-tag",
+  },
+} as const;
 
-const allowedDataScriptTypes = [
-  "application/json",
-  "application/ld+json",
-  "importmap",
-  "speculationrules",
-] as const;
+export type ScannerInputKindId = keyof typeof scannerInputKinds;
 
-type AllowedDataScriptType = (typeof allowedDataScriptTypes)[number];
+type AllowedDataScriptType = (typeof scannerInputKinds)["script-json"]["types"][number];
 
 const srcdocDepthLimit = 8;
 
 const srcdocIgnoredParseErrors = new Set<string>(["missing-doctype"]);
 
-function isAllowedDataScriptType(type: string): type is AllowedDataScriptType {
-  return allowedDataScriptTypes.some((allowed) => allowed === type);
+function hasScriptType(scan: "script" | "module", type: string): boolean {
+  for (const kind of Object.values(scannerInputKinds)) {
+    if (kind.group === "script-type" && kind.scan === scan && kind.types.some((entry) => entry === type)) {
+      return true;
+    }
+  }
+  return false;
 }
 
-const extensionLanguage = new Map<string, CommentLanguage>([
-  [".html", "html"],
-  [".css", "css"],
-  [".js", "js"],
-  [".mjs", "js"],
-  [".cjs", "js"],
-]);
+function isAllowedDataScriptType(type: string): type is AllowedDataScriptType {
+  return scannerInputKinds["script-json"].types.some((allowed) => allowed === type);
+}
 
-const opaqueExtensions = new Set([
-  ".png",
-  ".jpg",
-  ".jpeg",
-  ".gif",
-  ".webp",
-  ".avif",
-  ".ico",
-  ".bmp",
-  ".woff",
-  ".woff2",
-  ".ttf",
-  ".otf",
-  ".eot",
-]);
+const extensionLanguage = new Map<string, CommentLanguage>();
+for (const kind of Object.values(scannerInputKinds)) {
+  if (kind.group === "extension" && "extension" in kind && "language" in kind) {
+    extensionLanguage.set(kind.extension, kind.language);
+  }
+}
+
+function opaqueExtension(extension: string): boolean {
+  for (const kind of Object.values(scannerInputKinds)) {
+    if (kind.group === "opaque" && kind.extension === extension) return true;
+  }
+  return false;
+}
+
+function rootSkip(relative: string): boolean {
+  for (const kind of Object.values(scannerInputKinds)) {
+    if (kind.group === "root-skip" && kind.name === relative) return true;
+  }
+  return false;
+}
+
+function attributeAction(name: string): "style" | "event" | "srcdoc" | undefined {
+  for (const kind of Object.values(scannerInputKinds)) {
+    if (kind.group !== "attribute") continue;
+    if (kind.action === "event" && name.startsWith("on") && name.length > 2) return "event";
+    if ("name" in kind && kind.name === name && (kind.action === "style" || kind.action === "srcdoc")) {
+      return kind.action;
+    }
+  }
+  return undefined;
+}
+
+function tagAction(tag: string): "style" | "script" | "noscript" | undefined {
+  for (const kind of Object.values(scannerInputKinds)) {
+    if (kind.group === "tag" && kind.tag === tag) return kind.action;
+  }
+  return undefined;
+}
 
 function errorReason(error: unknown): string {
   if (error instanceof Error) {
@@ -125,7 +385,7 @@ function scanCss(css: string, file: string): Finding[] {
     postcss.parse(css);
     return commentFindings("css", file, cssCommentBodies(css));
   } catch (error) {
-    return [{ kind: "parse-error", file, reason: errorReason(error) }];
+    return [parserFinding(file, errorReason(error))];
   }
 }
 
@@ -147,10 +407,6 @@ function scanEventHandler(code: string, file: string): Finding[] {
   return scanJs(`function onEvent(){\n${code}\n}`, file, "script");
 }
 
-function isEventHandler(name: string): boolean {
-  return name.startsWith("on") && name.length > 2;
-}
-
 function scanJs(code: string, file: string, preferred: SourceType): Finding[] {
   const attempts: SourceType[] = preferred === "module" ? ["module", "script"] : ["script", "module"];
   let reason: string | undefined;
@@ -163,7 +419,8 @@ function scanJs(code: string, file: string, preferred: SourceType): Finding[] {
       }
     }
   }
-  return [{ kind: "parse-error", file, reason: reason ?? "parse error" }];
+  if (reason === undefined) return [staticFinding(file, "parse-error")];
+  return [parserFinding(file, reason)];
 }
 
 type JsonKeyScan = "duplicate" | "unique" | "unreadable";
@@ -336,9 +593,8 @@ function scanJsonKeys(text: string): JsonKeyScan {
 
 function duplicateJsonKeyFindings(text: string, file: string): Finding[] {
   const scan = scanJsonKeys(text);
-  if (scan === "unique") return [];
-  const reason = scan === "duplicate" ? "duplicate json key" : "unreadable json keys";
-  return [{ kind: "parse-error", file, reason }];
+  if (scan !== "duplicate") return [];
+  return [staticFinding(file, "duplicate-json-key")];
 }
 
 function scanJsonObject(value: Record<string, unknown>, file: string): Finding[] {
@@ -350,7 +606,7 @@ function scanJsonObject(value: Record<string, unknown>, file: string): Finding[]
   return findings;
 }
 
-function scanJsonValue(value: unknown, file: string): Finding[] {
+export function scanJsonValue(value: unknown, file: string): Finding[] {
   if (typeof value === "string") {
     return scanJsonString(value, file);
   }
@@ -367,7 +623,7 @@ function scanJsonValue(value: unknown, file: string): Finding[] {
   if (isJsonRecord(value)) {
     return scanJsonObject(value, file);
   }
-  return [{ kind: "parse-error", file, reason: "unsupported json value" }];
+  return [staticFinding(file, "unsupported-json-value")];
 }
 
 function scanJsonText(text: string, file: string): Finding[] {
@@ -375,7 +631,7 @@ function scanJsonText(text: string, file: string): Finding[] {
   try {
     parsed = JSON.parse(text);
   } catch (error) {
-    return [{ kind: "parse-error", file, reason: errorReason(error) }];
+    return [parserFinding(file, errorReason(error))];
   }
   const findings = duplicateJsonKeyFindings(text, file);
   if (isJsonRecord(parsed)) {
@@ -401,14 +657,11 @@ function elementText(element: ElementNode): string {
 }
 
 function scriptSource(typeValue: string | undefined): SourceType | "json" | "unknown" {
-  if (typeValue === undefined) {
-    return "script";
-  }
-  const type = typeValue.trim().toLowerCase();
-  if (type === "module") {
+  const type = typeValue === undefined ? "" : typeValue.trim().toLowerCase();
+  if (hasScriptType("module", type)) {
     return "module";
   }
-  if (classicScriptTypes.has(type)) {
+  if (hasScriptType("script", type)) {
     return "script";
   }
   if (isAllowedDataScriptType(type)) {
@@ -434,37 +687,38 @@ function walk(node: Node, file: string, findings: Finding[], depth = 0) {
   if (isElement(node)) {
     for (const attribute of node.attrs) {
       const name = attribute.name.toLowerCase();
-      if (name === "style") {
+      const action = attributeAction(name);
+      if (action === "style") {
         findings.push(...scanCss(attribute.value, file));
-      } else if (isEventHandler(name)) {
+      } else if (action === "event") {
         findings.push(...scanEventHandler(attribute.value, file));
-      } else if (name === "srcdoc") {
+      } else if (action === "srcdoc") {
         if (depth >= srcdocDepthLimit) {
-          findings.push({ kind: "parse-error", file, reason: "srcdoc nested too deep" });
+          findings.push(staticFinding(file, "srcdoc-too-deep"));
         } else {
           findings.push(...scanHtml(attribute.value, file, depth + 1, srcdocIgnoredParseErrors));
         }
       }
     }
-    if (node.tagName === "style") {
+    if (tagAction(node.tagName) === "style") {
       findings.push(...scanCss(elementText(node), file));
     }
     if (node.tagName === "script") {
-      const kind = scriptSource(node.attrs.find((attribute) => attribute.name === "type")?.value);
-      const code = elementText(node);
-      if (kind === "unknown") {
-        findings.push({
-          kind: "parse-error",
-          file,
-          reason: "unsupported script type",
-        });
-      } else if (kind === "json") {
-        findings.push(...scanJsonText(code, file));
+      if (tagAction("script") !== "script") {
+        findings.push(staticFinding(file, "unsupported-script-type"));
       } else {
-        findings.push(...scanJs(code, file, kind));
+        const kind = scriptSource(node.attrs.find((attribute) => attribute.name === "type")?.value);
+        const code = elementText(node);
+        if (kind === "unknown") {
+          findings.push(staticFinding(file, "unsupported-script-type"));
+        } else if (kind === "json") {
+          findings.push(...scanJsonText(code, file));
+        } else {
+          findings.push(...scanJs(code, file, kind));
+        }
       }
     }
-    if (node.tagName === "noscript") {
+    if (tagAction(node.tagName) === "noscript") {
       findings.push(...scanHtmlFragment(elementText(node), file, depth));
     }
   }
@@ -481,7 +735,7 @@ function recordParseErrors(
 ) {
   for (const code of errors) {
     if (ignored?.has(code)) continue;
-    findings.push({ kind: "parse-error", file, reason: code });
+    findings.push(parserFinding(file, code));
   }
 }
 
@@ -499,7 +753,7 @@ function scanHtmlFragment(html: string, file: string, depth = 0, recordErrors = 
       },
     });
   } catch (error) {
-    return [{ kind: "parse-error", file, reason: errorReason(error) }];
+    return [parserFinding(file, errorReason(error))];
   }
   const findings: Finding[] = [];
   if (recordErrors) recordParseErrors(errors, file, findings);
@@ -518,7 +772,7 @@ function scanHtml(html: string, file: string, depth = 0, ignored?: ReadonlySet<s
       },
     });
   } catch (error) {
-    return [{ kind: "parse-error", file, reason: errorReason(error) }];
+    return [parserFinding(file, errorReason(error))];
   }
   const findings: Finding[] = [];
   recordParseErrors(errors, file, findings, ignored);
@@ -556,25 +810,25 @@ export function scanRoot(root: string): Finding[] {
   try {
     stats = fs.statSync(root);
   } catch (error) {
-    return [{ kind: "parse-error", file: root, reason: errorReason(error) }];
+    return [parserFinding(root, errorReason(error))];
   }
   if (!stats.isDirectory()) {
-    return [{ kind: "parse-error", file: root, reason: "not a directory" }];
+    return [staticFinding(root, "not-a-directory")];
   }
   const findings: Finding[] = [];
   const entries = listEntries(root).sort((left, right) => left.path.localeCompare(right.path));
   for (const entry of entries) {
     const relative = relativeFile(root, entry.path);
     if (entry.kind === "symlink") {
-      findings.push({ kind: "parse-error", file: relative, reason: "symlink" });
+      findings.push(staticFinding(relative, "symlink"));
       continue;
     }
     const extension = path.extname(entry.path).toLowerCase();
-    if (relative === "robots.txt") continue;
+    if (rootSkip(relative)) continue;
     const language = extensionLanguage.get(extension);
     if (language === undefined) {
-      if (!opaqueExtensions.has(extension)) {
-        findings.push({ kind: "parse-error", file: relative, reason: "unknown extension" });
+      if (!opaqueExtension(extension)) {
+        findings.push(staticFinding(relative, "unknown-extension"));
       }
       continue;
     }
@@ -582,7 +836,7 @@ export function scanRoot(root: string): Finding[] {
     try {
       source = fs.readFileSync(entry.path, "utf8");
     } catch (error) {
-      findings.push({ kind: "parse-error", file: relative, reason: errorReason(error) });
+      findings.push(parserFinding(relative, errorReason(error)));
       continue;
     }
     if (language === "html") {
@@ -600,16 +854,27 @@ function formatFinding(finding: Finding): string {
   if (finding.kind === "comment") {
     return `${finding.language} comment in ${finding.file}`;
   }
+  if (finding.reason === "parser") {
+    return `parse error in ${finding.file}: ${finding.detail}`;
+  }
   return `parse error in ${finding.file}: ${finding.reason}`;
+}
+
+export function describeScan(root: string): { status: number; text: string } {
+  const findings = scanRoot(root);
+  return {
+    status: findings.length > 0 ? 1 : 0,
+    text: findings.map(formatFinding).join("\n"),
+  };
 }
 
 function main() {
   const root = process.argv[2] ?? "dist";
-  const findings = scanRoot(root);
-  for (const finding of findings) {
-    console.log(formatFinding(finding));
+  const result = describeScan(root);
+  if (result.text !== "") {
+    console.log(result.text);
   }
-  if (findings.length > 0) {
+  if (result.status !== 0) {
     process.exitCode = 1;
   }
 }
