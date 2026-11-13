@@ -25,6 +25,7 @@ type Report = {
 };
 
 const skipped = new Set(["node_modules", ".git", "dist", ".astro", "test-results", "playwright-report"]);
+const requiredMutantIds = ["M1", "M6", "M7"];
 
 function fail(message: string): never {
   throw new Error(message);
@@ -39,8 +40,9 @@ function stringField(record: Record<string, unknown>, key: string, index: number
 function readMutants(): Mutant[] {
   const parsed: unknown = JSON.parse(readFileSync(path.join(root, "scripts/mutants.json"), "utf8"));
   if (!Array.isArray(parsed)) fail("scripts/mutants.json must be an array");
+  if (parsed.length === 0) fail("scripts/mutants.json is empty");
   const seen = new Set<string>();
-  return parsed.map((entry, index) => {
+  const mutants = parsed.map((entry, index) => {
     if (typeof entry !== "object" || entry === null) fail(`mutant ${index} is not an object`);
     const record = entry as Record<string, unknown>;
     const mutant = {
@@ -57,6 +59,10 @@ function readMutants(): Mutant[] {
     seen.add(mutant.id);
     return mutant;
   });
+  for (const id of requiredMutantIds) {
+    if (!seen.has(id)) fail(`scripts/mutants.json is missing ${id}`);
+  }
+  return mutants;
 }
 
 function copyProject(work: string): void {
@@ -110,6 +116,7 @@ function runMutant(work: string, mutant: Mutant): boolean {
   const reportPath = path.join(work, "mutant-report.json");
   try {
     applyMutant(work, mutant);
+    rmSync(reportPath, { force: true });
     const result = spawnSync(process.execPath, [
       path.join(root, "node_modules/vitest/vitest.mjs"),
       "run",
@@ -129,7 +136,7 @@ function runMutant(work: string, mutant: Mutant): boolean {
     } catch (error) {
       const detail = error instanceof Error ? error.message : String(error);
       const tail = `${result.stdout}\n${result.stderr}`.trim().split("\n").slice(-20).join("\n");
-      console.log(`${mutant.id} survived`);
+      console.log(`${mutant.id} error`);
       console.log(`expected ${mutant.kills}`);
       console.log(detail);
       if (tail !== "") console.log(tail);
@@ -141,9 +148,14 @@ function runMutant(work: string, mutant: Mutant): boolean {
       for (const name of failed) console.log(name);
       return false;
     }
+    if (result.error !== undefined || result.status === null) {
+      console.log(`${mutant.id} error`);
+      console.log(result.error?.message ?? result.signal ?? "vitest did not finish");
+      return false;
+    }
     console.log(`${mutant.id} killed (${failed.length} failed)`);
     for (const name of failed) console.log(name);
-    return result.status !== 0;
+    return true;
   } finally {
     writeFileSync(path.join(work, mutant.file), saved);
   }
