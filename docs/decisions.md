@@ -14,3 +14,6 @@ Decisions Kai made for tesla-wrap-workshop, newest last. Dates are Europe/Dublin
 | 2026-11-09 | Accept PR #2 after review round 2; track the blank-author tests in #4. | [#1](https://github.com/kk-ai-lab/tesla-wrap-workshop/issues/1) |
 | 2026-11-11 | Keep every team document (research, design, reviews, decisions) under `docs/` in this repo; close issues once their work is merged. | [#5](https://github.com/kk-ai-lab/tesla-wrap-workshop/issues/5) |
 | 2026-11-11 | PR merges are delegated to the team: Eng Lead merges a PR once Review passes and the live PR state checks out. Kai keeps the release gate; production deploys and the I12 legal gate still wait for him. | [#7](https://github.com/kk-ai-lab/tesla-wrap-workshop/pull/7) |
+| 2026-11-11 | Merge PR #10 after review round 4; track the remaining dist-scanner gaps in #11. | [#10](https://github.com/kk-ai-lab/tesla-wrap-workshop/pull/10) |
+| 2026-11-13 | Keep the 12 rights-pending candidate wraps public in the repo. | [#32](https://github.com/kk-ai-lab/tesla-wrap-workshop/issues/32) |
+| 2026-11-13 | Skip the I11 legal review for now. The I12 public launch still needs Kai's explicit sign-off. | [#21](https://github.com/kk-ai-lab/tesla-wrap-workshop/issues/21) |
