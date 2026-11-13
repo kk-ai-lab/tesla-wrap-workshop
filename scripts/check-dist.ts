@@ -54,6 +54,8 @@ type AllowedDataScriptType = (typeof allowedDataScriptTypes)[number];
 
 const srcdocDepthLimit = 8;
 
+const srcdocIgnoredParseErrors = new Set<string>(["missing-doctype"]);
+
 function isAllowedDataScriptType(type: string): type is AllowedDataScriptType {
   return allowedDataScriptTypes.some((allowed) => allowed === type);
 }
@@ -164,9 +166,193 @@ function scanJs(code: string, file: string, preferred: SourceType): Finding[] {
   return [{ kind: "parse-error", file, reason: reason ?? "parse error" }];
 }
 
+type JsonKeyScan = "duplicate" | "unique" | "unreadable";
+
+function isJsonRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function scanJsonString(value: string, file: string): Finding[] {
+  return scanHtmlFragment(value, file, 0, false);
+}
+
+function jsonBoundary(char: string | undefined): boolean {
+  return (
+    char === undefined ||
+    char === " " ||
+    char === "\n" ||
+    char === "\r" ||
+    char === "\t" ||
+    char === "," ||
+    char === "{" ||
+    char === "}" ||
+    char === "[" ||
+    char === "]"
+  );
+}
+
+function scanJsonKeys(text: string): JsonKeyScan {
+  let index = 0;
+  let duplicate = false;
+  const escapes: Record<string, string> = {
+    '"': '"',
+    "\\": "\\",
+    "/": "/",
+    b: "\b",
+    f: "\f",
+    n: "\n",
+    r: "\r",
+    t: "\t",
+  };
+
+  function skipWhitespace(): void {
+    while (text[index] === " " || text[index] === "\n" || text[index] === "\r" || text[index] === "\t") {
+      index += 1;
+    }
+  }
+
+  function readString(): string | undefined {
+    if (text[index] !== '"') return undefined;
+    index += 1;
+    let value = "";
+    while (index < text.length) {
+      const char = text[index];
+      if (char === '"') {
+        index += 1;
+        return value;
+      }
+      if (char === "\\") {
+        index += 1;
+        const escaped = text[index];
+        if (escaped === undefined) return undefined;
+        index += 1;
+        if (escaped === "u") {
+          const hex = text.slice(index, index + 4);
+          if (!/^[0-9a-fA-F]{4}$/.test(hex)) return undefined;
+          value += String.fromCharCode(Number.parseInt(hex, 16));
+          index += 4;
+          continue;
+        }
+        const mapped = escapes[escaped];
+        if (mapped === undefined) return undefined;
+        value += mapped;
+        continue;
+      }
+      if (char === undefined) return undefined;
+      value += char;
+      index += 1;
+    }
+    return undefined;
+  }
+
+  function skipLiteral(): boolean {
+    const start = text[index];
+    if (start === "-" || (start !== undefined && start >= "0" && start <= "9")) {
+      while (!jsonBoundary(text[index])) index += 1;
+      return true;
+    }
+    if (text.startsWith("true", index)) {
+      index += 4;
+      return true;
+    }
+    if (text.startsWith("false", index)) {
+      index += 5;
+      return true;
+    }
+    if (text.startsWith("null", index)) {
+      index += 4;
+      return true;
+    }
+    return false;
+  }
+
+  function parseValue(): boolean {
+    skipWhitespace();
+    const char = text[index];
+    if (char === "{") return parseObject();
+    if (char === "[") return parseArray();
+    if (char === '"') return readString() !== undefined;
+    return skipLiteral();
+  }
+
+  function parseArray(): boolean {
+    index += 1;
+    skipWhitespace();
+    if (text[index] === "]") {
+      index += 1;
+      return true;
+    }
+    while (index < text.length) {
+      if (!parseValue()) return false;
+      skipWhitespace();
+      if (text[index] === "]") {
+        index += 1;
+        return true;
+      }
+      if (text[index] !== ",") return false;
+      index += 1;
+    }
+    return false;
+  }
+
+  function parseObject(): boolean {
+    index += 1;
+    const seen = new Set<string>();
+    skipWhitespace();
+    if (text[index] === "}") {
+      index += 1;
+      return true;
+    }
+    while (index < text.length) {
+      skipWhitespace();
+      const key = readString();
+      if (key === undefined) return false;
+      if (seen.has(key)) {
+        duplicate = true;
+        return true;
+      }
+      seen.add(key);
+      skipWhitespace();
+      if (text[index] !== ":") return false;
+      index += 1;
+      if (!parseValue()) return false;
+      skipWhitespace();
+      if (text[index] === "}") {
+        index += 1;
+        return true;
+      }
+      if (text[index] !== ",") return false;
+      index += 1;
+    }
+    return false;
+  }
+
+  const parsed = parseValue();
+  skipWhitespace();
+  if (duplicate) return "duplicate";
+  if (!parsed || index !== text.length) return "unreadable";
+  return "unique";
+}
+
+function duplicateJsonKeyFindings(text: string, file: string): Finding[] {
+  const scan = scanJsonKeys(text);
+  if (scan === "unique") return [];
+  const reason = scan === "duplicate" ? "duplicate json key" : "unreadable json keys";
+  return [{ kind: "parse-error", file, reason }];
+}
+
+function scanJsonObject(value: Record<string, unknown>, file: string): Finding[] {
+  const findings: Finding[] = [];
+  for (const key of Object.keys(value)) {
+    findings.push(...scanJsonString(key, file));
+    findings.push(...scanJsonValue(value[key], file));
+  }
+  return findings;
+}
+
 function scanJsonValue(value: unknown, file: string): Finding[] {
   if (typeof value === "string") {
-    return scanHtmlFragment(value, file);
+    return scanJsonString(value, file);
   }
   if (typeof value === "number" || typeof value === "boolean" || value === null) {
     return [];
@@ -178,12 +364,8 @@ function scanJsonValue(value: unknown, file: string): Finding[] {
     }
     return findings;
   }
-  if (typeof value === "object") {
-    const findings: Finding[] = [];
-    for (const item of Object.values(value)) {
-      findings.push(...scanJsonValue(item, file));
-    }
-    return findings;
+  if (isJsonRecord(value)) {
+    return scanJsonObject(value, file);
   }
   return [{ kind: "parse-error", file, reason: "unsupported json value" }];
 }
@@ -195,7 +377,13 @@ function scanJsonText(text: string, file: string): Finding[] {
   } catch (error) {
     return [{ kind: "parse-error", file, reason: errorReason(error) }];
   }
-  return scanJsonValue(parsed, file);
+  const findings = duplicateJsonKeyFindings(text, file);
+  if (isJsonRecord(parsed)) {
+    findings.push(...scanJsonObject(parsed, file));
+  } else {
+    findings.push(...scanJsonValue(parsed, file));
+  }
+  return findings;
 }
 
 function isElement(node: Node): node is ElementNode {
@@ -254,7 +442,7 @@ function walk(node: Node, file: string, findings: Finding[], depth = 0) {
         if (depth >= srcdocDepthLimit) {
           findings.push({ kind: "parse-error", file, reason: "srcdoc nested too deep" });
         } else {
-          findings.push(...scanHtml(attribute.value, file, depth + 1));
+          findings.push(...scanHtml(attribute.value, file, depth + 1, srcdocIgnoredParseErrors));
         }
       }
     }
@@ -285,13 +473,19 @@ function walk(node: Node, file: string, findings: Finding[], depth = 0) {
   }
 }
 
-function recordParseErrors(errors: ParserError["code"][], file: string, findings: Finding[]) {
+function recordParseErrors(
+  errors: ParserError["code"][],
+  file: string,
+  findings: Finding[],
+  ignored?: ReadonlySet<string>,
+) {
   for (const code of errors) {
+    if (ignored?.has(code)) continue;
     findings.push({ kind: "parse-error", file, reason: code });
   }
 }
 
-function scanHtmlFragment(html: string, file: string, depth = 0): Finding[] {
+function scanHtmlFragment(html: string, file: string, depth = 0, recordErrors = true): Finding[] {
   if (html.trim() === "") {
     return [];
   }
@@ -308,12 +502,12 @@ function scanHtmlFragment(html: string, file: string, depth = 0): Finding[] {
     return [{ kind: "parse-error", file, reason: errorReason(error) }];
   }
   const findings: Finding[] = [];
-  recordParseErrors(errors, file, findings);
+  if (recordErrors) recordParseErrors(errors, file, findings);
   walk(fragment, file, findings, depth);
   return findings;
 }
 
-function scanHtml(html: string, file: string, depth = 0): Finding[] {
+function scanHtml(html: string, file: string, depth = 0, ignored?: ReadonlySet<string>): Finding[] {
   const errors: ParserError["code"][] = [];
   let document: Node;
   try {
@@ -327,7 +521,7 @@ function scanHtml(html: string, file: string, depth = 0): Finding[] {
     return [{ kind: "parse-error", file, reason: errorReason(error) }];
   }
   const findings: Finding[] = [];
-  recordParseErrors(errors, file, findings);
+  recordParseErrors(errors, file, findings, ignored);
   walk(document, file, findings, depth);
   return findings;
 }
