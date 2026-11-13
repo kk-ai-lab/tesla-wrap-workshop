@@ -186,6 +186,50 @@ it("exits 0 for valid json without a comment", () => {
   expectExit("test/lint-fixtures/check-dist/ld-json-clean", 0, "");
 });
 
+it("exits 1 for an html comment in a json key", () => {
+  const result = expectExit("test/lint-fixtures/check-dist/json-key-comment", 1, "html comment");
+  expect(result.stdout).toContain("index.html");
+});
+
+it("exits 1 for an html comment in an importmap key", () => {
+  const result = expectExit("test/lint-fixtures/check-dist/importmap-key-comment", 1, "html comment");
+  expect(result.stdout).toContain("index.html");
+});
+
+it("exits 1 for a duplicate json key", () => {
+  const result = expectExit("test/lint-fixtures/check-dist/json-duplicate-key", 1, "duplicate json key");
+  expect(result.stdout).toContain("index.html");
+});
+
+it("exits 1 when srcdoc nesting passes the depth cap", () => {
+  const result = expectExit("test/lint-fixtures/check-dist/srcdoc-depth-cap", 1, "srcdoc nested too deep");
+  expect(result.stdout).toContain("index.html");
+});
+
+it("exits 0 for a srcdoc without a doctype", () => {
+  expectExit("test/lint-fixtures/check-dist/srcdoc-no-doctype", 0, "");
+});
+
+it("exits 0 for a json string that says price < 100", () => {
+  expectExit("test/lint-fixtures/check-dist/json-price-lt", 0, "");
+});
+
+it("exits 0 for a json string with a<b", () => {
+  expectExit("test/lint-fixtures/check-dist/json-altb", 0, "");
+});
+
+it("exits 0 for a json string with I <3", () => {
+  expectExit("test/lint-fixtures/check-dist/json-lt3", 0, "");
+});
+
+it("exits 0 for a json string with an ampersand", () => {
+  expectExit("test/lint-fixtures/check-dist/json-copy", 0, "");
+});
+
+it("exits 0 for a json string with an escaped less-than", () => {
+  expectExit("test/lint-fixtures/check-dist/json-altb-escaped", 0, "");
+});
+
 it("runs check:dist after build in ci", () => {
   const ci = fs.readFileSync(path.join(root, ".github/workflows/ci.yml"), "utf8");
   const buildAt = ci.indexOf("npm run build");
