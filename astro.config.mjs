@@ -44,7 +44,7 @@ export default defineConfig({
               throw new Error(`wrap changed while serving: ${wrap.id}`);
             }
             const body = thumbnail
-              ? await sharp(bytes).resize({ width: 512, withoutEnlargement: true }).webp({ quality: 80 }).toBuffer()
+              ? await sharp(bytes).resize({ width: 512, withoutEnlargement: true }).webp({ quality: 70 }).toBuffer()
               : bytes;
             res.writeHead(200, {
               "Content-Type": thumbnail ? "image/webp" : "image/png",
@@ -87,7 +87,7 @@ export default defineConfig({
             await writeFile(path.join(toDir, wrap.file), bytes);
             await sharp(bytes)
               .resize({ width: 512, withoutEnlargement: true })
-              .webp({ quality: 80 })
+              .webp({ quality: 70 })
               .toFile(path.join(thumbDir, `${wrap.id}.webp`));
           }
         },
