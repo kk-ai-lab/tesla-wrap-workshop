@@ -12,6 +12,7 @@
     "check": "tsx src/cli/check.ts",
     "build": "astro build",
     "check:dist": "tsx scripts/check-dist.ts",
+    "check:mutants": "tsx scripts/check-mutants.ts",
     "postbuild:check": "tsx scripts/postbuild-check.ts",
     "verify:provenance": "tsx scripts/verify-provenance.ts",
     "hash:tesla": "tsx scripts/hash-tesla-files.ts",

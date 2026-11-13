@@ -253,7 +253,7 @@ export default tseslint.config(
   tseslint.configs.recommended,
   ...eslintPluginAstro.configs["flat/base"],
   {
-    files: ["scripts/**/*.mjs", "astro.config.mjs"],
+    files: ["scripts/**/*.mjs", ".cursor/skills/**/*.mjs", "astro.config.mjs"],
     languageOptions: {
       globals: {
         Buffer: "readonly",
