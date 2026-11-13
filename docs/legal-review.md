@@ -7,7 +7,7 @@ This packet records the questions and evidence for Kai and counsel. It is not le
 - Repository and project name are `tesla-wrap-workshop`.
 - The visible site name is Wrap workshop. Tesla is named to describe vehicle compatibility.
 - Production domain is not configured. The existing decision is to use a Cloudflare `pages.dev` address initially.
-- Protected preview URL is not configured or verified in this run.
+- A Cloudflare Pages project and preview Access policy are configured. No preview has been deployed or verified with the site content.
 - The site is a curated gallery with downloads. It has no visitor uploads, accounts, payment processing, or comments.
 - The [catalogue inventory](legal-catalogue.md) records the files, hashes, licences, authors, and provenance currently proposed for publication.
 

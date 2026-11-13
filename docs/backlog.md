@@ -29,13 +29,15 @@ These gates are tracked in [issue 21](https://github.com/kk-ai-lab/tesla-wrap-wo
 
 | Gate | Next action | Owner |
 |---|---|---|
-| I9 protected online preview | Configure Cloudflare Pages with the reserved production branch and Access on previews; verify authentication and response headers | Kai or an authorized hosting operator |
+| I9 protected online preview | Pages project and preview Access policy configured. Deploy a preview and verify signed-in access and response headers | Kai or an authorized hosting operator |
 | I10 seed artwork | Review the 12 template-based candidates and their rights for all variants. The grey sample is development content | Maintainer and contributing artists |
 | I10 real vehicle tests | Complete Model 3, Model Y, and Cybertruck rows, including a boundary file and actual alignment evidence | Testers with the vehicles |
 | I11 legal review | Review naming, proposed domain, disclaimer, source rights, and the UV-layout derivative question | Kai and counsel |
 | I12 public launch | Record human sign-off plus approved inventory SHA-256, verify all earlier gates, and authorize deployment | Kai |
 
 No deployment, legal signature, real vehicle result, or artwork permission is inferred from the local checks. Do not close the release gates because a build passes.
+
+On 13 November, the Cloudflare Pages project was connected to the repository. Its production branch is `features/production-reserved`, and automatic production and preview branch deployments are disabled. The preview Access application allows the Cloudflare account email. The initial production build failed intentionally and Cloudflare reports no production deployment. A request without an Access session to the failed deployment's hostname redirected to Access. This does not verify a deployed preview or authenticated access. The production `pages.dev` hostname is not covered by the preview policy.
 
 ## Dependency maintenance
 
