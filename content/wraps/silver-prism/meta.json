@@ -1,0 +1,20 @@
+{
+  "id": "silver-prism",
+  "title": "Silver Prism",
+  "variant": "models-2025-plaid",
+  "file": "Silver Prism.png",
+  "licence": "CC0-1.0",
+  "provenance": [
+    {
+      "kind": "own",
+      "author": "OpenAI imagegen (AI-generated candidate; Tesla template composite)",
+      "createdWith": "OpenAI imagegen texture composited into official Tesla models-2025-plaid template at commit 86c7d31454caf0f20af6f6af105f577643f13bce. Only opaque pure-white RGBA pixels replaced; all other pixels and alpha preserved exactly. Texture-only quantization: none; final PNG RGBA lossless. Sources, hashes and pixel verification: docs/candidate-artwork-sources.json. Candidate; proposed CC0 only for any project-owned contribution, subject to rights review; Tesla template usage, derivative-work permission, layout and in-car review outstanding."
+    }
+  ],
+  "tags": [
+    "geometric",
+    "candidate",
+    "ai-generated"
+  ],
+  "addedOn": "2026-11-13"
+}

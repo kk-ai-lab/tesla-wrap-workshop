@@ -12,4 +12,4 @@ Record the exact file SHA-256, vehicle variant, vehicle software, app version if
 
 For each chosen design, inspect the panel alignment in Paint Shop after transfer. Include a boundary file between 999,900 and 1,000,000 bytes with a 30-character filename including `.png`. Record actual observations; do not change the workshop's conservative byte or filename policy based on a desktop parser result.
 
-I10 still requires reviewed original artwork across all 12 variants and at least these three vehicle checks. The current grey sample is development content. It does not satisfy the seed-gallery requirement.
+I10 still requires review of the template-based candidates for all 12 variants and at least these three vehicle checks. See [candidate artwork](candidate-artwork.md) for their origin and limitations. The grey sample is development content.

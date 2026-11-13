@@ -1,6 +1,6 @@
 # tesla-wrap-workshop
 
-Curated PNG designs for Tesla Paint Shop's on-screen vehicle visualization. Choose a vehicle variant, read a design's provenance, and download the original PNG. The current catalogue contains one development sample. v1 has no visitor uploads.
+Curated PNG designs for Tesla Paint Shop's on-screen vehicle visualization. Choose a vehicle variant, read a design's provenance, and download the original PNG. The local catalogue contains twelve AI-generated candidates, one per vehicle variant, plus the Solid Grey development sample. See [candidate artwork notes](docs/candidate-artwork.md) for generation and rights limitations. v1 has no visitor uploads.
 
 Not affiliated with, endorsed by or sponsored by Tesla, Inc.
 
@@ -16,7 +16,7 @@ npm run verify
 
 Use Node 22.23.4 or later within the Node 22 series, as selected by `.nvmrc`. `npm run verify` runs lint, typecheck, unit tests, catalogue and repository guards, provenance cases, the static build, output checks, legal-inventory freshness, and desktop/mobile browser tests. The browser tests own a foreground server on port 4176 and stop it after the run. `npm run dev` starts the development site.
 
-`npm run check` prints `check: 1 wrap, 0 violations` for the sample. `npm run build` writes `dist/`. `npm run postbuild:check` runs every output guard. Use `-- --only links`, `disclaimer`, `budget`, `launch`, or `assets` to investigate one guard.
+`npm run check` reports the catalogue size and any violations. `npm run build` writes `dist/`. `npm run postbuild:check` runs every output guard. Use `-- --only links`, `disclaimer`, `budget`, `launch`, or `assets` to investigate one guard.
 
 ## Compatibility and publication
 

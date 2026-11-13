@@ -1,0 +1,511 @@
+{
+  "generatedOn": "2026-11-13",
+  "source": "Twelve user-authorized imagegen textures masked into fixed-commit official Tesla templates. Exact prompts are not preserved. Pixel fidelity is a local processing policy, not a claim of an official Tesla requirement or vehicle acceptance.",
+  "sharpVersion": "0.35.5",
+  "records": [
+    {
+      "id": "copper-circuit",
+      "variant": "cybertruck",
+      "generator": "OpenAI imagegen",
+      "sourcePath": ".audit/imagegen-originals/texture-01.png",
+      "sourceSha256": "34711b88e6e4d0c3ecf1b96b056f146806439f08d8508126f06826dca04e7b4f",
+      "sourceBytes": 2125747,
+      "sourceWidth": 1774,
+      "sourceHeight": 887,
+      "templateReference": {
+        "commit": "86c7d31454caf0f20af6f6af105f577643f13bce",
+        "url": "https://github.com/teslamotors/custom-wraps/tree/86c7d31454caf0f20af6f6af105f577643f13bce/cybertruck",
+        "sha256": "02bab88dc29958f0a26d01aea053184da32cd4648862b1bcbb332f831482a658",
+        "bytes": 44088,
+        "usage": "Tesla template pixels directly retained in composite; permission and derivative-work clearance outstanding"
+      },
+      "outputPath": "content/wraps/copper-circuit/Copper Circuit.png",
+      "outputSha256": "79dcdc1510a2c3ae95ba06da9340104685786ded92fe431be378735e80bd6de7",
+      "outputBytes": 592738,
+      "width": 1024,
+      "height": 768,
+      "processing": {
+        "fit": "fill",
+        "kernel": "lanczos3",
+        "mask": "RGBA exactly 255,255,255,255 only",
+        "textureColours": null,
+        "dither": 0,
+        "clampedWhitePixels": 0,
+        "whiteClamp": "Texture pure white changed to RGB 255,255,254 so all paintable pixels visibly differ from blank template",
+        "finalPng": "lossless truecolour RGBA; no final palette quantization"
+      },
+      "verification": {
+        "paintablePixels": 346408,
+        "filledPixels": 346408,
+        "preservedPixels": 440024,
+        "transparentPixels": 363209,
+        "protectedPixelMismatches": 0,
+        "alphaMismatches": 0
+      },
+      "reviewStatus": "candidate; proposed CC0 for project-owned contributions only; Tesla template permission, copyright, authorization, layout and in-car review outstanding",
+      "sourceArchivePath": ".audit/imagegen-originals/texture-01.png"
+    },
+    {
+      "id": "tidal-jade",
+      "variant": "model3",
+      "generator": "OpenAI imagegen",
+      "sourcePath": ".audit/imagegen-originals/texture-02.png",
+      "sourceSha256": "d4bd18813870cb9c4af4f3fc312a361e742d8cf91a338b882c67087aa6b417af",
+      "sourceBytes": 2333366,
+      "sourceWidth": 1774,
+      "sourceHeight": 887,
+      "templateReference": {
+        "commit": "86c7d31454caf0f20af6f6af105f577643f13bce",
+        "url": "https://github.com/teslamotors/custom-wraps/tree/86c7d31454caf0f20af6f6af105f577643f13bce/model3",
+        "sha256": "1ab297c83f904d50f3be188818e33d67fad432cbca60d499717e58bb1192055d",
+        "bytes": 190892,
+        "usage": "Tesla template pixels directly retained in composite; permission and derivative-work clearance outstanding"
+      },
+      "outputPath": "content/wraps/tidal-jade/Tidal Jade.png",
+      "outputSha256": "88fef1d987d4b81d634c7eb8149ba9303f0f48c29f919b1edff0b9b610e6f986",
+      "outputBytes": 851991,
+      "width": 1024,
+      "height": 1024,
+      "processing": {
+        "fit": "fill",
+        "kernel": "lanczos3",
+        "mask": "RGBA exactly 255,255,255,255 only",
+        "textureColours": null,
+        "dither": 0,
+        "clampedWhitePixels": 0,
+        "whiteClamp": "Texture pure white changed to RGB 255,255,254 so all paintable pixels visibly differ from blank template",
+        "finalPng": "lossless truecolour RGBA; no final palette quantization"
+      },
+      "verification": {
+        "paintablePixels": 363715,
+        "filledPixels": 363715,
+        "preservedPixels": 684861,
+        "transparentPixels": 655642,
+        "protectedPixelMismatches": 0,
+        "alphaMismatches": 0
+      },
+      "reviewStatus": "candidate; proposed CC0 for project-owned contributions only; Tesla template permission, copyright, authorization, layout and in-car review outstanding",
+      "sourceArchivePath": ".audit/imagegen-originals/texture-02.png"
+    },
+    {
+      "id": "porcelain-grid",
+      "variant": "model3-2024-base",
+      "generator": "OpenAI imagegen",
+      "sourcePath": ".audit/imagegen-originals/texture-03.png",
+      "sourceSha256": "ea308eca33f23f86427435d52a59bbe82e2481dddd8979f2c9c29667f7a8e4a3",
+      "sourceBytes": 1818555,
+      "sourceWidth": 1774,
+      "sourceHeight": 887,
+      "templateReference": {
+        "commit": "86c7d31454caf0f20af6f6af105f577643f13bce",
+        "url": "https://github.com/teslamotors/custom-wraps/tree/86c7d31454caf0f20af6f6af105f577643f13bce/model3-2024-base",
+        "sha256": "661c8b779ec34890ef453fd096975f17fa40075c988faf343898ac2b6136e443",
+        "bytes": 124548,
+        "usage": "Tesla template pixels directly retained in composite; permission and derivative-work clearance outstanding"
+      },
+      "outputPath": "content/wraps/porcelain-grid/Porcelain Grid.png",
+      "outputSha256": "311bffba48776a68e72aa27aeba74cb65e8624220ee059905af4b1ce2617ce85",
+      "outputBytes": 672904,
+      "width": 1024,
+      "height": 1024,
+      "processing": {
+        "fit": "fill",
+        "kernel": "lanczos3",
+        "mask": "RGBA exactly 255,255,255,255 only",
+        "textureColours": null,
+        "dither": 0,
+        "clampedWhitePixels": 339,
+        "whiteClamp": "Texture pure white changed to RGB 255,255,254 so all paintable pixels visibly differ from blank template",
+        "finalPng": "lossless truecolour RGBA; no final palette quantization"
+      },
+      "verification": {
+        "paintablePixels": 416504,
+        "filledPixels": 416504,
+        "preservedPixels": 632072,
+        "transparentPixels": 600596,
+        "protectedPixelMismatches": 0,
+        "alphaMismatches": 0
+      },
+      "reviewStatus": "candidate; proposed CC0 for project-owned contributions only; Tesla template permission, copyright, authorization, layout and in-car review outstanding",
+      "sourceArchivePath": ".audit/imagegen-originals/texture-03.png"
+    },
+    {
+      "id": "ember-chevron",
+      "variant": "model3-2024-performance",
+      "generator": "OpenAI imagegen",
+      "sourcePath": ".audit/imagegen-originals/texture-04.png",
+      "sourceSha256": "375cfe99c4f8cb17174291ba6422dc5a4e54b3bddb934ed638f0f6828ac76314",
+      "sourceBytes": 2448824,
+      "sourceWidth": 1774,
+      "sourceHeight": 887,
+      "templateReference": {
+        "commit": "86c7d31454caf0f20af6f6af105f577643f13bce",
+        "url": "https://github.com/teslamotors/custom-wraps/tree/86c7d31454caf0f20af6f6af105f577643f13bce/model3-2024-performance",
+        "sha256": "a59d8ec97c42b579c9911ce236678dc2ee7e3a6ad92ae83fa1a04af427157201",
+        "bytes": 129561,
+        "usage": "Tesla template pixels directly retained in composite; permission and derivative-work clearance outstanding"
+      },
+      "outputPath": "content/wraps/ember-chevron/Ember Chevron.png",
+      "outputSha256": "1f2ed77413be4e3d4fa9c4bb2ad645eee3075db5bf2a97e929c79fafd677318b",
+      "outputBytes": 897366,
+      "width": 1024,
+      "height": 1024,
+      "processing": {
+        "fit": "fill",
+        "kernel": "lanczos3",
+        "mask": "RGBA exactly 255,255,255,255 only",
+        "textureColours": null,
+        "dither": 0,
+        "clampedWhitePixels": 0,
+        "whiteClamp": "Texture pure white changed to RGB 255,255,254 so all paintable pixels visibly differ from blank template",
+        "finalPng": "lossless truecolour RGBA; no final palette quantization"
+      },
+      "verification": {
+        "paintablePixels": 414095,
+        "filledPixels": 414095,
+        "preservedPixels": 634481,
+        "transparentPixels": 602929,
+        "protectedPixelMismatches": 0,
+        "alphaMismatches": 0
+      },
+      "reviewStatus": "candidate; proposed CC0 for project-owned contributions only; Tesla template permission, copyright, authorization, layout and in-car review outstanding",
+      "sourceArchivePath": ".audit/imagegen-originals/texture-04.png"
+    },
+    {
+      "id": "pine-canopy",
+      "variant": "modely",
+      "generator": "OpenAI imagegen",
+      "sourcePath": ".audit/imagegen-originals/texture-05.png",
+      "sourceSha256": "5fc3960a5a8a9330b92b960dc954a2bb7ffed9bb68433214230ed21ff87a84ce",
+      "sourceBytes": 1861910,
+      "sourceWidth": 1774,
+      "sourceHeight": 887,
+      "templateReference": {
+        "commit": "86c7d31454caf0f20af6f6af105f577643f13bce",
+        "url": "https://github.com/teslamotors/custom-wraps/tree/86c7d31454caf0f20af6f6af105f577643f13bce/modely",
+        "sha256": "145e56ff1d9d3d5d3c3bac4ce1b331387858cb3ee7f17dce7d1de2100bf42a4b",
+        "bytes": 114843,
+        "usage": "Tesla template pixels directly retained in composite; permission and derivative-work clearance outstanding"
+      },
+      "outputPath": "content/wraps/pine-canopy/Pine Canopy.png",
+      "outputSha256": "dad1fecc3de82b7f65528f9043d68d9c44187496e55ee84fef3d596a099505af",
+      "outputBytes": 724404,
+      "width": 1024,
+      "height": 1024,
+      "processing": {
+        "fit": "fill",
+        "kernel": "lanczos3",
+        "mask": "RGBA exactly 255,255,255,255 only",
+        "textureColours": null,
+        "dither": 0,
+        "clampedWhitePixels": 0,
+        "whiteClamp": "Texture pure white changed to RGB 255,255,254 so all paintable pixels visibly differ from blank template",
+        "finalPng": "lossless truecolour RGBA; no final palette quantization"
+      },
+      "verification": {
+        "paintablePixels": 440985,
+        "filledPixels": 440985,
+        "preservedPixels": 607591,
+        "transparentPixels": 580111,
+        "protectedPixelMismatches": 0,
+        "alphaMismatches": 0
+      },
+      "reviewStatus": "candidate; proposed CC0 for project-owned contributions only; Tesla template permission, copyright, authorization, layout and in-car review outstanding",
+      "sourceArchivePath": ".audit/imagegen-originals/texture-05.png"
+    },
+    {
+      "id": "dune-rhythm",
+      "variant": "modely-2025-base",
+      "generator": "OpenAI imagegen",
+      "sourcePath": ".audit/imagegen-originals/texture-06.png",
+      "sourceSha256": "9fd38b36bdf854a394f01be78101580e01cfde8391e2aab828f5ea9972417fb1",
+      "sourceBytes": 3025508,
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "templateReference": {
+        "commit": "86c7d31454caf0f20af6f6af105f577643f13bce",
+        "url": "https://github.com/teslamotors/custom-wraps/tree/86c7d31454caf0f20af6f6af105f577643f13bce/modely-2025-base",
+        "sha256": "df7e18b382306d3631be58ec313471bdc02e6183b7d4d1a1e33306fd345f373a",
+        "bytes": 150559,
+        "usage": "Tesla template pixels directly retained in composite; permission and derivative-work clearance outstanding"
+      },
+      "outputPath": "content/wraps/dune-rhythm/Dune Rhythm.png",
+      "outputSha256": "a0c34e3deff6eadc4e2d0414a2a5e074b724a574f3769a49d9b1584ff1d47f8a",
+      "outputBytes": 714926,
+      "width": 1024,
+      "height": 1024,
+      "processing": {
+        "fit": "fill",
+        "kernel": "lanczos3",
+        "mask": "RGBA exactly 255,255,255,255 only",
+        "textureColours": null,
+        "dither": 0,
+        "clampedWhitePixels": 0,
+        "whiteClamp": "Texture pure white changed to RGB 255,255,254 so all paintable pixels visibly differ from blank template",
+        "finalPng": "lossless truecolour RGBA; no final palette quantization"
+      },
+      "verification": {
+        "paintablePixels": 271155,
+        "filledPixels": 271155,
+        "preservedPixels": 777421,
+        "transparentPixels": 753664,
+        "protectedPixelMismatches": 0,
+        "alphaMismatches": 0
+      },
+      "reviewStatus": "candidate; proposed CC0 for project-owned contributions only; Tesla template permission, copyright, authorization, layout and in-car review outstanding",
+      "sourceArchivePath": ".audit/imagegen-originals/texture-06.png"
+    },
+    {
+      "id": "midnight-weave",
+      "variant": "modely-2025-premium",
+      "generator": "OpenAI imagegen",
+      "sourcePath": ".audit/imagegen-originals/texture-07.png",
+      "sourceSha256": "4c5c742537ca713ecae0f79e8021e0f9c40cd5198929c9c31ae7e300b0e0d4a0",
+      "sourceBytes": 2468777,
+      "sourceWidth": 1774,
+      "sourceHeight": 887,
+      "templateReference": {
+        "commit": "86c7d31454caf0f20af6f6af105f577643f13bce",
+        "url": "https://github.com/teslamotors/custom-wraps/tree/86c7d31454caf0f20af6f6af105f577643f13bce/modely-2025-premium",
+        "sha256": "336a738ffa7b11eaa4909fcaacc6d9066b38f9a06feba1fddf9634554f27e3b5",
+        "bytes": 119659,
+        "usage": "Tesla template pixels directly retained in composite; permission and derivative-work clearance outstanding"
+      },
+      "outputPath": "content/wraps/midnight-weave/Midnight Weave.png",
+      "outputSha256": "aeb70d0efe74efe3539947607ef0912ba23f095d5894f6f0d084ab7346958c10",
+      "outputBytes": 740056,
+      "width": 1024,
+      "height": 1024,
+      "processing": {
+        "fit": "fill",
+        "kernel": "lanczos3",
+        "mask": "RGBA exactly 255,255,255,255 only",
+        "textureColours": null,
+        "dither": 0,
+        "clampedWhitePixels": 4,
+        "whiteClamp": "Texture pure white changed to RGB 255,255,254 so all paintable pixels visibly differ from blank template",
+        "finalPng": "lossless truecolour RGBA; no final palette quantization"
+      },
+      "verification": {
+        "paintablePixels": 334906,
+        "filledPixels": 334906,
+        "preservedPixels": 713670,
+        "transparentPixels": 688196,
+        "protectedPixelMismatches": 0,
+        "alphaMismatches": 0
+      },
+      "reviewStatus": "candidate; proposed CC0 for project-owned contributions only; Tesla template permission, copyright, authorization, layout and in-car review outstanding",
+      "sourceArchivePath": ".audit/imagegen-originals/texture-07.png"
+    },
+    {
+      "id": "cobalt-pulse",
+      "variant": "modely-2025-performance",
+      "generator": "OpenAI imagegen",
+      "sourcePath": ".audit/imagegen-originals/texture-08.png",
+      "sourceSha256": "96bb860f9ea6b9d1da084e2a05f106096b33c6c1abf112dc78634092b87dd22e",
+      "sourceBytes": 1915429,
+      "sourceWidth": 1774,
+      "sourceHeight": 887,
+      "templateReference": {
+        "commit": "86c7d31454caf0f20af6f6af105f577643f13bce",
+        "url": "https://github.com/teslamotors/custom-wraps/tree/86c7d31454caf0f20af6f6af105f577643f13bce/modely-2025-performance",
+        "sha256": "f55baf4fc9f097650c2a15754005e913365efde55695c424fb78f35c57ae8f0b",
+        "bytes": 160052,
+        "usage": "Tesla template pixels directly retained in composite; permission and derivative-work clearance outstanding"
+      },
+      "outputPath": "content/wraps/cobalt-pulse/Cobalt Pulse.png",
+      "outputSha256": "e3ffd057983f77d6af66fde131700dddda9ec48dfd87e4c70e5d1f04021a9458",
+      "outputBytes": 666919,
+      "width": 1024,
+      "height": 1024,
+      "processing": {
+        "fit": "fill",
+        "kernel": "lanczos3",
+        "mask": "RGBA exactly 255,255,255,255 only",
+        "textureColours": null,
+        "dither": 0,
+        "clampedWhitePixels": 1,
+        "whiteClamp": "Texture pure white changed to RGB 255,255,254 so all paintable pixels visibly differ from blank template",
+        "finalPng": "lossless truecolour RGBA; no final palette quantization"
+      },
+      "verification": {
+        "paintablePixels": 339476,
+        "filledPixels": 339476,
+        "preservedPixels": 709100,
+        "transparentPixels": 682270,
+        "protectedPixelMismatches": 0,
+        "alphaMismatches": 0
+      },
+      "reviewStatus": "candidate; proposed CC0 for project-owned contributions only; Tesla template permission, copyright, authorization, layout and in-car review outstanding",
+      "sourceArchivePath": ".audit/imagegen-originals/texture-08.png"
+    },
+    {
+      "id": "olive-orbit",
+      "variant": "modely-l",
+      "generator": "OpenAI imagegen",
+      "sourcePath": ".audit/imagegen-originals/texture-09.png",
+      "sourceSha256": "e1ef32ca484d34a5c9935f3b73f396331a633a1da9117717efdb3f40b5d2f8bb",
+      "sourceBytes": 1719643,
+      "sourceWidth": 1672,
+      "sourceHeight": 941,
+      "templateReference": {
+        "commit": "86c7d31454caf0f20af6f6af105f577643f13bce",
+        "url": "https://github.com/teslamotors/custom-wraps/tree/86c7d31454caf0f20af6f6af105f577643f13bce/modely-l",
+        "sha256": "08d486b115da0b2df988e26e6260704150044dc1b96a319f2c432f79b09c6400",
+        "bytes": 125226,
+        "usage": "Tesla template pixels directly retained in composite; permission and derivative-work clearance outstanding"
+      },
+      "outputPath": "content/wraps/olive-orbit/Olive Orbit.png",
+      "outputSha256": "545f61e2ea9aa048b5ec72add8ba2a2dfcf2301f300516c8ad803548a6bb5b74",
+      "outputBytes": 616503,
+      "width": 1024,
+      "height": 1024,
+      "processing": {
+        "fit": "fill",
+        "kernel": "lanczos3",
+        "mask": "RGBA exactly 255,255,255,255 only",
+        "textureColours": null,
+        "dither": 0,
+        "clampedWhitePixels": 0,
+        "whiteClamp": "Texture pure white changed to RGB 255,255,254 so all paintable pixels visibly differ from blank template",
+        "finalPng": "lossless truecolour RGBA; no final palette quantization"
+      },
+      "verification": {
+        "paintablePixels": 390401,
+        "filledPixels": 390401,
+        "preservedPixels": 658175,
+        "transparentPixels": 630617,
+        "protectedPixelMismatches": 0,
+        "alphaMismatches": 0
+      },
+      "reviewStatus": "candidate; proposed CC0 for project-owned contributions only; Tesla template permission, copyright, authorization, layout and in-car review outstanding",
+      "sourceArchivePath": ".audit/imagegen-originals/texture-09.png"
+    },
+    {
+      "id": "plum-lattice",
+      "variant": "models-2021",
+      "generator": "OpenAI imagegen",
+      "sourcePath": ".audit/imagegen-originals/texture-10.png",
+      "sourceSha256": "166278d1a5becfd10d84991bf278dd9c365b56485a9cbf2be0d464d2a6da7f29",
+      "sourceBytes": 2237810,
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "templateReference": {
+        "commit": "86c7d31454caf0f20af6f6af105f577643f13bce",
+        "url": "https://github.com/teslamotors/custom-wraps/tree/86c7d31454caf0f20af6f6af105f577643f13bce/models-2021",
+        "sha256": "9a0e7900da5d5be23bcdfd3867c742c4c0a83a6ec024c68f54c23894b12737a3",
+        "bytes": 125257,
+        "usage": "Tesla template pixels directly retained in composite; permission and derivative-work clearance outstanding"
+      },
+      "outputPath": "content/wraps/plum-lattice/Plum Lattice.png",
+      "outputSha256": "5f4bd43bf4cdcdcef9eae4aaad0790ef86bba0583cc69736b6376dfeeb12c0f7",
+      "outputBytes": 663262,
+      "width": 1024,
+      "height": 1024,
+      "processing": {
+        "fit": "fill",
+        "kernel": "lanczos3",
+        "mask": "RGBA exactly 255,255,255,255 only",
+        "textureColours": null,
+        "dither": 0,
+        "clampedWhitePixels": 18,
+        "whiteClamp": "Texture pure white changed to RGB 255,255,254 so all paintable pixels visibly differ from blank template",
+        "finalPng": "lossless truecolour RGBA; no final palette quantization"
+      },
+      "verification": {
+        "paintablePixels": 323926,
+        "filledPixels": 323926,
+        "preservedPixels": 724650,
+        "transparentPixels": 695568,
+        "protectedPixelMismatches": 0,
+        "alphaMismatches": 0
+      },
+      "reviewStatus": "candidate; proposed CC0 for project-owned contributions only; Tesla template permission, copyright, authorization, layout and in-car review outstanding",
+      "sourceArchivePath": ".audit/imagegen-originals/texture-10.png"
+    },
+    {
+      "id": "silver-prism",
+      "variant": "models-2025-plaid",
+      "generator": "OpenAI imagegen",
+      "sourcePath": ".audit/imagegen-originals/texture-11.png",
+      "sourceSha256": "a802b581e8061e78148f82e6bc3ad49528fbeaebc516bb2e72216669eb6a8637",
+      "sourceBytes": 2540330,
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "templateReference": {
+        "commit": "86c7d31454caf0f20af6f6af105f577643f13bce",
+        "url": "https://github.com/teslamotors/custom-wraps/tree/86c7d31454caf0f20af6f6af105f577643f13bce/models-2025-plaid",
+        "sha256": "24abdcfe489d5328a8a9f09823dc654553fff2eb2c5224bd0ea3da253e9ee09c",
+        "bytes": 129376,
+        "usage": "Tesla template pixels directly retained in composite; permission and derivative-work clearance outstanding"
+      },
+      "outputPath": "content/wraps/silver-prism/Silver Prism.png",
+      "outputSha256": "c92dbc08a2411504a3fb6a8245dbe7be7721605b3a33a5894b33611f3534b051",
+      "outputBytes": 667220,
+      "width": 1024,
+      "height": 1024,
+      "processing": {
+        "fit": "fill",
+        "kernel": "lanczos3",
+        "mask": "RGBA exactly 255,255,255,255 only",
+        "textureColours": null,
+        "dither": 0,
+        "clampedWhitePixels": 168,
+        "whiteClamp": "Texture pure white changed to RGB 255,255,254 so all paintable pixels visibly differ from blank template",
+        "finalPng": "lossless truecolour RGBA; no final palette quantization"
+      },
+      "verification": {
+        "paintablePixels": 303932,
+        "filledPixels": 303932,
+        "preservedPixels": 744644,
+        "transparentPixels": 714824,
+        "protectedPixelMismatches": 0,
+        "alphaMismatches": 0
+      },
+      "reviewStatus": "candidate; proposed CC0 for project-owned contributions only; Tesla template permission, copyright, authorization, layout and in-car review outstanding",
+      "sourceArchivePath": ".audit/imagegen-originals/texture-11.png"
+    },
+    {
+      "id": "ochre-arches",
+      "variant": "modelx-2021",
+      "generator": "OpenAI imagegen",
+      "sourcePath": ".audit/imagegen-originals/texture-12.png",
+      "sourceSha256": "79340acb97925f8c556bcd4959fc61fa68210ed8a222fdcfbbd122c206e6c973",
+      "sourceBytes": 3256692,
+      "sourceWidth": 1199,
+      "sourceHeight": 1312,
+      "templateReference": {
+        "commit": "86c7d31454caf0f20af6f6af105f577643f13bce",
+        "url": "https://github.com/teslamotors/custom-wraps/tree/86c7d31454caf0f20af6f6af105f577643f13bce/modelx-2021",
+        "sha256": "ce823059d4bf72bde9abfc1478a4e8615dc385013383935cc0ecdf39fc51e66b",
+        "bytes": 96976,
+        "usage": "Tesla template pixels directly retained in composite; permission and derivative-work clearance outstanding"
+      },
+      "outputPath": "content/wraps/ochre-arches/Ochre Arches.png",
+      "outputSha256": "0cca1187e7f4e2c63fa4ec957d7507650989498307a4e91fafcea1755063d68c",
+      "outputBytes": 666305,
+      "width": 1024,
+      "height": 1024,
+      "processing": {
+        "fit": "fill",
+        "kernel": "lanczos3",
+        "mask": "RGBA exactly 255,255,255,255 only",
+        "textureColours": null,
+        "dither": 0,
+        "clampedWhitePixels": 0,
+        "whiteClamp": "Texture pure white changed to RGB 255,255,254 so all paintable pixels visibly differ from blank template",
+        "finalPng": "lossless truecolour RGBA; no final palette quantization"
+      },
+      "verification": {
+        "paintablePixels": 239300,
+        "filledPixels": 239300,
+        "preservedPixels": 809276,
+        "transparentPixels": 783596,
+        "protectedPixelMismatches": 0,
+        "alphaMismatches": 0
+      },
+      "reviewStatus": "candidate; proposed CC0 for project-owned contributions only; Tesla template permission, copyright, authorization, layout and in-car review outstanding",
+      "sourceArchivePath": ".audit/imagegen-originals/texture-12.png"
+    }
+  ]
+}

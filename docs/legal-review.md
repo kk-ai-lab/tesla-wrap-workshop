@@ -24,7 +24,7 @@ The disclaimer is visible in every page footer. It does not establish permission
 3. Are the per-design CC0-1.0 and CC-BY-4.0 notices and recorded provenance sufficient for the proposed files?
 4. Is the disclaimer adequate? Are any further notices or changes needed before public availability?
 
-Tesla templates, examples, and vehicle images are linked from the official repository. The project does not distribute those source images. Exact-hash checks cannot detect all altered copies or embedded logos. A human reviewer must inspect each image and its source-licence evidence.
+Tesla templates, examples, and vehicle images are linked from the official repository. The project does not distribute the downloaded source-template files as standalone assets. The twelve local imagegen candidates directly retain pixels from the corresponding official Tesla templates around the masked texture areas; see [candidate artwork](candidate-artwork.md). Permission and derivative-work clearance remain outstanding. Exact-hash checks cannot detect all altered copies or embedded logos. A human reviewer must inspect each image and its source-licence evidence.
 
 ## Release evidence still required
 

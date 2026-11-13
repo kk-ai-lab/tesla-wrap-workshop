@@ -30,7 +30,7 @@ These gates are tracked in [issue 21](https://github.com/kk-ai-lab/tesla-wrap-wo
 | Gate | Next action | Owner |
 |---|---|---|
 | I9 protected online preview | Configure Cloudflare Pages with the reserved production branch and Access on previews; verify authentication and response headers | Kai or an authorized hosting operator |
-| I10 seed artwork | Curate and review original designs for all 12 variants. The grey sample is development content | Maintainer and contributing artists |
+| I10 seed artwork | Review the 12 template-based candidates and their rights for all variants. The grey sample is development content | Maintainer and contributing artists |
 | I10 real vehicle tests | Complete Model 3, Model Y, and Cybertruck rows, including a boundary file and actual alignment evidence | Testers with the vehicles |
 | I11 legal review | Review naming, proposed domain, disclaimer, source rights, and the UV-layout derivative question | Kai and counsel |
 | I12 public launch | Record human sign-off plus approved inventory SHA-256, verify all earlier gates, and authorize deployment | Kai |
