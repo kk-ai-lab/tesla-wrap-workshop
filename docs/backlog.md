@@ -1,8 +1,10 @@
 # Maintainer backlog
 
-Updated on 12 November 2026. This records implementation status, not permission to publish. The [original v1 design](design/2026-11-04-v1-design.md) remains the historical plan. The [hardening design](design/2026-11-12-maintainer-hardening.md) records the takeover decisions.
+Updated on 13 November 2026. This records implementation status, not permission to publish. The [original v1 design](design/2026-11-04-v1-design.md) remains the historical plan. The [hardening design](design/2026-11-12-maintainer-hardening.md) records the takeover decisions.
 
-## Local work prepared for review
+## Completed local work
+
+The input validation, gallery and preview guards, and dependency repair were reviewed and merged in [PR 23](https://github.com/kk-ai-lab/tesla-wrap-workshop/pull/23), [PR 24](https://github.com/kk-ai-lab/tesla-wrap-workshop/pull/24), and [PR 25](https://github.com/kk-ai-lab/tesla-wrap-workshop/pull/25). The CI, user-facing checks, and independent review results are recorded in [the maintenance status](reviews/2026-11-13-maintainer-status.md).
 
 | Work | Result | Verification |
 |---|---|---|
@@ -17,6 +19,7 @@ Updated on 12 November 2026. This records implementation status, not permission 
 | I11 review packet | Human packet and separate deterministic catalogue inventory | Inventory freshness and provenance/escaping tests |
 | ESLint timeout, issue 18 | Explicit 30-second fixture-test timeout | Full fixture suite |
 | Preview listener PID, issue 15 | Record the actual listener after readiness, verify its working directory, and stop that process | Real local server inspection and cleanup |
+| CI action runtime, issue 26 | Checkout and setup-node v7 in both workflows | PR CI and a manual template-link run on GitHub |
 
 I7's automated checks do not recognize arbitrary SVG paths or logos embedded in raster images. No trustworthy exact Tesla T-logo path signature was added. The human image checklist remains mandatory. Exact hash matching also cannot recognize modified Tesla images.
 
@@ -37,5 +40,7 @@ No deployment, legal signature, real vehicle result, or artwork permission is in
 ## Dependency maintenance
 
 The takeover's dependency follow-up updates Zod and Vitest to patched releases. A scoped minimatch override under TypeScript ESLint removes its affected transitive version. [Issue 22](https://github.com/kk-ai-lab/tesla-wrap-workshop/issues/22) tracks removing the override after TypeScript ESLint adopts a patched minimatch release. The override crosses upstream's declared major range, so keep the lint fixture suite and full checks as integration coverage.
+
+The unsupported ESLint 9 installation warning is tracked in [issue 29](https://github.com/kk-ai-lab/tesla-wrap-workshop/issues/29). Check the issue for the current migration status.
 
 The weekly upstream check reports any Tesla revision change. Review the official README, template folders, measured dimensions, and hash inventory before accepting an update.

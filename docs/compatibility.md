@@ -1,6 +1,6 @@
 # Wrap compatibility
 
-Checked on 12 November 2026 against Tesla's [official custom-wraps repository](https://github.com/teslamotors/custom-wraps), at commit [`86c7d31454caf0f20af6f6af105f577643f13bce`](https://github.com/teslamotors/custom-wraps/tree/86c7d31454caf0f20af6f6af105f577643f13bce).
+Read on 12 November 2026 against Tesla's [official custom-wraps repository](https://github.com/teslamotors/custom-wraps), at commit [`86c7d31454caf0f20af6f6af105f577643f13bce`](https://github.com/teslamotors/custom-wraps/tree/86c7d31454caf0f20af6f6af105f577643f13bce). On 13 November, the upstream revision remained unchanged and all 12 template-folder links returned HTTP 200.
 
 These are files for the vehicle's Paint Shop visualization. They are not files for printing a physical vehicle wrap.
 
