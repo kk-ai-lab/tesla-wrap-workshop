@@ -240,6 +240,54 @@ const astroStyleCommentBan = {
   },
 };
 
+export const commentLintKinds = [
+  {
+    id: "astro-html",
+    rule: "astro-comments/ban-html-comments",
+    fixture: "test/lint-fixtures/html-comment.astro",
+  },
+  {
+    id: "astro-style",
+    rule: "astro-comments/ban-style-comments",
+    fixture: "test/lint-fixtures/style-comment.astro",
+  },
+  {
+    id: "astro-set-directive",
+    rule: "astro-comments/ban-style-set-directive",
+    fixture: "test/lint-fixtures/style-set-html.astro",
+  },
+  {
+    id: "astro-style-attribute",
+    rule: "astro-comments/ban-style-attribute-comment",
+    fixture: "test/lint-fixtures/style-attr-static.astro",
+  },
+  {
+    id: "astro-uninspected-style",
+    rule: "astro-comments/ban-uninspected-style",
+    fixture: "test/lint-fixtures/style-lang-scss.astro",
+  },
+  {
+    id: "ts-line-comment",
+    rule: "ban-comments/ban-comments",
+    fixture: "test/lint-fixtures/issue-link-hack.ts",
+  },
+  {
+    id: "astro-frontmatter",
+    rule: "ban-comments/ban-comments",
+    fixture: "test/lint-fixtures/frontmatter-comment.astro",
+  },
+];
+
+function astroCommentRules() {
+  const rules = {};
+  for (const kind of commentLintKinds) {
+    if (kind.rule.startsWith("astro-comments/")) {
+      rules[kind.rule] = "error";
+    }
+  }
+  return rules;
+}
+
 export default tseslint.config(
   {
     ignores: ["dist/**", ".astro/**", "content/**", "docs/**", "test/lint-fixtures/**"],
@@ -292,12 +340,6 @@ export default tseslint.config(
   },
   {
     files: ["**/*.astro"],
-    rules: {
-      "astro-comments/ban-html-comments": "error",
-      "astro-comments/ban-style-comments": "error",
-      "astro-comments/ban-style-set-directive": "error",
-      "astro-comments/ban-style-attribute-comment": "error",
-      "astro-comments/ban-uninspected-style": "error",
-    },
+    rules: astroCommentRules(),
   },
 );

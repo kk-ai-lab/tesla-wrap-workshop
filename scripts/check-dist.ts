@@ -35,38 +35,174 @@ const tokenize = require(path.join(postcssDir, "lib/tokenize.js")) as (
 ) => CssTokenizer;
 const CssInput = require(path.join(postcssDir, "lib/input.js")) as new (css: string) => CssInput;
 
-const classicScriptTypes = new Set([
-  "",
-  "text/javascript",
-  "application/javascript",
-  "text/ecmascript",
-  "application/ecmascript",
-]);
+export const scannerInputKinds = {
+  "script-classic": {
+    group: "script-type",
+    scan: "script",
+    types: ["", "text/javascript", "application/javascript", "text/ecmascript", "application/ecmascript"],
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/inline-script",
+    needle: "js comment",
+  },
+  "script-module": {
+    group: "script-type",
+    scan: "module",
+    types: ["module"],
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/script-module",
+    needle: "js comment",
+  },
+  "script-json": {
+    group: "script-type",
+    scan: "json",
+    types: ["application/json", "application/ld+json", "importmap", "speculationrules"],
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/json-forbidden",
+    needle: "html comment",
+  },
+  "script-unknown": {
+    group: "script-type",
+    scan: "reject",
+    types: [],
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/unknown-script-type",
+    needle: "unsupported script type",
+  },
+  "attr-style": {
+    group: "attribute",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/style-attr",
+    needle: "css comment",
+  },
+  "attr-event": {
+    group: "attribute",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/event-handler",
+    needle: "js comment",
+  },
+  "attr-srcdoc": {
+    group: "attribute",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/srcdoc-comment",
+    needle: "html comment",
+  },
+  "json-key": {
+    group: "json",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/json-key-comment",
+    needle: "html comment",
+  },
+  "json-value": {
+    group: "json",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/json-forbidden",
+    needle: "html comment",
+  },
+  "json-duplicate-key": {
+    group: "json",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/json-duplicate-key",
+    needle: "duplicate json key",
+  },
+  "json-invalid": {
+    group: "json",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/ld-json-invalid",
+    needle: "in JSON",
+  },
+  "extension-html": {
+    group: "extension",
+    extension: ".html",
+    language: "html",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/extensions",
+    needle: "html comment in probe.HTML",
+  },
+  "extension-css": {
+    group: "extension",
+    extension: ".css",
+    language: "css",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/extensions",
+    needle: "css comment in probe.CSS",
+  },
+  "extension-js": {
+    group: "extension",
+    extension: ".js",
+    language: "js",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/extensions",
+    needle: "js comment in probe.JS",
+  },
+  "extension-mjs": {
+    group: "extension",
+    extension: ".mjs",
+    language: "js",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/extensions",
+    needle: "js comment in probe.mjs",
+  },
+  "extension-cjs": {
+    group: "extension",
+    extension: ".cjs",
+    language: "js",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/extensions",
+    needle: "js comment in probe.cjs",
+  },
+  "extension-unknown": {
+    group: "extension",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/unknown-extension",
+    needle: "unknown extension",
+  },
+  noscript: {
+    group: "tag",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/noscript-comment",
+    needle: "html comment",
+  },
+  symlink: {
+    group: "entry",
+    coverage: "symlink",
+    fixture: "",
+    needle: "symlink",
+  },
+  "parse-error": {
+    group: "parse-error",
+    coverage: "files",
+    fixture: "test/lint-fixtures/check-dist/malformed-html",
+    needle: "eof-in-tag",
+  },
+} as const;
 
-const allowedDataScriptTypes = [
-  "application/json",
-  "application/ld+json",
-  "importmap",
-  "speculationrules",
-] as const;
+export type ScannerInputKindId = keyof typeof scannerInputKinds;
 
-type AllowedDataScriptType = (typeof allowedDataScriptTypes)[number];
+type AllowedDataScriptType = (typeof scannerInputKinds)["script-json"]["types"][number];
 
 const srcdocDepthLimit = 8;
 
 const srcdocIgnoredParseErrors = new Set<string>(["missing-doctype"]);
 
-function isAllowedDataScriptType(type: string): type is AllowedDataScriptType {
-  return allowedDataScriptTypes.some((allowed) => allowed === type);
+function hasScriptType(scan: "script" | "module", type: string): boolean {
+  for (const kind of Object.values(scannerInputKinds)) {
+    if (kind.group === "script-type" && kind.scan === scan && kind.types.some((entry) => entry === type)) {
+      return true;
+    }
+  }
+  return false;
 }
 
-const extensionLanguage = new Map<string, CommentLanguage>([
-  [".html", "html"],
-  [".css", "css"],
-  [".js", "js"],
-  [".mjs", "js"],
-  [".cjs", "js"],
-]);
+function isAllowedDataScriptType(type: string): type is AllowedDataScriptType {
+  return scannerInputKinds["script-json"].types.some((allowed) => allowed === type);
+}
+
+const extensionLanguage = new Map<string, CommentLanguage>();
+for (const kind of Object.values(scannerInputKinds)) {
+  if (kind.group === "extension" && "extension" in kind && "language" in kind) {
+    extensionLanguage.set(kind.extension, kind.language);
+  }
+}
 
 const opaqueExtensions = new Set([
   ".png",
@@ -401,14 +537,11 @@ function elementText(element: ElementNode): string {
 }
 
 function scriptSource(typeValue: string | undefined): SourceType | "json" | "unknown" {
-  if (typeValue === undefined) {
-    return "script";
-  }
-  const type = typeValue.trim().toLowerCase();
-  if (type === "module") {
+  const type = typeValue === undefined ? "" : typeValue.trim().toLowerCase();
+  if (hasScriptType("module", type)) {
     return "module";
   }
-  if (classicScriptTypes.has(type)) {
+  if (hasScriptType("script", type)) {
     return "script";
   }
   if (isAllowedDataScriptType(type)) {
@@ -603,13 +736,21 @@ function formatFinding(finding: Finding): string {
   return `parse error in ${finding.file}: ${finding.reason}`;
 }
 
+export function describeScan(root: string): { status: number; text: string } {
+  const findings = scanRoot(root);
+  return {
+    status: findings.length > 0 ? 1 : 0,
+    text: findings.map(formatFinding).join("\n"),
+  };
+}
+
 function main() {
   const root = process.argv[2] ?? "dist";
-  const findings = scanRoot(root);
-  for (const finding of findings) {
-    console.log(formatFinding(finding));
+  const result = describeScan(root);
+  if (result.text !== "") {
+    console.log(result.text);
   }
-  if (findings.length > 0) {
+  if (result.status !== 0) {
     process.exitCode = 1;
   }
 }
