@@ -32,6 +32,10 @@ function findingReasons(source: string): string[] {
   for (const line of source.split("\n")) {
     const direct = line.match(/reason:\s*"([^"]*)"/);
     if (direct?.[1] !== undefined) reasons.add(direct[1]);
+    if (line.includes("reason")) {
+      const fallback = line.match(/\?\?\s*"([^"]*)"/);
+      if (fallback?.[1] !== undefined) reasons.add(fallback[1]);
+    }
     const ternary = line.match(/const reason = scan === "duplicate" \? "([^"]*)" : "([^"]*)"/);
     if (ternary?.[1] !== undefined && ternary[2] !== undefined) {
       reasons.add(ternary[1]);
@@ -39,16 +43,6 @@ function findingReasons(source: string): string[] {
     }
   }
   return [...reasons];
-}
-
-function guardCalls(source: string): string[] {
-  return [...source.matchAll(/guardBranch\("([^"]+)"\)/g)].map((match) => match[1] ?? "");
-}
-
-function guardArray(source: string): string[] {
-  const match = source.match(/const distGuardIds = \[([\s\S]*?)\] as const/);
-  if (match === null || match[1] === undefined) return [];
-  return [...match[1].matchAll(/"([^"]+)"/g)].map((item) => item[1] ?? "");
 }
 
 export function runGuardPinCheck(): PinCheckResult {
@@ -66,31 +60,14 @@ export function runGuardPinCheck(): PinCheckResult {
   }
 
   const distSource = readFileSync(path.join(repoRoot, "scripts/check-dist.ts"), "utf8");
-  for (const match of distSource.matchAll(/guardBranch\(/g)) {
-    const index = match.index ?? 0;
-    const before = distSource.slice(Math.max(0, index - 9), index);
-    if (before.endsWith("function ")) continue;
-    const after = distSource.slice(index + "guardBranch(".length);
-    if (!/^\s*"/.test(after)) lines.push("guardBranch needs a string literal id");
-  }
-  const calls = new Set(guardCalls(distSource));
-  const listed = new Set(guardArray(distSource));
-  const distMutants = mutants.filter((mutant) => mutant.file === "scripts/check-dist.ts");
-  for (const id of listed) {
-    if (!calls.has(id)) lines.push(`guard ${id} is not on a branch`);
-  }
-  for (const id of calls) {
-    if (!listed.has(id)) lines.push(`guard ${id} is not in distGuardIds`);
-    if (!requiredSet.has(id) || !distMutants.some((mutant) => mutant.id === id)) {
-      lines.push(`guard ${id} is not in the required floor`);
+  const distMutants = mutants.filter((mutant) => mutant.file === "scripts/check-dist.ts" && requiredSet.has(mutant.id));
+  for (const mutant of distMutants) {
+    if (!distSource.includes(mutant.search)) {
+      lines.push(`mutant ${mutant.id} search text is missing from scripts/check-dist.ts`);
     }
   }
-  for (const mutant of distMutants) {
-    if (!calls.has(mutant.id)) lines.push(`guard ${mutant.id} is not on a branch`);
-  }
-
   for (const reason of findingReasons(distSource)) {
-    const pinned = distMutants.some((mutant) => requiredSet.has(mutant.id) && mutant.search.includes(reason));
+    const pinned = distMutants.some((mutant) => mutant.search.includes(reason) && distSource.includes(mutant.search));
     if (!pinned) lines.push(`finding reason "${reason}" has no killing mutant`);
   }
 

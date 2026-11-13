@@ -178,37 +178,11 @@ export const scannerInputKinds = {
 
 export type ScannerInputKindId = keyof typeof scannerInputKinds;
 
-const distGuardIds = [
-  "M8",
-  "M9",
-  "M10",
-  "M11",
-  "M12",
-  "M13",
-  "M14",
-  "M15",
-  "M16",
-  "M17",
-  "M18",
-  "M19",
-  "M20",
-  "M21",
-  "M22",
-  "M23",
-  "M24",
-] as const;
-
-function guardBranch(id: (typeof distGuardIds)[number]): void {
-  void distGuardIds;
-  void id;
-}
-
 type AllowedDataScriptType = (typeof scannerInputKinds)["script-json"]["types"][number];
 
 const srcdocDepthLimit = 8;
 
 const srcdocIgnoredParseErrors = new Set<string>(["missing-doctype"]);
-guardBranch("M18");
 
 function hasScriptType(scan: "script" | "module", type: string): boolean {
   for (const kind of Object.values(scannerInputKinds)) {
@@ -325,7 +299,7 @@ function scanJs(code: string, file: string, preferred: SourceType): Finding[] {
       }
     }
   }
-  return [{ kind: "parse-error", file, reason: reason ?? errorReason(new Error()) }];
+  return [{ kind: "parse-error", file, reason: reason ?? "parse error" }];
 }
 
 type JsonKeyScan = "duplicate" | "unique" | "unreadable";
@@ -335,7 +309,6 @@ function isJsonRecord(value: unknown): value is Record<string, unknown> {
 }
 
 function scanJsonString(value: string, file: string): Finding[] {
-  guardBranch("M19");
   return scanHtmlFragment(value, file, 0, false);
 }
 
@@ -500,7 +473,6 @@ function scanJsonKeys(text: string): JsonKeyScan {
 function duplicateJsonKeyFindings(text: string, file: string): Finding[] {
   const scan = scanJsonKeys(text);
   if (scan === "unique") return [];
-  guardBranch("M22");
   const reason = scan === "duplicate" ? "duplicate json key" : "unreadable json keys";
   return [{ kind: "parse-error", file, reason }];
 }
@@ -508,7 +480,6 @@ function duplicateJsonKeyFindings(text: string, file: string): Finding[] {
 function scanJsonObject(value: Record<string, unknown>, file: string): Finding[] {
   const findings: Finding[] = [];
   for (const key of Object.keys(value)) {
-    guardBranch("M14");
     findings.push(...scanJsonString(key, file));
     findings.push(...scanJsonValue(value[key], file));
   }
@@ -516,7 +487,6 @@ function scanJsonObject(value: Record<string, unknown>, file: string): Finding[]
 }
 
 export function scanJsonValue(value: unknown, file: string): Finding[] {
-  guardBranch("M11");
   if (typeof value === "string") {
     return scanJsonString(value, file);
   }
@@ -531,22 +501,18 @@ export function scanJsonValue(value: unknown, file: string): Finding[] {
     return findings;
   }
   if (isJsonRecord(value)) {
-    guardBranch("M15");
     return scanJsonObject(value, file);
   }
-  guardBranch("M24");
   return [{ kind: "parse-error", file, reason: "unsupported json value" }];
 }
 
 function scanJsonText(text: string, file: string): Finding[] {
-  guardBranch("M10");
   let parsed: unknown;
   try {
     parsed = JSON.parse(text);
   } catch (error) {
     return [{ kind: "parse-error", file, reason: errorReason(error) }];
   }
-  guardBranch("M16");
   const findings = duplicateJsonKeyFindings(text, file);
   if (isJsonRecord(parsed)) {
     findings.push(...scanJsonObject(parsed, file));
@@ -578,7 +544,6 @@ function scriptSource(typeValue: string | undefined): SourceType | "json" | "unk
   if (hasScriptType("script", type)) {
     return "script";
   }
-  guardBranch("M13");
   if (isAllowedDataScriptType(type)) {
     return "json";
   }
@@ -607,12 +572,9 @@ function walk(node: Node, file: string, findings: Finding[], depth = 0) {
       } else if (isEventHandler(name)) {
         findings.push(...scanEventHandler(attribute.value, file));
       } else if (name === "srcdoc") {
-        guardBranch("M8");
         if (depth >= srcdocDepthLimit) {
-          guardBranch("M17");
           findings.push({ kind: "parse-error", file, reason: "srcdoc nested too deep" });
         } else {
-          guardBranch("M9");
           findings.push(...scanHtml(attribute.value, file, depth + 1, srcdocIgnoredParseErrors));
         }
       }
@@ -623,7 +585,6 @@ function walk(node: Node, file: string, findings: Finding[], depth = 0) {
     if (node.tagName === "script") {
       const kind = scriptSource(node.attrs.find((attribute) => attribute.name === "type")?.value);
       const code = elementText(node);
-      guardBranch("M12");
       if (kind === "unknown") {
         findings.push({
           kind: "parse-error",
@@ -731,7 +692,6 @@ export function scanRoot(root: string): Finding[] {
     return [{ kind: "parse-error", file: root, reason: errorReason(error) }];
   }
   if (!stats.isDirectory()) {
-    guardBranch("M23");
     return [{ kind: "parse-error", file: root, reason: "not a directory" }];
   }
   const findings: Finding[] = [];
@@ -739,7 +699,6 @@ export function scanRoot(root: string): Finding[] {
   for (const entry of entries) {
     const relative = relativeFile(root, entry.path);
     if (entry.kind === "symlink") {
-      guardBranch("M20");
       findings.push({ kind: "parse-error", file: relative, reason: "symlink" });
       continue;
     }
@@ -748,7 +707,6 @@ export function scanRoot(root: string): Finding[] {
     const language = extensionLanguage.get(extension);
     if (language === undefined) {
       if (!opaqueExtensions.has(extension)) {
-        guardBranch("M21");
         findings.push({ kind: "parse-error", file: relative, reason: "unknown extension" });
       }
       continue;

@@ -24,6 +24,6 @@ it("rejects an unsupported json value", () => {
   ]);
 });
 
-it("pins every guard branch to a required mutant", () => {
+it("pins every finding reason to a floor mutant", () => {
   expect(runGuardPinCheck()).toEqual({ status: 0, text: "" });
 });

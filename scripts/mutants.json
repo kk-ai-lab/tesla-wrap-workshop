@@ -22,5 +22,6 @@
 {"id":"M21","file":"scripts/check-dist.ts","search":"        findings.push({ kind: \"parse-error\", file: relative, reason: \"unknown extension\" });","replace":"        void relative;","kills":"test/check-dist.test.ts > exits 1 for an unknown extension"},
 {"id":"M22","file":"scripts/check-dist.ts","search":"  const reason = scan === \"duplicate\" ? \"duplicate json key\" : \"unreadable json keys\";","replace":"  const reason = scan === \"duplicate\" ? \"cleared\" : \"cleared\";","kills":"test/check-dist.test.ts > exits 1 for a duplicate json key"},
 {"id":"M23","file":"scripts/check-dist.ts","search":"    return [{ kind: \"parse-error\", file: root, reason: \"not a directory\" }];","replace":"    return [];","kills":"test/guard-pin-kills.test.ts > exits 1 when the dist root is a file"},
-{"id":"M24","file":"scripts/check-dist.ts","search":"  return [{ kind: \"parse-error\", file, reason: \"unsupported json value\" }];","replace":"  return [];","kills":"test/guard-pin-kills.test.ts > rejects an unsupported json value"}
+{"id":"M24","file":"scripts/check-dist.ts","search":"  return [{ kind: \"parse-error\", file, reason: \"unsupported json value\" }];","replace":"  return [];","kills":"test/guard-pin-kills.test.ts > rejects an unsupported json value"},
+{"id":"M25","file":"scripts/check-dist.ts","search":"  return [{ kind: \"parse-error\", file, reason: reason ?? \"parse error\" }];","replace":"  return [];","kills":"test/check-dist.test.ts > exits 1 when js cannot be parsed"}
 ]
