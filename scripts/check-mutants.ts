@@ -25,7 +25,7 @@ type Report = {
 };
 
 const skipped = new Set(["node_modules", ".git", "dist", ".astro", "test-results", "playwright-report"]);
-const requiredMutantIds = ["M1", "M6", "M7"];
+const requiredMutantIds = ["M1", "M2", "M3", "M4", "M5", "M6", "M7"];
 
 function fail(message: string): never {
   throw new Error(message);
@@ -151,6 +151,12 @@ function runMutant(work: string, mutant: Mutant): boolean {
     if (result.error !== undefined || result.status === null) {
       console.log(`${mutant.id} error`);
       console.log(result.error?.message ?? result.signal ?? "vitest did not finish");
+      return false;
+    }
+    if (result.status === 0) {
+      console.log(`${mutant.id} error`);
+      console.log(`expected ${mutant.kills}`);
+      console.log("vitest exited 0");
       return false;
     }
     console.log(`${mutant.id} killed (${failed.length} failed)`);

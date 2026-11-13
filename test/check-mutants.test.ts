@@ -25,3 +25,12 @@ it("rejects a mutant list that drops M6", () => {
   expect(output).toContain("scripts/mutants.json is missing M6");
   expect(output).not.toContain("killed");
 });
+
+it("rejects a failing report when vitest exits 0", () => {
+  const result = runHoleProbe("exit-zero");
+  const output = `${result.stdout}\n${result.stderr}`;
+  expect(result.status).toBe(1);
+  expect(output).toContain("M1 error");
+  expect(output).toContain("vitest exited 0");
+  expect(output).not.toMatch(/^M1 killed/m);
+});
