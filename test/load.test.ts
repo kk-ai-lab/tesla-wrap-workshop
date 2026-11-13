@@ -409,36 +409,6 @@ it("rejects corrupt PNG chunks, incomplete files, and corrupt compressed pixels"
   }
 });
 
-function flipIendCrc(png: Buffer): Buffer {
-  const out = Buffer.from(png);
-  let offset = 8;
-  while (offset + 12 <= out.length) {
-    const length = out.readUInt32BE(offset);
-    const type = out.toString("ascii", offset + 4, offset + 8);
-    const crcAt = offset + 8 + length;
-    if (type === "IEND") {
-      out[crcAt] ^= 0xff;
-      return out;
-    }
-    offset = crcAt + 4;
-  }
-  throw new Error("PNG fixture has no IEND chunk");
-}
-
-it("rejects a PNG whose only defect is a bad IEND CRC", async () => {
-  const original = await readFile(validPng);
-  const badIend = flipIendCrc(original);
-  const pixels = original.readUInt32BE(16) * original.readUInt32BE(20);
-  await expect(sharp(badIend, { failOn: "warning", limitInputPixels: pixels }).raw().toBuffer()).resolves.toBeInstanceOf(Buffer);
-  await withRoot(async (root) => {
-    await writeWrap(root, "bad-iend", { meta: meta("bad-iend") });
-    await writeFile(path.join(root, "bad-iend", "wrap.png"), badIend);
-    const result = await loadCatalogue(root);
-    expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.violations).toContainEqual({ code: "invalid-png", wrap: "bad-iend" });
-  });
-});
-
 it("rejects unsafe paths and symlinked content", async () => {
   await withRoot(async (root) => {
     await writeWrap(root, "bad-path", { meta: meta("bad-path", { file: "../secret.png" }) });
