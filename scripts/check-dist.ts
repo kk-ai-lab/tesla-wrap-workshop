@@ -43,12 +43,20 @@ const classicScriptTypes = new Set([
   "application/ecmascript",
 ]);
 
-const nonJsScriptTypes = new Set([
+const allowedDataScriptTypes = [
   "application/json",
   "application/ld+json",
   "importmap",
   "speculationrules",
-]);
+] as const;
+
+type AllowedDataScriptType = (typeof allowedDataScriptTypes)[number];
+
+const srcdocDepthLimit = 8;
+
+function isAllowedDataScriptType(type: string): type is AllowedDataScriptType {
+  return allowedDataScriptTypes.some((allowed) => allowed === type);
+}
 
 const extensionLanguage = new Map<string, CommentLanguage>([
   [".html", "html"],
@@ -156,6 +164,40 @@ function scanJs(code: string, file: string, preferred: SourceType): Finding[] {
   return [{ kind: "parse-error", file, reason: reason ?? "parse error" }];
 }
 
+function scanJsonValue(value: unknown, file: string): Finding[] {
+  if (typeof value === "string") {
+    return scanHtmlFragment(value, file);
+  }
+  if (typeof value === "number" || typeof value === "boolean" || value === null) {
+    return [];
+  }
+  if (Array.isArray(value)) {
+    const findings: Finding[] = [];
+    for (const item of value) {
+      findings.push(...scanJsonValue(item, file));
+    }
+    return findings;
+  }
+  if (typeof value === "object") {
+    const findings: Finding[] = [];
+    for (const item of Object.values(value)) {
+      findings.push(...scanJsonValue(item, file));
+    }
+    return findings;
+  }
+  return [{ kind: "parse-error", file, reason: "unsupported json value" }];
+}
+
+function scanJsonText(text: string, file: string): Finding[] {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text);
+  } catch (error) {
+    return [{ kind: "parse-error", file, reason: errorReason(error) }];
+  }
+  return scanJsonValue(parsed, file);
+}
+
 function isElement(node: Node): node is ElementNode {
   return "tagName" in node && typeof node.tagName === "string";
 }
@@ -170,7 +212,7 @@ function elementText(element: ElementNode): string {
   return text;
 }
 
-function scriptSource(typeValue: string | undefined): SourceType | "skip" | "unknown" {
+function scriptSource(typeValue: string | undefined): SourceType | "json" | "unknown" {
   if (typeValue === undefined) {
     return "script";
   }
@@ -181,8 +223,8 @@ function scriptSource(typeValue: string | undefined): SourceType | "skip" | "unk
   if (classicScriptTypes.has(type)) {
     return "script";
   }
-  if (nonJsScriptTypes.has(type)) {
-    return "skip";
+  if (isAllowedDataScriptType(type)) {
+    return "json";
   }
   return "unknown";
 }
@@ -197,7 +239,7 @@ function children(node: Node): Node[] {
   return [];
 }
 
-function walk(node: Node, file: string, findings: Finding[]) {
+function walk(node: Node, file: string, findings: Finding[], depth = 0) {
   if (node.nodeName === "#comment" && "data" in node) {
     findings.push(...commentFindings("html", file, [node.data]));
   }
@@ -208,6 +250,12 @@ function walk(node: Node, file: string, findings: Finding[]) {
         findings.push(...scanCss(attribute.value, file));
       } else if (isEventHandler(name)) {
         findings.push(...scanEventHandler(attribute.value, file));
+      } else if (name === "srcdoc") {
+        if (depth >= srcdocDepthLimit) {
+          findings.push({ kind: "parse-error", file, reason: "srcdoc nested too deep" });
+        } else {
+          findings.push(...scanHtml(attribute.value, file, depth + 1));
+        }
       }
     }
     if (node.tagName === "style") {
@@ -222,16 +270,18 @@ function walk(node: Node, file: string, findings: Finding[]) {
           file,
           reason: "unsupported script type",
         });
-      } else if (kind !== "skip") {
+      } else if (kind === "json") {
+        findings.push(...scanJsonText(code, file));
+      } else {
         findings.push(...scanJs(code, file, kind));
       }
     }
     if (node.tagName === "noscript") {
-      findings.push(...scanHtmlFragment(elementText(node), file));
+      findings.push(...scanHtmlFragment(elementText(node), file, depth));
     }
   }
   for (const child of children(node)) {
-    walk(child, file, findings);
+    walk(child, file, findings, depth);
   }
 }
 
@@ -241,7 +291,7 @@ function recordParseErrors(errors: ParserError["code"][], file: string, findings
   }
 }
 
-function scanHtmlFragment(html: string, file: string): Finding[] {
+function scanHtmlFragment(html: string, file: string, depth = 0): Finding[] {
   if (html.trim() === "") {
     return [];
   }
@@ -259,11 +309,11 @@ function scanHtmlFragment(html: string, file: string): Finding[] {
   }
   const findings: Finding[] = [];
   recordParseErrors(errors, file, findings);
-  walk(fragment, file, findings);
+  walk(fragment, file, findings, depth);
   return findings;
 }
 
-function scanHtml(html: string, file: string): Finding[] {
+function scanHtml(html: string, file: string, depth = 0): Finding[] {
   const errors: ParserError["code"][] = [];
   let document: Node;
   try {
@@ -278,7 +328,7 @@ function scanHtml(html: string, file: string): Finding[] {
   }
   const findings: Finding[] = [];
   recordParseErrors(errors, file, findings);
-  walk(document, file, findings);
+  walk(document, file, findings, depth);
   return findings;
 }
 
