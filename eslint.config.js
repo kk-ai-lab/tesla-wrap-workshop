@@ -1,3 +1,4 @@
+import { fixupPluginRules } from "@eslint/compat";
 import eslint from "@eslint/js";
 import banComments from "eslint-plugin-ban-comments";
 import eslintPluginAstro from "eslint-plugin-astro";
@@ -265,7 +266,7 @@ export default tseslint.config(
   },
   {
     plugins: {
-      "ban-comments": banComments,
+      "ban-comments": fixupPluginRules(banComments),
       "astro-comments": {
         rules: {
           "ban-html-comments": astroHtmlCommentBan,

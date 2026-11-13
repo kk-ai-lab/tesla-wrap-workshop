@@ -39,8 +39,8 @@ No deployment, legal signature, real vehicle result, or artwork permission is in
 
 ## Dependency maintenance
 
-The takeover's dependency follow-up updates Zod and Vitest to patched releases. A scoped minimatch override under TypeScript ESLint removes its affected transitive version. [Issue 22](https://github.com/kk-ai-lab/tesla-wrap-workshop/issues/22) tracks removing the override after TypeScript ESLint adopts a patched minimatch release. The override crosses upstream's declared major range, so keep the lint fixture suite and full checks as integration coverage.
+The takeover's dependency follow-up updates Zod and Vitest to patched releases. Scoped minimatch 11 overrides under TypeScript ESLint, ESLint, and its config-array package replace an affected transitive version. [Issue 22](https://github.com/kk-ai-lab/tesla-wrap-workshop/issues/22) tracks removing each override when its upstream consumer adopts a patched release. The overrides cross upstream's declared major range, so keep the lint fixture suite and full checks as integration coverage.
 
-The unsupported ESLint 9 installation warning is tracked in [issue 29](https://github.com/kk-ai-lab/tesla-wrap-workshop/issues/29). Check the issue for the current migration status.
+The ESLint 10 migration and compatibility wrapper are documented in [the lint review](reviews/2026-11-13-eslint-migration.md) and [issue 29](https://github.com/kk-ai-lab/tesla-wrap-workshop/issues/29).
 
 The weekly upstream check reports any Tesla revision change. Review the official README, template folders, measured dimensions, and hash inventory before accepting an update.
