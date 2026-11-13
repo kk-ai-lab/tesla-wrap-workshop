@@ -1,0 +1,1706 @@
+{
+  "repository": "https://github.com/teslamotors/custom-wraps",
+  "revision": "86c7d31454caf0f20af6f6af105f577643f13bce",
+  "checkedOn": "2026-11-12",
+  "readmeSha256": "21aec181ef8015b139bcf8d2827eacbeb7a05dd79e51ba33eb54a5627dcecff5",
+  "assets": [
+    {
+      "path": "cybertruck/example/Ani.png",
+      "sha256": "82723d2c057854fa0e8c3e43baaf9b75afa0440b760b58ebac60e3cd6a3a7e6b",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "cybertruck/example/Camo_Blue.png",
+      "sha256": "0b44317386a1eb819373f834a3bb5938f6c51199661fae152377d5f25eb8f302",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Camo_Brown.png",
+      "sha256": "0dc5c8dc990aeba165c83d74118aacee86e934132ca0145191b65fb5f7c810f6",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Camo_Green.png",
+      "sha256": "59f41b178a2b5f93c7653474ba5dc289924544842813779ff691f90c4702f9d2",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Camo_Pink.png",
+      "sha256": "f27b1539a307680655fd09aa47e5f3a07c189a162b9c8513f984ee7ab7989d51",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Camo_Sand.png",
+      "sha256": "2d5331bc0757c1bda7a0237d6a5290e495fb13ac960476a829d63d43e5c7394e",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Camo_Snow.png",
+      "sha256": "5558ea0302d37f095f2960c8dfcba46b696dcfee2799a2c006b26bc4e4ba98c1",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Camo_Stealth.png",
+      "sha256": "24ada9500e04a5852a70c8162240b62e96d3e9cfc479feaf901603a04701b5f2",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Clay.png",
+      "sha256": "c9de85f35f35be65fecdea81789335e3758966ab9100a96629d9c481d1205e68",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "cybertruck/example/Cosmic_Burst.png",
+      "sha256": "b072dde8122195841a7fbd6eb9d69cb06e2bf2a37d82716216e261b97cb07164",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "cybertruck/example/Digital_Camo_Green.png",
+      "sha256": "646ce456c981de8821026e943c4009187553fd3dd6550c6619ccf6c5dcf37788",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Digital_Camo_Snow.png",
+      "sha256": "606f978e3dbb9c97f901d0a1682102df96c255f8b6d368f14be925925279e73d",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Digital_Camo_Stealth.png",
+      "sha256": "1dfc1e93abe5824b8383aa00cb9e704ba44f1df546d48a52f9f8228a135a9e28",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Doge_Camo.png",
+      "sha256": "b40409cae6b05b44da6a9459e3f335db1122cba02602fb25fcdfb0b202ee4097",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Gradient_Black.png",
+      "sha256": "cb410dbff8d276d73be9d2183ead0df12fbab97be52ef0b5c056c66be7e50aff",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Gradient_Burn.png",
+      "sha256": "0187bb3120668e0355e5460883539b95c6cafaa6230f23197f69eeb581dde27a",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Gradient_Cotton_Candy.png",
+      "sha256": "4e7daa68d0e809116b6b89f7afbe46fd33a5eafc4d9c9671225cbcdfe97b69c8",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Gradient_Green.png",
+      "sha256": "ad4544285e013c1a94c70275405f9aa2e98ff3d3ce96acadde8db8909813969f",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Gradient_Purple_Burn.png",
+      "sha256": "50dccefd16fb270166b44ef676ac5233e62c38d6b16ddb612aa032b89996f995",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Gradient_Sunburst.png",
+      "sha256": "64234ae705152b78a4a92a2a18f0b17544122f468b67c8351d757ecd41e29d4b",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Graffiti_back.png",
+      "sha256": "05f2aff8ae2ad6595db6771eeb4cd1617701a9644e7021ab4b48e04c0851a80e",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Graffiti_green.png",
+      "sha256": "259d75afd3b6fb878815ca1eb741c6826a9a6e43bb0fb473fa5cec62c0fdbbd0",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Graffiti_orange.png",
+      "sha256": "8c1b8e0951d98e75d5c6083a9e40d78bae841e01fbeb0d85c2b8ee2d3969878b",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Grandmas_Sofa.png",
+      "sha256": "b41b1f095508fb508bdba228e3c0883c60160bdc371b6359ed1da4b91c086986",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Houndstooth.png",
+      "sha256": "842e09b1ec18a6de8b1295567127baec4967655468b99594b6731cd77e63e9be",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Leopard.png",
+      "sha256": "a0c923821178cdc6cf6b6f2cd05bb979c2bc2f195c57662329125c863e1e257b",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "cybertruck/example/Mika.png",
+      "sha256": "efe5165c57b9f923fc038b6e14ceaa3038ee56108e6d057c412d77e1b8472256",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "cybertruck/example/Rc_prototype.png",
+      "sha256": "ea146d11fe71c19c4e8728e9d53052fc96daa1d1811a52665805741f30d83e64",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Retro.png",
+      "sha256": "523d93a8225685b2c0466edfcb8b9a64d38dbc000d02d14fc14cfc96bdbd975c",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Rudi.png",
+      "sha256": "6d7f6fbbea694a76d4a7ccc9bddc8ab27231b4aa601a0de48d45f0517f413641",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Rust.png",
+      "sha256": "0d59d64a4c2c08f969b3a69160e0bf17e0bcf7e7dbf8d784fe2de60ca9732ad0",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Valentine.png",
+      "sha256": "7f64af955ec0c837de92c1d57a287107f98c5d1c51767ffad8228e5b84f62b4b",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Woody.png",
+      "sha256": "622a1b36cdd96c894d2a9fa1ae022be61c4587e08d32ad1e89728687b8d8ddd1",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Xmas_Camo.png",
+      "sha256": "6f312d5eaa4c9a40ee0fdc88067b71b6eccd8a33d97ad3c63f60e1c3302e8f64",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Xmas_Lights.png",
+      "sha256": "52bcca9810bedffa2da0df6294a47aa07ac378f7f09afa73fbfadbc42fc0c0e3",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/example/Xray.png",
+      "sha256": "ed759c64651126bad73dcab18e8a6b26ba2d96fd29133a1677c7c28b843129cb",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/template.png",
+      "sha256": "02bab88dc29958f0a26d01aea053184da32cd4648862b1bcbb332f831482a658",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "path": "cybertruck/vehicle_image.png",
+      "sha256": "e4f6584e709c5123fa184a90764ecb72a1ea1f76cc8736d76d720c25ee7a407e",
+      "width": 900,
+      "height": 1000
+    },
+    {
+      "path": "images/paint-shop-wraps-ct.png",
+      "sha256": "3d93bad936e5e8a508e7a39c5006fe979ab501a9c5d66ef0291a1ebe8212ea07",
+      "width": 960,
+      "height": 1140
+    },
+    {
+      "path": "images/paint-shop-wraps-m3.png",
+      "sha256": "fad081f54e158c3d37147db44ee6e7d3e7d5abb5db5c35033e4c0a69ed413f13",
+      "width": 960,
+      "height": 1020
+    },
+    {
+      "path": "model3-2024-base/example/Acid_Drip.png",
+      "sha256": "c63b74612862c7640a140512990fb095f6ad713b72b07063c5e57ee2b50255db",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-base/example/Ani.png",
+      "sha256": "2eff1835efeddac04920be2d8cda7016d2d02ca01ca0e4bd90f2e6235bb82500",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-base/example/Apocalypse.png",
+      "sha256": "816f8dbd0bf3e78db6372fd5d4b1b6788950caf617862e6b6795f6402c72f59c",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-base/example/Avocado_Green.png",
+      "sha256": "0c3749e3ff718fe9c700952f10e77991a19b894b9eb6c5c7b631efbd540ee258",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-base/example/Camo.png",
+      "sha256": "6522266a3fcdf010bdc896e28c3ce5d4085e95281f340946ef20f24173dc536c",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-base/example/Cosmic_Burst.png",
+      "sha256": "4ca7dd875d9059b620c4ed426bd9f630014f34eb27be69a0a9c9e83c64445ee5",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-base/example/Divide.png",
+      "sha256": "3b21a724c33bb6200bb8f187318bf19de65979dd5554015a0fca24f83c9ff2b8",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-base/example/Doge.png",
+      "sha256": "51aa552574169b355ee8a5b8576bcc7fa774c50a5740a32fbb3e443aa736fa07",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-base/example/Dot_Matrix.png",
+      "sha256": "74003580c604d8c943411718836f13ecf9146159f1ab911fc274ba60d0ef4cc5",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-base/example/Ice_Cream.png",
+      "sha256": "b1797d122c2d31daa7bba06bc01ac254077b4e26d1ccead2270622ee3ce76ac4",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-base/example/Leopard.png",
+      "sha256": "aed30839dd5b918a6f8617cc2b9bb361bb5a4af07c2b0d78353faff820302eeb",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-base/example/Pixel_Art.png",
+      "sha256": "8c52b38766f2066081d8b8a20bed81a97fca1568f0cee33a7656bdbfa101e6a1",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-base/example/Reindeer.png",
+      "sha256": "60e4cc238803aff28e4a5d9c5beeea1fe1960c427b29ac9d3789946131f7621d",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-base/example/Rudi.png",
+      "sha256": "c5ba0986343220234c41acbec410d71d3842a8346058177d112c897c2e489b1d",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-base/example/Sakura.png",
+      "sha256": "f11edaedf9122890db2242bada12bf6335af156e39f255688e141b3db6f62363",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-base/example/Sketch.png",
+      "sha256": "8e358a66ff70bb4daddeacb37070934ee956477023a37bbec6a851f4ad0549f9",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-base/example/String_Lights.png",
+      "sha256": "141d3b425553a60fa14505b7d848a513f16f60753c573f102065f049d07996c3",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-base/example/Valentine.png",
+      "sha256": "705768561f2e7e96117cddd78e7daf44dac4321e2dae34f3dbae3f59c91bfed8",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-base/example/Vintage_Gradient.png",
+      "sha256": "1f77a8687aebca0b5481bdd20519327937f55b0c2b4ce1843765ea9afd463c99",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-base/example/Vintage_Stripes.png",
+      "sha256": "50f3df6a5882d5b504cb2e18212b0db4633cd31ec4f7b5ed516fb8e8c3467ed3",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-base/template.png",
+      "sha256": "661c8b779ec34890ef453fd096975f17fa40075c988faf343898ac2b6136e443",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-base/vehicle_image.png",
+      "sha256": "f428f7161085cce59fec6f0ba11a2b13638beb91d9f5cb14cbed85f5cb6dd28f",
+      "width": 900,
+      "height": 1000
+    },
+    {
+      "path": "model3-2024-performance/example/Acid_Drip.png",
+      "sha256": "bfbb7be30b0e3cdcb9fa18fbc65ce289cce119df14b1c807b07e0d968ec4b1f2",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-performance/example/Ani.png",
+      "sha256": "abce354d732f614978183c89bdb46f07aa4a117cc0b6b494572b1958ca23f952",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-performance/example/Apocalypse.png",
+      "sha256": "80082f15770c2cef994c2a96b5339978de626d6f8639d80afb9e4e2cbadcf50c",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-performance/example/Avocado_Green.png",
+      "sha256": "219a125883b5e427a7268c7a88da91cd3e0538d80acb1caedb6867a15e07a624",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-performance/example/Camo.png",
+      "sha256": "c47f160ad75ec8a5790ab4ceb026b9df4023f44ba22bca53fa92a63ba7542c66",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-performance/example/Cosmic_Burst.png",
+      "sha256": "c4b7860067a1ce3996567d3dcb813eb244ee7eccc77de114fc1b554dda3459a5",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-performance/example/Divide.png",
+      "sha256": "615ecec6e53a6072e7a55c300f68892c52dd72fd1ea755b8895cd09bd5a22c15",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-performance/example/Doge.png",
+      "sha256": "b73c0161a985d76413c690a68eae29eb90c77ed5d814bcf1f3596fd88ad8e574",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-performance/example/Dot_Matrix.png",
+      "sha256": "bf34ccb943505384f2128f676858602f3266be06caeb3ce120beaeffedda75da",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-performance/example/Ice_Cream.png",
+      "sha256": "a9e71af333a65b701f35ede4aedb18238dc20608568c4de7f5177fe0ce5d5238",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-performance/example/Leopard.png",
+      "sha256": "0194055a0b135721bf46500af3761b1b0346c22b25a6ef60e01eef39460c8687",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-performance/example/Pixel_Art.png",
+      "sha256": "fc0a917b7867bc0064bbaaabfeeab4d46396edb15a072df871a1f2ec46e9f737",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-performance/example/Reindeer.png",
+      "sha256": "a6d7bb40840ba03867b7d891d67190f3417eb4ecf2d009fa5866a85eb574f248",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-performance/example/Rudi.png",
+      "sha256": "51bfafec7591b3202c9c3ae8f769a616118045fd4213beced71f37fb1475a213",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-performance/example/Sakura.png",
+      "sha256": "768616fa904356332640a37ac1a1480c89780cf64d5a7d55f716962ed8282223",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-performance/example/Sketch.png",
+      "sha256": "8496badf5c3bf26d150bfac87bf87c7683553281b2458293739c51338527c310",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-performance/example/String_Lights.png",
+      "sha256": "3fb0d683cfaf40a43067517f7bb4c87a607c7b9fe49134778fe6ff5bc497ea72",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-performance/example/Valentine.png",
+      "sha256": "30f94820e86308fa27f00a4d611cf888af6c8f823ef79a963ae42e9cf2d74ff3",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-performance/example/Vintage_Gradient.png",
+      "sha256": "d5985c5eafeb916d7bcdecd47f2a2eb459c4d62246fb649ad91f0f1f4bea1866",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-performance/example/Vintage_Stripes.png",
+      "sha256": "d4cc32a7b70ce3477dc94fa29473a6d6e6bdcf7a760b0f0bd047b9d326c2f33c",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-performance/template.png",
+      "sha256": "a59d8ec97c42b579c9911ce236678dc2ee7e3a6ad92ae83fa1a04af427157201",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3-2024-performance/vehicle_image.png",
+      "sha256": "ee0666ed6f0286eaa8adb7db9e38da1a58282b2b7af0ee72be41cc79786989b1",
+      "width": 900,
+      "height": 1000
+    },
+    {
+      "path": "model3/example/Acid_Drip.png",
+      "sha256": "9609e00702ae6a186cb01c0dd394c24d66b6df2b94d90f915b6cc76354eafbd3",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3/example/Ani.png",
+      "sha256": "c40c85ed3dd0487156c9b58772f1a1edb024cc37a4205b9401a51eb1321c53ba",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3/example/Apocalypse.png",
+      "sha256": "0dc39860fa1a5a51d37584e9311565628e2cd34e8feafa391e1936bbf9c822a7",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3/example/Avocado_Green.png",
+      "sha256": "edfe11c306f76d5d5c6f3983abe7581608584a2c983ade03c8386d11c080de2b",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3/example/Camo.png",
+      "sha256": "70faac78f1ca7f183c9e7576ce9d625cf167fccdfc089682f3ca20ee21672cb0",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3/example/Cosmic_Burst.png",
+      "sha256": "70dd93c4d9f6eb6fc66e0e811c02495300e08f222cc9280078934318411cf9ec",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3/example/Divide.png",
+      "sha256": "1dee9fe8d5da2c325bc59b7a944b34efa7589a8ea97be4dc9b7a087bce8b326f",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3/example/Doge.png",
+      "sha256": "c77ea31f9ba9daca3d10f977518da2ff17ea5ae9a8d83763c9f9d2def4861fc0",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3/example/Dot_Matrix.png",
+      "sha256": "4d59c605658a26a930c7d7832a4e3513cc3abce800e4d430499754f91c9fc928",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3/example/Ice_Cream.png",
+      "sha256": "7799433f26dd97d09dda41eb6c52bc28cc591c082027e717b52a0d2f959f9567",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3/example/Leopard.png",
+      "sha256": "9bd2606270b9297c5cb44afa9f4d54878ec7c48a348ea6d9ad6b4e1a0376ede0",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3/example/Pixel_Art.png",
+      "sha256": "36a0329d93e7b31b36b1553d20590779f0376a2a9c8eccd286f8a4c311d58558",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3/example/Reindeer.png",
+      "sha256": "241de7714845c80f3b1a42a3b4c6fd23f33ac212e823701926b258f8aaf432be",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3/example/Rudi.png",
+      "sha256": "85739718c76c8d0bb969f436e136f687da57b78918e1396111f0289ace345a91",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3/example/Sakura.png",
+      "sha256": "47d0ab7c45626e0adcd70722245f76baa81dd10d4636ba423b4a74ef4d4fbd11",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3/example/Sketch.png",
+      "sha256": "39a7b5be92fded745582cfaec559a751a0996d47d97d714d85c1f974b4e3ca2d",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3/example/String_Lights.png",
+      "sha256": "6ccc30149dfc12112b39614d95eaeca4a40657853fe485131ae5ae3d18fcd081",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3/example/Valentine.png",
+      "sha256": "2fc2b0afa08a5d53d6ed4431d59fd2369310ca6689bbde05c53c4eb96a19adf1",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3/example/Vintage_Gradient.png",
+      "sha256": "436779db9da9852004277939a56a5b4f87876626188832297dddc99d46ef8ca7",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3/example/Vintage_Stripes.png",
+      "sha256": "1df56511ea7e5f08768cc74781f3fe4e5c43a5137a86e3cf3b03c90e88abba59",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3/template.png",
+      "sha256": "1ab297c83f904d50f3be188818e33d67fad432cbca60d499717e58bb1192055d",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "model3/vehicle_image.png",
+      "sha256": "4d558c5ea0732e9785a08483266283a2e59f1c97b17051c68818865642a38cbc",
+      "width": 900,
+      "height": 1000
+    },
+    {
+      "path": "models-2021/example/Acid_Drip.png",
+      "sha256": "dd464e4ee11208561c7f663c96aa3fee7c1ac3ff78a51227f70d421bf7129a36",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2021/example/Ani.png",
+      "sha256": "cab53369da61a36719bdccdf8939aabf2b01f2de9fa36f1e4698bce5750aac42",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2021/example/Apocalypse.png",
+      "sha256": "289069f51d9b1df4221363feccabb7be09a639a04e0ccf986b24146faf739c17",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2021/example/Avocado_Green.png",
+      "sha256": "1f10bb270c46bc688e28c16f1ee68081aa36a59066e456f361d52bf3fe107951",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2021/example/Camo.png",
+      "sha256": "15d124a32d679ebd14ed39c4c4a1e3142da02dbd5dfc0cf347a27d24d016597c",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2021/example/Cosmic_Burst.png",
+      "sha256": "33b8635517299ab5f16917eccf4cce10046b3bd6b4694d561053cd2d22ce3515",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2021/example/Divide.png",
+      "sha256": "f40785ce1f9d6082cec2ec0d41445824997706378542138b61f2bf38bc5f37c9",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2021/example/Doge.png",
+      "sha256": "1b8b357c7625e145955520e8ca11e87d800e85b2ae17694523a6d29267439e74",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2021/example/Dot_Matrix.png",
+      "sha256": "04e3bc3a147a2b4a0a2ba15c58a2ea67010336377dc25113f701dcdb448331d8",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2021/example/Ice_Cream.png",
+      "sha256": "974aff68bd80ae451387881e1139fb5eb970146c3d0f4c21f778b675add1fb85",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2021/example/Leopard.png",
+      "sha256": "1a6e764d37d3bae09f86ab9dd960fca55585951fe53bd8b46a188d04113ba083",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2021/example/Pixel_Art.png",
+      "sha256": "67a66923611ee86cbfecf7945ce89ab46eb4ceb2d76d76ac302fd97d96f32687",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2021/example/Reindeer.png",
+      "sha256": "32c1ba1bf4d387075491960863a9e97568ae8acf98df5dbfb3c7b5510022f071",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2021/example/Rudi.png",
+      "sha256": "6c275bd7c5adf38e2b24fdf403e9c5e57924cb7ccc405198a7e2668f945e2025",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2021/example/Sakura.png",
+      "sha256": "72a61a8f9ea4f0d3c9ad617dcd2744fbd5e02167741121e74b80793028b066cc",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2021/example/Sketch.png",
+      "sha256": "982ac977e7af419dfb6a802eb6fb42aead0cf5834ba737940e02cb2dafbeadf4",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2021/example/String_Lights.png",
+      "sha256": "6a459e0ba696d5b2d04ed96b20eac5dca38f5b5071559f0374adb803c663f6c1",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2021/example/Valentine.png",
+      "sha256": "a1be9730a8e6b5695c2da0f2de9be7182722a999ab5ef595d98222a98f542336",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2021/example/Vintage_Gradient.png",
+      "sha256": "6c55326d76b41a82f45bd96f4ae277e3edce3fdecc6e95c8320cc23561e6bb5f",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2021/example/Vintage_Stripes.png",
+      "sha256": "16e011f1ae2d27dac77206d83d7a8ec1af227c324cb92e3ce99cf19c578332ba",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2021/template.png",
+      "sha256": "9a0e7900da5d5be23bcdfd3867c742c4c0a83a6ec024c68f54c23894b12737a3",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2021/vehicle_image.png",
+      "sha256": "363aa7f991a78fda0be50d968ded3d0be4bb926f56c596bb2274db2713c72770",
+      "width": 902,
+      "height": 1000
+    },
+    {
+      "path": "models-2025-plaid/example/Acid_Drip.png",
+      "sha256": "05f2da68170a9986dc6c9501950d9a3d640f667aa2186373fab16c183892b541",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2025-plaid/example/Alpha_Mask.png",
+      "sha256": "a231276de10cb7456fc8ee009d57f67dc5e238ae9bed289f214da8dd9299f643",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2025-plaid/example/Ani.png",
+      "sha256": "02bb413d60a8e5b8cce49e9444a9822850a91ff17c292a0ac25ac51e28fffcd4",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2025-plaid/example/Apocalypse.png",
+      "sha256": "8ac0c6360deb869f1266266c04f9a198bd4f18f5c305962e26615beeb0b120cf",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2025-plaid/example/Avocado_Green.png",
+      "sha256": "12082add0628dc0961568ae89c45a7d76c7a5c1776d9bdda844f4ee9490bc0aa",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2025-plaid/example/Camo.png",
+      "sha256": "17c7984d35ac38e0d307b10b6f67eafe5e64a037687837eecf68bb3c1f3c98f9",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2025-plaid/example/Cosmic_Burst.png",
+      "sha256": "1b1edd9085df1a04c3f6f8940ad8cbde3c25cbd2e7899e98e5a6a4c14128e636",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2025-plaid/example/Divide.png",
+      "sha256": "cb473632471f0922aaacdc9b91db7110f53d433965e57e4af4ed2ee77005d59d",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2025-plaid/example/Doge.png",
+      "sha256": "af25c88c51865b98c4b0da80449abba078de8db1ec3fe2d36bc375499f93fb64",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2025-plaid/example/Dot_Matrix.png",
+      "sha256": "24fadcf31e76150a07af939a2cb533be692d77e478adf638436544c48e4333e3",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2025-plaid/example/Ice_Cream.png",
+      "sha256": "bd0464f1e457995aa1cd8e8f7611bccfa0a3791c9332c7e7106c9380d9a3fd84",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2025-plaid/example/Leopard.png",
+      "sha256": "ff859e06950034231ad7f312e2a18c3afa7576f8040f2b64a535006b10a3f284",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2025-plaid/example/Pixel_Art.png",
+      "sha256": "1ffecbb9e349aea3217b322f34365385c4651efa3d9486ee25945d664a80e586",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2025-plaid/example/Reindeer.png",
+      "sha256": "b0c156c16e91e6bcb75b394d23ccc7e311152da6870a8a76f4b9875e5b9a8845",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2025-plaid/example/Rudi.png",
+      "sha256": "e6029b93adb8957baa4b585e9043a9b1cddc9b5e72e1852247db735606525b8b",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2025-plaid/example/Sakura.png",
+      "sha256": "e2b12e8d4f431e008b9467a8e907cac61b2a513ac3b8d8601ab7671b4ac4bcec",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2025-plaid/example/Sketch.png",
+      "sha256": "7c8bea773fe978cc9677d372e419e57b68cb834f494db22cf7b474152e208687",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2025-plaid/example/String_Lights.png",
+      "sha256": "c9ec8f951751c361bf8841817f43af1688d056d6c0c72c23458746142598255d",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2025-plaid/example/Valentine.png",
+      "sha256": "dc5da992a3bda9ff03c4d2abaa2a69acfe0cce70d1615928912dd05d1b278c68",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2025-plaid/example/Vintage_Gradient.png",
+      "sha256": "1a208d0209d2921d74378f8af25571ffd8be1d1d638a552b92e8bfcea7699f0f",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2025-plaid/example/Vintage_Stripes.png",
+      "sha256": "c36444d2407ed42a382a2e6eddcd4fc7477e1113d2e9c5e6e3f7b734b2812dbb",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2025-plaid/template.png",
+      "sha256": "24abdcfe489d5328a8a9f09823dc654553fff2eb2c5224bd0ea3da253e9ee09c",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "models-2025-plaid/vehicle_image.png",
+      "sha256": "b4b2ed91382e279b746cb91ed4600bf64d15ba1b9d4fd634475c7cddfcacabf3",
+      "width": 902,
+      "height": 1000
+    },
+    {
+      "path": "modelx-2021/example/Acid_Drip.png",
+      "sha256": "ac4245bdc89a9ed16259dba2dffb1b2efedf30802fe4632d3c3a50f80d394358",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modelx-2021/example/Ani.png",
+      "sha256": "6039c621e0977a96537b8696b5457bc43ff4f6520e66f5c39f75b8ee122e711c",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modelx-2021/example/Apocalypse.png",
+      "sha256": "d55017b6c616a0844c16074fcab6d81650e5a292297e59e422b93daee7b649de",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modelx-2021/example/Avocado_Green.png",
+      "sha256": "1fee89aee87816e68d32f146e69390d5da3851ee4533c23145fdb0ffa21c310d",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modelx-2021/example/Camo.png",
+      "sha256": "73a713168d793c05bee5e10c588089f3078e1f1a573d361362b01148f99e96fc",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modelx-2021/example/Cosmic_Burst.png",
+      "sha256": "57475e85193d9969fcfc16b201de9e3001c7401cd96f833923b17f0b5b461a64",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modelx-2021/example/Divide.png",
+      "sha256": "0a587be43a934b1514c4d5a2636ac858f2085776321c8881c1a7d86672f925e3",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modelx-2021/example/Doge.png",
+      "sha256": "6cbfc6229085619228a9571eedf521a584f523d30aa86511c013e43bebd8e9a7",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modelx-2021/example/Dot_Matrix.png",
+      "sha256": "2a4892c04cf7c3a17aefb12e7c75d03b0cb4dd0cf6332005e952f1069714befa",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modelx-2021/example/Ice_Cream.png",
+      "sha256": "5c0f5704cb80e8d900254f8a638a2d1c64c311f612c0ae7f3610cbb8935412cd",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modelx-2021/example/Leopard.png",
+      "sha256": "ab3299dd92180fc3d0d1483c600aca9e9e27a80d3ea60c0a7183c5b811849dca",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modelx-2021/example/Pixel_Art.png",
+      "sha256": "cba2f079c941e2f5e4b06bf290941f3220725a6b14776e81c7466eb6df2b1815",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modelx-2021/example/Reindeer.png",
+      "sha256": "a514e1408a29bb45e299f3e5b04991d20d1a351d6c0d8a4c1465606de0945478",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modelx-2021/example/Rudi.png",
+      "sha256": "11ea53653a621f66b5e34ffe7de65e00f976e387f723be715174133fea76228e",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modelx-2021/example/Sakura.png",
+      "sha256": "9fb737691ce2d146022f7f7fcdd58e84cafcf96429e20a8c444cad474c5d72d5",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modelx-2021/example/Sketch.png",
+      "sha256": "2a18c762cb85a28a4da3be7c6b3ab80cf9abda1a29b1f6d94ea3178e2a53cd17",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modelx-2021/example/String_Lights.png",
+      "sha256": "d453ec26d48eee8b02dd7401fe89d43959013a1abfdee428a97574d28e0a01a4",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modelx-2021/example/Valentine.png",
+      "sha256": "f1ffa928fcaa3997340b72b1975aee50fe593b669c40519cb9d3aeb6e6f688a3",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modelx-2021/example/Vintage_Gradient.png",
+      "sha256": "53d58395e252f8ff03c5506e54b058c91a20023b2cf7111a57296a9cc94adb9c",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modelx-2021/example/Vintage_Stripes.png",
+      "sha256": "c9affde403c8e8187fe4ad5752cc5f009d2fdddad1679995e958bae5eee94dc4",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modelx-2021/template.png",
+      "sha256": "ce823059d4bf72bde9abfc1478a4e8615dc385013383935cc0ecdf39fc51e66b",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modelx-2021/vehicle_image.png",
+      "sha256": "2ce9c2cc354166dcc15727331e5bdcebbea44361401f0d4c5dac6fffde531226",
+      "width": 902,
+      "height": 1000
+    },
+    {
+      "path": "modely-2025-base/example/Acid_Drip.png",
+      "sha256": "eede31793dff907f10efe9a4d0d160512ea46a5b76125ff8ad0f6135fbf5a374",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-base/example/Ani.png",
+      "sha256": "03a8db6affe1ba26ca10a7366680223c31d8df6b82f208bf69ec2a3e90286161",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-base/example/Apocalypse.png",
+      "sha256": "e085df5e304241487e23fd2379a03db9742897995b854ae218cf73a409596fe6",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-base/example/Avocado_Green.png",
+      "sha256": "e5aa7e1507b56a265d60139b294cdbabe21e84cc90b32a02d640cad71f5ccf68",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-base/example/Camo.png",
+      "sha256": "60fdb832083238fbaa2f30522d80c95f05ad06742801b4a03412a2a3acfdd969",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-base/example/Cosmic_Burst.png",
+      "sha256": "62911faef830cdf69f1745772d284998996a557487a1b5767e4df20c81f2405d",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-base/example/Divide.png",
+      "sha256": "97dafb1aeaaaa2f2cc476027c94a04f0acc27bcbe5844f2673bf1d36efdcf2d5",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-base/example/Doge.png",
+      "sha256": "313e0091ff60fd204dfc882e0e37eba192054a3a1b765ccd445215294ef06a44",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-base/example/Dot_Matrix.png",
+      "sha256": "46129ac8915ce85c252de89ef0778a194910b28cb0effedd21e2cb5e90334bb5",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-base/example/Ice_Cream.png",
+      "sha256": "8b1c3b75386fc6e2b12ec6ebd80ed28147bf6f8a6cc67f6c89f8a492862bb2e7",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-base/example/Leopard.png",
+      "sha256": "88c007e488aa420218aef8a568cb6fab1da1fc09278238416b76d74f6149ea0a",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-base/example/Pixel_Art.png",
+      "sha256": "2bf36877bdd6f1c055ef0527e40eb315424f044ddef1070a209afadfcae87a69",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-base/example/Reindeer.png",
+      "sha256": "17e30c18d96c13a0c465f768952433dc3863e920b06dbb04d2a6a3e119254c1c",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-base/example/Rudi.png",
+      "sha256": "74757175193369cc1fdfe0ec2e1cc945c55918ea1807acf266fc46c23bf8279b",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-base/example/Sakura.png",
+      "sha256": "4635331efff71aea8584299f2de634e01ea2cb93edc37277094cf66aab0008ac",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-base/example/Sketch.png",
+      "sha256": "e08c7518653b7b7db826b28f73773f65c23091bed63c90fb0cc12adc3b63c1b2",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-base/example/String_Lights.png",
+      "sha256": "2794e7c83520b0c0b8eae2f661dbcfa66d75e5db839016586b3b56d0b1e42f8f",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-base/example/Valentine.png",
+      "sha256": "6703cd63eee2955ca3588c45aed706ce80a030fc1f3aa2c5abf9d387e514fdbc",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-base/example/Vintage_Gradient.png",
+      "sha256": "aa5c3722c9e837cb9d9df81e908cb63e8610fa03ab445482b153beeabec5a61e",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-base/example/Vintage_Stripes.png",
+      "sha256": "e1abb85506c4c6ebfdaeddde8c4da96aeac2bcd5cd94bcc7c58cbad4263a300b",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-base/template.png",
+      "sha256": "df7e18b382306d3631be58ec313471bdc02e6183b7d4d1a1e33306fd345f373a",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-base/vehicle_image.png",
+      "sha256": "b2ad137858cf44ada1be6b9f778629425b2ea7d3e6b3a88902fc186e55830089",
+      "width": 900,
+      "height": 1000
+    },
+    {
+      "path": "modely-2025-performance/example/Acid_Drip.png",
+      "sha256": "0bbe3ccdec47b1c87537aead18a84c12bcfbc87d3e0e7228a70f8803fddb9286",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-performance/example/Ani.png",
+      "sha256": "3c873572b8b0d9b4c1e5c6c9a91a9df57d151abc55f822cb368ec5374f6bd40f",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-performance/example/Apocalypse.png",
+      "sha256": "c6e70f0b8c23efb0ea6d42fa82c8462c15c953de14a47f8a8c69feef6bef4fef",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-performance/example/Avocado_Green.png",
+      "sha256": "00faa14fd576dab03d3dcbf1698691f49750e4ffaa4c9ba7be14b774cdb44dad",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-performance/example/Camo.png",
+      "sha256": "96d16f386b2a78db0e49829e7fa2f233c917e451b48d9bade3e0a9e5cd661670",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-performance/example/Cosmic_Burst.png",
+      "sha256": "c4e66cbf30afe69e9858191efb774496e00a7f4e7b9f0b034936b5c0cd0743eb",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-performance/example/Divide.png",
+      "sha256": "9b00f15f0899732983b1b365901ffbb3c13e41aea4eba1c325ebcf4c1099a7b3",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-performance/example/Doge.png",
+      "sha256": "6b2bbc19cc9324e94e14d49add81a4c6c0aa199336f285ac7e8dd38232df3c52",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-performance/example/Dot_Matrix.png",
+      "sha256": "1fbd5040e6508dd48ce34605ae47e1a8cff14cf7677e728500c3b2a5093732c4",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-performance/example/Ice_Cream.png",
+      "sha256": "4e8683300b932ea1a1f840a642ed8761f6d17c1432b7bdb6bc0291a9484fbcbf",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-performance/example/Leopard.png",
+      "sha256": "a7b792055f182e6529b18c4e519d91c2a2082dfd1c40e13fe6740ec2d8b5a163",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-performance/example/Pixel_Art.png",
+      "sha256": "b76d94ed3a4991b133f636984c208b7407979dd776784a40be03a3b317cdf00e",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-performance/example/Reindeer.png",
+      "sha256": "5a09abd149abe5d425460c911d62cfaf58d4dee2702136b3fae73f9ea0e8f127",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-performance/example/Rudi.png",
+      "sha256": "4eeb09892762117b3ea80391159b02157af38268b57ba8f1b2353c0ec942051c",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-performance/example/Sakura.png",
+      "sha256": "f55491956e1833b42be4f7950ad18bde3c653ff602aea9ac2dbc6202e840e77e",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-performance/example/Sketch.png",
+      "sha256": "9f14137133d5789664e66b2aff3eaae9783eff2c19cd38cf014f6628889580e3",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-performance/example/String_Lights.png",
+      "sha256": "32981ae5ce53e982feb3d255d6a78d71ff2579cf90c13db4abe2b639cb813b7b",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-performance/example/Valentine.png",
+      "sha256": "01358dcdecdb47b455b97739013910c6641bec54181f0f44cb0172aa403088a4",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-performance/example/Vintage_Gradient.png",
+      "sha256": "119cf2a00440846f949e9a74c6ba2e557b43d92de41fc558d62abc00540333d4",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-performance/example/Vintage_Stripes.png",
+      "sha256": "3a9ae476a6dcd43f2241706535e2fe1ccc1c4c58aa15eb05d3d32e19b9cbfdcb",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-performance/template.png",
+      "sha256": "f55baf4fc9f097650c2a15754005e913365efde55695c424fb78f35c57ae8f0b",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-performance/vehicle_image.png",
+      "sha256": "3bc963cc5beb555a39f74c2fdd8a0137502b8f02f97670d42b505e7643c7ffca",
+      "width": 900,
+      "height": 1000
+    },
+    {
+      "path": "modely-2025-premium/example/Acid_Drip.png",
+      "sha256": "5a8c329fab8c024773ab60062de2f8bff0a15e72f72a116236814971ff872c22",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-premium/example/Ani.png",
+      "sha256": "859a06c97a5ecf086ad1bd200db16b8db6227995e3faf5017712c90c9d1ea7d8",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-premium/example/Apocalypse.png",
+      "sha256": "a9ac487a747fd87194aa6d45f4ff65381272f7f169b263cbb6c9b8bae4dad0ae",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-premium/example/Avocado_Green.png",
+      "sha256": "423ec0aa099be2f2f1bb571992da434de3dcca76ed1524f9ef41af61341442ec",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-premium/example/Camo.png",
+      "sha256": "f442d3f2bb7929739cafb81834fb9d78319274a274ff0f4f042e9729264d4b06",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-premium/example/Cosmic_Burst.png",
+      "sha256": "05a053bb36bb41f2b92f650ffb54988dde6303687fb855d9584590de8e30805b",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-premium/example/Divide.png",
+      "sha256": "384d1866d419fddc5bc5deb6210a38f4e9ae39beecfe3032cb3e343f820f93eb",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-premium/example/Doge.png",
+      "sha256": "1c8d4770d306be381221fff74af529181cceedc6d3fc32516694bf0889a90674",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-premium/example/Dot_Matrix.png",
+      "sha256": "9cdd50997c1161b89675e526d03248411b36cd1e132b438dff87f7f5bdfa1733",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-premium/example/Ice_Cream.png",
+      "sha256": "4c9b4761dc7e3c029ca9904acc928d566abcbdccd5fc7763249da58c7e1bb41d",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-premium/example/Leopard.png",
+      "sha256": "63f591684b27c26d358722077e5dc039590f90340d49dad09d5f2ab23ea2a988",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-premium/example/Pixel_Art.png",
+      "sha256": "7170a1887afdd31acbac0573504e316c5a20992155102c1aff255a624b487a7a",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-premium/example/Reindeer.png",
+      "sha256": "4f9175182515a7fb1aa92a6dded8f8aa7def12684ec9f537a5197ee7622a0584",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-premium/example/Rudi.png",
+      "sha256": "53645d60fc0b44ece5a5a59a28a5d868e5cf2ac9e027faaa9de375eb4f3122f3",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-premium/example/Sakura.png",
+      "sha256": "65cc6010f42b5c16626261ea20d2a3d64c75e9d02d9e84b658e4ef0c3b409121",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-premium/example/Sketch.png",
+      "sha256": "f37e51c5a236bfd801ee4dd6aa3bd03ff0e4a5368c9552ea95adc7d24c22b348",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-premium/example/String_Lights.png",
+      "sha256": "9000ece02b43f53e6f40399da2bd528d10e47bd7210d2484d68f7a61cdf3d570",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-premium/example/Valentine.png",
+      "sha256": "414521e815e6d1bbab4dff2bae45672e97b49a34a86fc2caea950496b3df163d",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-premium/example/Vintage_Gradient.png",
+      "sha256": "75c898e7fcc5a075819354949dbe8a41375fd2e27705f8b80ecd7c73f3c6a04d",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-premium/example/Vintage_Stripes.png",
+      "sha256": "59be879fb919441bd6db10d8b3f1ee8ba5f758a0aa88230cfe2bf09edd4b1d1d",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-premium/template.png",
+      "sha256": "336a738ffa7b11eaa4909fcaacc6d9066b38f9a06feba1fddf9634554f27e3b5",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-2025-premium/vehicle_image.png",
+      "sha256": "791676f638388048692858cb1fee21a2b2f08e45392731ad3164a2c0d1b72928",
+      "width": 900,
+      "height": 1000
+    },
+    {
+      "path": "modely-l/example/Acid_Drip.png",
+      "sha256": "eb1e1290c65f12fccfe0d4e7a05d3ed94c2857fbd1572cc099bd5c72ab79db19",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-l/example/Ani.png",
+      "sha256": "50c24dd05aa8e49e16e51325b37e3b2d63cc6a0fc34e56e8c8dc61b9706c8710",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-l/example/Apocalypse.png",
+      "sha256": "bccabb97110259cf3cc809c13737f2c01e7c67dbff9b5c739a51311bb5247afc",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-l/example/Avocado_Green.png",
+      "sha256": "6f6029d371ab319b0dc104bc0913aed51cb6b7560d2ed3bdf92377168fa836b3",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-l/example/Camo.png",
+      "sha256": "1b210da61dab20968f4325ada2abcf2a7a13a3a278479c66418f3196c73c878f",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-l/example/Cosmic_Burst.png",
+      "sha256": "ebfe2284dd0d0c049f89c3405c9a2b7145fd0a1dc6f2434888b630bb7dbc5e81",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-l/example/Divide.png",
+      "sha256": "81323f01442465c08ea8a3544ba6ba01f547e96b1e27a464d90e92c7fcb0ff96",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-l/example/Doge.png",
+      "sha256": "f667d8f4bf393e4918db2f4e437b9de90d2b532b0cc08f8ee4c055e40a0e1f38",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-l/example/Dot_Matrix.png",
+      "sha256": "3516c6a680af1b03f17f580f050cd6d7b48c662b697f8066b732408ca5accd04",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-l/example/Ice_Cream.png",
+      "sha256": "06ab2a1b9431d2255dc3d68900a7429d7ae2b9b4a933e5042c76babd29f36d4b",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-l/example/Leopard.png",
+      "sha256": "deccd19a1b21aeefe1f0b24083ee65a35c9a0902c77e9592746ffa4edf04f748",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-l/example/Pixel_Art.png",
+      "sha256": "9e3ce991a0ab445aedc230572a0b10fb20f9cc44266f6f83bac2d9a8eb1014a9",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-l/example/Reindeer.png",
+      "sha256": "e30f18e531017409df892ccb21b1802f4f5966df507a1c77b043e7a1817a7545",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-l/example/Rudi.png",
+      "sha256": "b6296e59f7f6795cd38d2cb7dc5c2f4de8cdcce1907a2b328717c7d5bef61d00",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-l/example/Sakura.png",
+      "sha256": "33ab5ed93cf4471cbe3278b794c7641a4ddeb46e9c527b977281260e4a6f1ca6",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-l/example/Sketch.png",
+      "sha256": "546556b705cb3fc0dac308d768648c49f9e65e183c01efec19d26ff61bc04489",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-l/example/String_Lights.png",
+      "sha256": "1629db1e61c17fc9e766e0343bfbe10ae865e93d372a8bfcacc961a7ea09409e",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-l/example/Valentine.png",
+      "sha256": "be08f76f8a3294a43cbf20380c74d3a8eb10e614992f99ca720b2be9a2d1ce1b",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-l/example/Vintage_Gradient.png",
+      "sha256": "a4f30e1a04a2d169b67776326eb2b57f9a2f01a0903d03720ea05db762f14795",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-l/example/Vintage_Stripes.png",
+      "sha256": "d66f9bb5aedaa313038a7623d8abf5356a06745c6610d09e2045e8c66c2a13aa",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-l/template.png",
+      "sha256": "08d486b115da0b2df988e26e6260704150044dc1b96a319f2c432f79b09c6400",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely-l/vehicle_image.png",
+      "sha256": "b49f5aa20b5faf6353234d35797d550d51c29e3e71e8a1ed6fe98da16f1280c5",
+      "width": 900,
+      "height": 1000
+    },
+    {
+      "path": "modely/example/Acid_Drip.png",
+      "sha256": "a75af4cbfc64c9a5267c88f367457c9bd583cf771d2fafe02164a0601fdb2429",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely/example/Ani.png",
+      "sha256": "c05d259a4160580eddb72513af4b448f3fff282ff723c6ae04221b9f3c97d60c",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely/example/Apocalypse.png",
+      "sha256": "de6d4f2bfa911930b4b012cd69f57fe19bd2ce4be0801cdf964496af899b33b4",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely/example/Avocado_Green.png",
+      "sha256": "61dddd45ba2c122218fffb50d91a2ed91c0a718b977cad7a03dcc2ac8f83d562",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely/example/Camo.png",
+      "sha256": "adc778f74be0e7ec57ad15142a376a7e0e2a8dce26567ab8defb78d5876ce833",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely/example/Cosmic_Burst.png",
+      "sha256": "d589ccc37c66871d39a70269a248855ed2450e164e5cc76d996cad6fba0e6e11",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely/example/Divide.png",
+      "sha256": "f21b62d4fb76d218fe2e0aadd3d1ffafb9ca225e293a3cea6d9f82762d77bf46",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely/example/Doge.png",
+      "sha256": "2b0311b75daf94db95ba72bdb47329d2d92d260ea1d4ecee24b3aa0f4652c8c2",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely/example/Dot_Matrix.png",
+      "sha256": "057ed5c3e79c19fe17dfe9d0abaf90e3f20e12fc233e41699061746aa1e38130",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely/example/Ice_Cream.png",
+      "sha256": "073ae23b8a8d6acdc79dde796e213f9f4ebb3229394f35e0f1e398bbcc733cf7",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely/example/Leopard.png",
+      "sha256": "915fdfa07793f4608ec7f9e9cfa98942c4d2811bc68f8d0ac3241ecccfcc8c14",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely/example/Pixel_Art.png",
+      "sha256": "c3a74da55057dd183fa56b996257b8bbefc4b4eb0713a868f74f690b30fa107b",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely/example/Reindeer.png",
+      "sha256": "19a01c0d918116a51c788a17a8cb7484a743375b797384b06309b45c29182aeb",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely/example/Rudi.png",
+      "sha256": "dc85597e41d628686a849f3daea56a761c5f4d721de3db75936c7f08543e913f",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely/example/Sakura.png",
+      "sha256": "9914f1d87b70a4e0ea646bac3930c622b6e25f6604ad8ce9854a40af29675dda",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely/example/Sketch.png",
+      "sha256": "ac9c600139d7529a1834d9b13d88ebc0b6e6ca4424ac6cd948b80bc29d21fde2",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely/example/String_Lights.png",
+      "sha256": "fcc9b1b81e25fda717cdfd76dba07b9441b31ac6ce24916cc5acd474c7139bee",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely/example/Valentine.png",
+      "sha256": "6a30677b581b8caa236b98fa3a613aab31a6a5ebd60077f638d0d2ea2260998b",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely/example/Vintage_Gradient.png",
+      "sha256": "3204407ae3df5cbcfc57e7b21270de85c357da3b2135c7704f6887d135aa753e",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely/example/Vintage_Stripes.png",
+      "sha256": "25e03a425a1e9f473dfececc4c6851960909241ad41add6b754699b27176cf9a",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely/template.png",
+      "sha256": "145e56ff1d9d3d5d3c3bac4ce1b331387858cb3ee7f17dce7d1de2100bf42a4b",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "modely/vehicle_image.png",
+      "sha256": "0be879da640cc7f3e02a0a95dc125d6c70b2ce145e674c892b407c714b35fd96",
+      "width": 900,
+      "height": 1000
+    }
+  ]
+}

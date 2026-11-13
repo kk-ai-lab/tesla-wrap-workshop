@@ -23,7 +23,11 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run check
+      - run: npm run verify:provenance
       - run: npm run build
       - run: npm run check:dist
       - run: npm run verify:gallery
-      - run: npm run postbuild:check -- --only links
+      - run: npm run postbuild:check
+      - run: npm run legal:check
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser

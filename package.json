@@ -13,9 +13,15 @@
     "build": "astro build",
     "check:dist": "tsx scripts/check-dist.ts",
     "postbuild:check": "tsx scripts/postbuild-check.ts",
+    "verify:provenance": "tsx scripts/verify-provenance.ts",
+    "hash:tesla": "tsx scripts/hash-tesla-files.ts",
+    "legal:packet": "tsx scripts/legal-packet.ts",
+    "legal:check": "tsx scripts/legal-packet.ts --check",
+    "check:upstream": "tsx scripts/check-upstream.ts",
+    "test:browser": "playwright test",
+    "verify": "npm run lint && npm run typecheck && npm test && npm run check && npm run verify:provenance && npm run build && npm run check:dist && npm run verify:gallery && npm run postbuild:check && npm run legal:check && npm run test:browser",
     "verify:gallery": "tsx scripts/verify-gallery.ts",
-    "check:template-links": "tsx scripts/check-template-links.ts",
-    "verify:provenance": "tsx scripts/verify-provenance.ts"
+    "check:template-links": "tsx scripts/check-template-links.ts"
   },
   "dependencies": {
     "astro": "^7.4.7",
@@ -33,6 +39,7 @@
     "tsx": "^4.23.15",
     "typescript": "^5.9.0",
     "typescript-eslint": "^8.72.2",
-    "vitest": "^3.2.0"
+    "vitest": "^3.2.0",
+    "@playwright/test": "^1.65.0"
   }
 }

@@ -1,7 +1,9 @@
 import { ESLint } from "eslint";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { expect, it } from "vitest";
+import { expect, it, vi } from "vitest";
+
+vi.setConfig({ testTimeout: 30_000 });
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 

@@ -28,4 +28,4 @@ Preconditions:
 - The filename contains a space. The href uses `%20`. The file on disk uses a space. Decode the href before checking `dist/`.
 - `astro preview` serves `dist/`. A stale `dist/` from an older build fails the byte match.
 - Do not point the script at a preview this run did not start.
-- Start preview with `node ./node_modules/astro/bin/astro.mjs`, not `npx`. `npx` can exit and leave the listener running.
+- Astro 7 can detach a listener even when invoked directly with Node. Follow the main skill's listener-PID and working-directory checks before driving or stopping it.

@@ -1,9 +1,12 @@
 ---
+import { launchMode } from "../../domain/launch";
+import Disclaimer from "../components/Disclaimer.astro";
 import "../styles/global.css";
 
 type Props = { title: string };
 
 const { title } = Astro.props;
+const preview = launchMode(process.env.PUBLIC_LAUNCH) === "preview";
 ---
 
 <!doctype html>
@@ -11,21 +14,27 @@ const { title } = Astro.props;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
+    <meta name="description" content="A curated community gallery of PNG designs for Tesla Paint Shop, with source and licence details." />
+    {preview && <meta name="robots" content="noindex,nofollow" />}
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2310120f'/%3E%3Cpath d='M7 8h5l4 10 4-10h5l-9 18z' fill='%23d6ff5c'/%3E%3C/svg%3E" />
+    <title>{title} | Wrap workshop</title>
   </head>
   <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
     <header class="site-header">
-      <a class="brand" href="/">tesla-wrap-workshop</a>
-      <nav>
+      <a class="brand" href="/" aria-label="Wrap workshop home"><span class="brand-mark" aria-hidden="true">W/</span> Wrap workshop</a>
+      <nav aria-label="Main navigation">
         <a href="/#vehicles">Vehicles</a>
-        <a href="/#wraps">Wraps</a>
+        <a href="/#wraps">Gallery</a>
+        <a href="/about/">About &amp; install</a>
       </nav>
     </header>
-    <main>
+    <main id="main-content" tabindex="-1">
       <slot />
     </main>
     <footer class="site-footer">
-      <p>Curated wrap designs with provenance.</p>
+      <div><a class="footer-brand" href="/">Wrap workshop</a><p>Community PNGs for Tesla Paint Shop.</p></div>
+      <div><a href="/about/">Sources, licences &amp; installation</a><Disclaimer /></div>
     </footer>
   </body>
 </html>
