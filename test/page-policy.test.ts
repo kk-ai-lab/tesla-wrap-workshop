@@ -143,3 +143,61 @@ it("defaults to preview and blocks public builds without recorded sign-off", asy
     await expect(assertReleaseAllowed(root, "true")).rejects.toThrow("catalogue differs");
   });
 });
+
+const CATALOGUE_DIFFERS = "public build blocked: catalogue differs from the inventory approved by Kai";
+const SIGN_OFF_REQUIRED = "public build blocked: Kai must record legal sign-off in docs/legal-review.md";
+
+async function withReleaseCatalogue(work: (root: string, inventory: string, hash: string) => Promise<void>): Promise<void> {
+  await withSite(async (root) => {
+    const wraps = path.join(root, "content/wraps/grey-sample");
+    await mkdir(wraps, { recursive: true });
+    await writeFile(path.join(wraps, "meta.json"), JSON.stringify({
+      id: "grey-sample",
+      title: "Solid Grey",
+      variant: "model3",
+      file: "wrap.png",
+      licence: "CC0-1.0",
+      provenance: [{ kind: "own", author: "kk-ai-lab" }],
+      tags: ["sample"],
+      addedOn: "2026-11-09",
+    }));
+    await cp(path.resolve("test/fixtures/valid.png"), path.join(wraps, "wrap.png"));
+    await mkdir(path.join(root, "docs"), { recursive: true });
+    const loaded = await loadCatalogue(path.join(root, "content/wraps"));
+    if (!loaded.ok) throw new Error("release-gate fixture must load");
+    const inventory = renderLegalCatalogue(loaded.catalogue);
+    const hash = createHash("sha256").update(inventory).digest("hex");
+    await work(root, inventory, hash);
+  });
+}
+
+it("blocks a public build when the approved catalogue hash is missing", async () => {
+  await withReleaseCatalogue(async (root, inventory) => {
+    await writeFile(path.join(root, "docs/legal-catalogue.md"), inventory);
+    await writeFile(path.join(root, "docs/legal-review.md"), "LEGAL_SIGNOFF: Kai, 2026-11-12\n");
+    await expect(assertReleaseAllowed(root, "true")).rejects.toThrow(CATALOGUE_DIFFERS);
+  });
+});
+
+it("blocks a public build when the inventory was regenerated but the approved hash is old", async () => {
+  await withReleaseCatalogue(async (root, inventory, hash) => {
+    const metaPath = path.join(root, "content/wraps/grey-sample/meta.json");
+    const meta = JSON.parse(await readFile(metaPath, "utf8")) as { title: string };
+    await writeFile(metaPath, JSON.stringify({ ...meta, title: "Reviewed again" }));
+    const reloaded = await loadCatalogue(path.join(root, "content/wraps"));
+    if (!reloaded.ok) throw new Error("regenerated catalogue must load");
+    const regenerated = renderLegalCatalogue(reloaded.catalogue);
+    if (regenerated === inventory) throw new Error("fixture must change the inventory");
+    await writeFile(path.join(root, "docs/legal-catalogue.md"), regenerated);
+    await writeFile(path.join(root, "docs/legal-review.md"), `LEGAL_SIGNOFF: Kai, 2026-11-12\nLEGAL_CATALOGUE_SHA256: ${hash}\n`);
+    await expect(assertReleaseAllowed(root, "true")).rejects.toThrow(CATALOGUE_DIFFERS);
+  });
+});
+
+it("blocks a public build when legal sign-off is empty and the catalogue hash is current", async () => {
+  await withReleaseCatalogue(async (root, inventory, hash) => {
+    await writeFile(path.join(root, "docs/legal-catalogue.md"), inventory);
+    await writeFile(path.join(root, "docs/legal-review.md"), `LEGAL_SIGNOFF:\nLEGAL_CATALOGUE_SHA256: ${hash}\n`);
+    await expect(assertReleaseAllowed(root, "true")).rejects.toThrow(SIGN_OFF_REQUIRED);
+  });
+});
