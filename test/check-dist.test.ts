@@ -153,6 +153,39 @@ it("exits 1 for a directory symlink", () => {
   }
 });
 
+it("exits 1 for an html comment inside srcdoc", () => {
+  const result = expectExit("test/lint-fixtures/check-dist/srcdoc-comment", 1, "html comment");
+  expect(result.stdout).toContain("index.html");
+});
+
+it("exits 1 for an html comment inside nested srcdoc", () => {
+  const result = expectExit("test/lint-fixtures/check-dist/srcdoc-nested", 1, "html comment");
+  expect(result.stdout).toContain("index.html");
+});
+
+it("exits 1 for invalid json in an ld+json script", () => {
+  const result = expectExit("test/lint-fixtures/check-dist/ld-json-invalid", 1, "in JSON");
+  expect(result.stdout).toContain("index.html");
+});
+
+it("exits 1 for a forbidden value inside json", () => {
+  const result = expectExit("test/lint-fixtures/check-dist/json-forbidden", 1, "html comment");
+  expect(result.stdout).toContain("index.html");
+});
+
+it("exits 1 for an unknown data script type", () => {
+  const result = expectExit("test/lint-fixtures/check-dist/unknown-script-type", 1, "unsupported script type");
+  expect(result.stdout).toContain("index.html");
+});
+
+it("exits 0 for an allowlisted data script type", () => {
+  expectExit("test/lint-fixtures/check-dist/importmap-clean", 0, "");
+});
+
+it("exits 0 for valid json without a comment", () => {
+  expectExit("test/lint-fixtures/check-dist/ld-json-clean", 0, "");
+});
+
 it("runs check:dist after build in ci", () => {
   const ci = fs.readFileSync(path.join(root, ".github/workflows/ci.yml"), "utf8");
   const buildAt = ci.indexOf("npm run build");
