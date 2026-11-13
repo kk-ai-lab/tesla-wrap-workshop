@@ -56,6 +56,12 @@ export function runScannerInputCheck(): InputCheckResult {
       result = scanFixture(kind.fixture);
       seen.set(kind.fixture, result);
     }
+    if (kind.coverage === "skip") {
+      if (result.status !== 0 || result.text !== "") {
+        lines.push(`scanner input kind ${id} fixture ${kind.fixture} does not exit 0`);
+      }
+      continue;
+    }
     if (result.status !== 1 || !result.text.includes(kind.needle)) {
       lines.push(`scanner input kind ${id} fixture ${kind.fixture} does not exit 1`);
     }

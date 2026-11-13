@@ -25,7 +25,7 @@ type Report = {
 };
 
 const skipped = new Set(["node_modules", ".git", "dist", ".astro", "test-results", "playwright-report"]);
-const requiredMutantIds = ["M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M9", "M10", "M11", "M12", "M13", "M14", "M15", "M16", "M17", "M18", "M19", "M20", "M21", "M22", "M23", "M24", "M25"];
+export const requiredMutantIds = ["M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M9", "M10", "M11", "M12", "M13", "M14", "M15", "M16", "M17", "M18", "M19", "M20", "M21", "M22", "M23", "M24", "M25"] as const;
 
 function fail(message: string): never {
   throw new Error(message);
@@ -187,4 +187,7 @@ function main(): number {
   return exitCode;
 }
 
-process.exit(main());
+const entry = process.argv[1];
+if (entry !== undefined && path.resolve(entry) === fileURLToPath(import.meta.url)) {
+  process.exit(main());
+}
