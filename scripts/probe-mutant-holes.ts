@@ -38,6 +38,18 @@ const present = [
   mutant("M5", "FIVE"),
   mutant("M6", "SIX"),
   mutant("M7", "SEVEN"),
+  mutant("M8", "EIGHT"),
+  mutant("M9", "NINE"),
+  mutant("M10", "TEN"),
+  mutant("M11", "ELEVEN"),
+  mutant("M12", "TWELVE"),
+  mutant("M13", "THIRTEEN"),
+  mutant("M14", "FOURTEEN"),
+  mutant("M15", "FIFTEEN"),
+  mutant("M16", "SIXTEEN"),
+  mutant("M17", "SEVENTEEN"),
+  mutant("M18", "EIGHTEEN"),
+  mutant("M19", "NINETEEN"),
 ];
 
 const lists: Record<HoleScenario, MutantEntry[]> = {
