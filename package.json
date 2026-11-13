@@ -19,7 +19,8 @@
     "legal:check": "tsx scripts/legal-packet.ts --check",
     "check:upstream": "tsx scripts/check-upstream.ts",
     "test:browser": "playwright test",
-    "verify": "npm run lint && npm run typecheck && npm test && npm run check && npm run verify:provenance && npm run build && npm run check:dist && npm run verify:gallery && npm run postbuild:check && npm run legal:check && npm run test:browser",
+    "test:browser:dev": "playwright test --config playwright.dev.config.ts",
+    "verify": "npm run lint && npm run typecheck && npm test && npm run check && npm run verify:provenance && npm run build && npm run check:dist && npm run verify:gallery && npm run postbuild:check && npm run legal:check && npm run test:browser && npm run test:browser:dev",
     "verify:gallery": "tsx scripts/verify-gallery.ts",
     "check:template-links": "tsx scripts/check-template-links.ts"
   },
