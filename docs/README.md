@@ -16,5 +16,6 @@ Every stage's output for this repo lives here, so the trail is visible on GitHub
 - [Maintainer design](design/2026-11-12-maintainer-hardening.md) records boundaries and validation choices.
 - [Maintainer status](reviews/2026-11-13-maintainer-status.md) records the merged work and remaining gates.
 - [CI Actions review](reviews/2026-11-13-ci-actions.md) records the runtime upgrade and live workflow checks.
+- [ESLint migration review](reviews/2026-11-13-eslint-migration.md) records lint coverage and dependency tradeoffs.
 - [Legal packet](legal-review.md) retains the unsigned human review. [Generated inventory](legal-catalogue.md) records the actual files.
 - [In-car tests](in-car-tests.md) records the untested vehicle checks.

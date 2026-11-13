@@ -14,7 +14,7 @@ npx playwright install chromium
 npm run verify
 ```
 
-Use Node 22 from `.nvmrc`. `npm run verify` runs lint, typecheck, unit tests, catalogue and repository guards, provenance cases, the static build, output checks, legal-inventory freshness, and desktop/mobile browser tests. The browser tests own a foreground server on port 4176 and stop it after the run. `npm run dev` starts the development site.
+Use Node 22.23.4 or later within the Node 22 series, as selected by `.nvmrc`. `npm run verify` runs lint, typecheck, unit tests, catalogue and repository guards, provenance cases, the static build, output checks, legal-inventory freshness, and desktop/mobile browser tests. The browser tests own a foreground server on port 4176 and stop it after the run. `npm run dev` starts the development site.
 
 `npm run check` prints `check: 1 wrap, 0 violations` for the sample. `npm run build` writes `dist/`. `npm run postbuild:check` runs every output guard. Use `-- --only links`, `disclaimer`, `budget`, `launch`, or `assets` to investigate one guard.
 

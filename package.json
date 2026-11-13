@@ -2,7 +2,7 @@
   "name": "tesla-wrap-workshop",
   "type": "module",
   "engines": {
-    "node": "22.x"
+    "node": ">=22.23.4 <23"
   },
   "scripts": {
     "dev": "astro dev",
@@ -28,10 +28,12 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@eslint/compat": "^2.1.1",
+    "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.65.0",
     "@types/node": "^22.19.0",
     "acorn": "8.19.0",
-    "eslint": "^9.39.5",
+    "eslint": "^10.14.0",
     "eslint-plugin-astro": "^1.7.0",
     "eslint-plugin-ban-comments": "^1.0.3",
     "parse5": "7.3.0",
@@ -44,6 +46,12 @@
   },
   "overrides": {
     "@typescript-eslint/typescript-estree": {
+      "minimatch": "^11.0.1"
+    },
+    "eslint": {
+      "minimatch": "^11.0.1"
+    },
+    "@eslint/config-array": {
       "minimatch": "^11.0.1"
     }
   }

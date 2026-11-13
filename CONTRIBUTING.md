@@ -7,7 +7,7 @@ The current gallery accepts curated changes through pull requests. Read [compati
 3. Create `content/wraps/<id>/meta.json` and add the PNG in that folder. Use a new lowercase slug as the ID. Replacing an image needs a new ID so existing download hashes stay meaningful.
 4. Copy the sample metadata shape. Set the exact variant, original filename, title, tags, real added date, and either `CC0-1.0` or `CC-BY-4.0` as the output licence.
 5. For original work, add `kind: "own"` and a nonblank author. Record a creation tool when useful. For each third-party source, add `kind: "third-party"`, its author, absolute HTTP(S) source and licence-evidence URLs, and the real retrieval date. Third-party source entries are allowed only with CC0 output under the current project policy. A URL alone does not prove a source's licence.
-6. Use Node 22. Run `npm ci`, `npm run legal:packet`, and `npm run verify`.
+6. Use Node 22.23.4 or later within the Node 22 series. Run `npm ci`, `npm run legal:packet`, and `npm run verify`.
 7. Open a pull request. Provide a screenshot of the affected pages and evidence of the source licence. Complete the image and rights review checklist.
 
 The validator preserves PNG bytes. It does not repair or recompress a file. Fix invalid files in your image editor and rerun the checks.
