@@ -91,9 +91,19 @@ it("exits 1 when css cannot be parsed", () => {
   expect(result.stdout).toContain("main.css");
 });
 
+it("reports a closed parser reason with its detail", () => {
+  const findings = scanRoot(path.join(root, "test/lint-fixtures/check-dist/broken-css"));
+  expect(findings).toEqual([
+    { kind: "parse-error", file: "main.css", reason: "css-parser", detail: expect.stringContaining("Unclosed") },
+  ]);
+});
+
 it("exits 1 when js cannot be parsed", () => {
   const result = expectExit("test/lint-fixtures/check-dist/broken-js", 1, "parse error in main.js:");
   expect(result.stdout).toContain("main.js");
+  expect(scanRoot(path.join(root, "test/lint-fixtures/check-dist/broken-js"))).toEqual([
+    expect.objectContaining({ kind: "parse-error", file: "main.js", reason: "js-parser", detail: expect.any(String) }),
+  ]);
 });
 
 it("exits 1 for an html comment inside noscript", () => {
@@ -122,6 +132,9 @@ it("exits 0 when an event handler string contains a block comment", () => {
 it("exits 1 when html ends inside a tag", () => {
   const result = expectExit("test/lint-fixtures/check-dist/malformed-html", 1, "eof-in-tag");
   expect(result.stdout).toContain("index.html");
+  expect(scanRoot(path.join(root, "test/lint-fixtures/check-dist/malformed-html"))).toEqual(
+    expect.arrayContaining([expect.objectContaining({ kind: "parse-error", file: "index.html", reason: "html-parse-error", detail: "eof-in-tag" })]),
+  );
 });
 
 it("exits 1 for comments in mjs, cjs, and uppercase extensions", () => {
@@ -166,6 +179,9 @@ it("exits 1 for an html comment inside nested srcdoc", () => {
 it("exits 1 for invalid json in an ld+json script", () => {
   const result = expectExit("test/lint-fixtures/check-dist/ld-json-invalid", 1, "in JSON");
   expect(result.stdout).toContain("index.html");
+  expect(scanRoot(path.join(root, "test/lint-fixtures/check-dist/ld-json-invalid"))).toEqual(
+    expect.arrayContaining([expect.objectContaining({ kind: "parse-error", file: "index.html", reason: "json-parser", detail: expect.any(String) })]),
+  );
 });
 
 it("exits 1 for a forbidden value inside json", () => {

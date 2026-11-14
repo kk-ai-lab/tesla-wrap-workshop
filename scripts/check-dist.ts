@@ -6,7 +6,6 @@ import { fileURLToPath } from "node:url";
 import { parse as parseHtml, parseFragment, type DefaultTreeAdapterMap, type ParserError } from "parse5";
 import postcss from "postcss";
 import { allowsComment } from "./comment-allowlist.js";
-import { requiredMutantIds } from "./check-mutants.ts";
 
 type Node = DefaultTreeAdapterMap["node"];
 type ElementNode = DefaultTreeAdapterMap["element"];
@@ -27,40 +26,20 @@ export const findingReasons = {
 export type FindingReasonId = keyof typeof findingReasons;
 export type FindingReason = (typeof findingReasons)[FindingReasonId];
 
-type ReasonMutantMap = {
-  [Id in FindingReasonId]: (typeof requiredMutantIds)[number];
-};
-
-type UniqueReasonMutants<T extends ReasonMutantMap> = {
-  [Id in keyof T]: T[Id] extends T[Exclude<keyof T, Id>] ? never : T[Id];
-};
-
-function exactReasonMutants<T extends ReasonMutantMap>(map: T & UniqueReasonMutants<T>): T {
-  return map;
-}
-
-export const reasonMutants = exactReasonMutants({
-  symlink: "M20",
-  "unknown-extension": "M21",
-  "duplicate-json-key": "M22",
-  "srcdoc-too-deep": "M17",
-  "unsupported-script-type": "M12",
-  "unsupported-json-value": "M24",
-  "not-a-directory": "M23",
-  "parse-error": "M25",
-});
+export const parserReasonIds = ["css-parser", "js-parser", "json-parser", "json-key-scanner", "html-parser", "html-fragment-parser", "html-parse-error", "root-stat", "directory-read", "file-read"] as const;
+export type ParserReasonId = (typeof parserReasonIds)[number];
 
 export type Finding =
   | { kind: "comment"; language: CommentLanguage; file: string }
   | { kind: "parse-error"; file: string; reason: FindingReason }
-  | { kind: "parse-error"; file: string; reason: "parser"; detail: string };
+  | { kind: "parse-error"; file: string; reason: ParserReasonId; detail: string };
 
 function staticFinding(file: string, id: FindingReasonId): Finding {
   return { kind: "parse-error", file, reason: findingReasons[id] };
 }
 
-function parserFinding(file: string, detail: string): Finding {
-  return { kind: "parse-error", file, reason: "parser", detail };
+function parserFinding(file: string, id: ParserReasonId, detail: string): Finding {
+  return { kind: "parse-error", file, reason: id, detail };
 }
 
 type CssToken = [string, string, ...number[]];
@@ -385,7 +364,7 @@ function scanCss(css: string, file: string): Finding[] {
     postcss.parse(css);
     return commentFindings("css", file, cssCommentBodies(css));
   } catch (error) {
-    return [parserFinding(file, errorReason(error))];
+    return [parserFinding(file, "css-parser", errorReason(error))];
   }
 }
 
@@ -420,10 +399,10 @@ function scanJs(code: string, file: string, preferred: SourceType): Finding[] {
     }
   }
   if (reason === undefined) return [staticFinding(file, "parse-error")];
-  return [parserFinding(file, reason)];
+  return [parserFinding(file, "js-parser", reason)];
 }
 
-type JsonKeyScan = "duplicate" | "unique" | "unreadable";
+type JsonKeyScan = "duplicate" | "unique";
 
 function isJsonRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -587,7 +566,7 @@ function scanJsonKeys(text: string): JsonKeyScan {
   const parsed = parseValue();
   skipWhitespace();
   if (duplicate) return "duplicate";
-  if (!parsed || index !== text.length) return "unreadable";
+  if (!parsed || index !== text.length) throw new Error("Unable to scan JSON keys");
   return "unique";
 }
 
@@ -631,9 +610,14 @@ function scanJsonText(text: string, file: string): Finding[] {
   try {
     parsed = JSON.parse(text);
   } catch (error) {
-    return [parserFinding(file, errorReason(error))];
+    return [parserFinding(file, "json-parser", errorReason(error))];
   }
-  const findings = duplicateJsonKeyFindings(text, file);
+  let findings: Finding[];
+  try {
+    findings = duplicateJsonKeyFindings(text, file);
+  } catch (error) {
+    return [parserFinding(file, "json-key-scanner", errorReason(error))];
+  }
   if (isJsonRecord(parsed)) {
     findings.push(...scanJsonObject(parsed, file));
   } else {
@@ -735,7 +719,7 @@ function recordParseErrors(
 ) {
   for (const code of errors) {
     if (ignored?.has(code)) continue;
-    findings.push(parserFinding(file, code));
+    findings.push(parserFinding(file, "html-parse-error", code));
   }
 }
 
@@ -753,7 +737,7 @@ function scanHtmlFragment(html: string, file: string, depth = 0, recordErrors = 
       },
     });
   } catch (error) {
-    return [parserFinding(file, errorReason(error))];
+    return [parserFinding(file, "html-fragment-parser", errorReason(error))];
   }
   const findings: Finding[] = [];
   if (recordErrors) recordParseErrors(errors, file, findings);
@@ -772,7 +756,7 @@ function scanHtml(html: string, file: string, depth = 0, ignored?: ReadonlySet<s
       },
     });
   } catch (error) {
-    return [parserFinding(file, errorReason(error))];
+    return [parserFinding(file, "html-parser", errorReason(error))];
   }
   const findings: Finding[] = [];
   recordParseErrors(errors, file, findings, ignored);
@@ -810,13 +794,18 @@ export function scanRoot(root: string): Finding[] {
   try {
     stats = fs.statSync(root);
   } catch (error) {
-    return [parserFinding(root, errorReason(error))];
+    return [parserFinding(root, "root-stat", errorReason(error))];
   }
   if (!stats.isDirectory()) {
     return [staticFinding(root, "not-a-directory")];
   }
   const findings: Finding[] = [];
-  const entries = listEntries(root).sort((left, right) => left.path.localeCompare(right.path));
+  let entries: ListedEntry[];
+  try {
+    entries = listEntries(root).sort((left, right) => left.path.localeCompare(right.path));
+  } catch (error) {
+    return [parserFinding(root, "directory-read", errorReason(error))];
+  }
   for (const entry of entries) {
     const relative = relativeFile(root, entry.path);
     if (entry.kind === "symlink") {
@@ -836,7 +825,7 @@ export function scanRoot(root: string): Finding[] {
     try {
       source = fs.readFileSync(entry.path, "utf8");
     } catch (error) {
-      findings.push(parserFinding(relative, errorReason(error)));
+      findings.push(parserFinding(relative, "file-read", errorReason(error)));
       continue;
     }
     if (language === "html") {
@@ -854,7 +843,7 @@ function formatFinding(finding: Finding): string {
   if (finding.kind === "comment") {
     return `${finding.language} comment in ${finding.file}`;
   }
-  if (finding.reason === "parser") {
+  if ("detail" in finding) {
     return `parse error in ${finding.file}: ${finding.detail}`;
   }
   return `parse error in ${finding.file}: ${finding.reason}`;

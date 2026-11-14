@@ -2,7 +2,23 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { requiredMutantIds } from "./check-mutants.ts";
-import { findingReasons, reasonMutants } from "./check-dist.ts";
+import { findingReasons, parserReasonIds, type FindingReasonId, type ParserReasonId } from "./check-dist.ts";
+
+type ReasonMutantMap = { [Id in FindingReasonId | ParserReasonId]: (typeof requiredMutantIds)[number] };
+type UniqueReasonMutants<T extends ReasonMutantMap> = {
+  [Id in keyof T]: T[Id] extends T[Exclude<keyof T, Id>] ? never : T[Id];
+};
+function exactReasonMutants<T extends ReasonMutantMap>(map: T & UniqueReasonMutants<T>): T {
+  return map;
+}
+export const reasonMutants = exactReasonMutants({
+  symlink: "M20", "unknown-extension": "M21", "duplicate-json-key": "M22",
+  "srcdoc-too-deep": "M17", "unsupported-script-type": "M12", "unsupported-json-value": "M24",
+  "not-a-directory": "M23", "parse-error": "M36",
+  "css-parser": "M26", "js-parser": "M27", "json-parser": "M28", "json-key-scanner": "M29",
+  "html-parser": "M30", "html-fragment-parser": "M31", "html-parse-error": "M32",
+  "root-stat": "M33", "file-read": "M34", "directory-read": "M35",
+});
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -29,7 +45,7 @@ export function runGuardPinCheck(): PinCheckResult {
     if (!floor.has(id)) lines.push(`mutant ${id} is not in the required floor`);
   }
 
-  const reasonIds = Object.keys(findingReasons);
+  const reasonIds: string[] = [...Object.keys(findingReasons), ...parserReasonIds];
   const mappedIds = Object.keys(reasonMutants);
   for (const id of reasonIds) {
     if (!mappedIds.includes(id)) lines.push(`finding reason ${id} has no killing mutant`);
