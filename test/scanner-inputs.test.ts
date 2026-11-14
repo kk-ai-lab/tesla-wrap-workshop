@@ -1,3 +1,7 @@
+import { cpSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { expect, it } from "vitest";
 import { commentLintKinds } from "../eslint.config.js";
 import { scannerInputKinds } from "../scripts/check-dist.ts";
@@ -71,4 +75,84 @@ it("every dist scanner input kind has a bad fixture", () => {
 it("every comment lint kind has a bad fixture", async () => {
   const result = await runCommentLintKindCheck();
   expect(result).toEqual({ status: 0, text: "" });
+});
+
+function withFixtureCopy(check: (root: string) => void): void {
+  const root = mkdtempSync(path.join(tmpdir(), "scanner-witness-"));
+  const source = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "lint-fixtures/check-dist");
+  const destination = path.join(root, "test/lint-fixtures/check-dist");
+  try {
+    mkdirSync(path.dirname(destination), { recursive: true });
+    cpSync(source, destination, { recursive: true });
+    check(root);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+}
+
+it("rejects missing skip witnesses", () => {
+  withFixtureCopy((root) => {
+    rmSync(path.join(root, "test/lint-fixtures/check-dist/opaque/x.png"));
+    rmSync(path.join(root, "test/lint-fixtures/check-dist/robots/robots.txt"));
+    const result = runScannerInputCheck(root);
+    expect(result.status).toBe(1);
+    expect(result.text).toContain("scanner input kind opaque-png fixture test/lint-fixtures/check-dist/opaque has no regular witness");
+    expect(result.text).toContain("scanner input kind robots-txt fixture test/lint-fixtures/check-dist/robots has no regular witness");
+  });
+});
+
+it("requires a regular witness for each opaque extension", () => {
+  withFixtureCopy((root) => {
+    for (const [id, kind] of Object.entries(scannerInputKinds)) {
+      if (kind.group !== "opaque") continue;
+      rmSync(path.join(root, kind.fixture, `x${kind.extension}`));
+      const result = runScannerInputCheck(root);
+      expect(result.status).toBe(1);
+      expect(result.text).toContain(`scanner input kind ${id} fixture ${kind.fixture} has no regular witness`);
+    }
+  });
+});
+
+it("does not accept directories or symlinks as skip witnesses", () => {
+  withFixtureCopy((root) => {
+    const opaque = path.join(root, "test/lint-fixtures/check-dist/opaque/x.png");
+    const robots = path.join(root, "test/lint-fixtures/check-dist/robots/robots.txt");
+    rmSync(opaque);
+    rmSync(robots);
+    mkdirSync(opaque);
+    symlinkSync(path.join(root, "test/lint-fixtures/check-dist/opaque/x.jpg"), robots);
+    const result = runScannerInputCheck(root);
+    expect(result.status).toBe(1);
+    expect(result.text).toContain("scanner input kind opaque-png fixture test/lint-fixtures/check-dist/opaque has no regular witness");
+    expect(result.text).toContain("scanner input kind robots-txt fixture test/lint-fixtures/check-dist/robots has no regular witness");
+  });
+});
+
+it("requires the declared root-skip filename", () => {
+  withFixtureCopy((root) => {
+    const fixture = path.join(root, "test/lint-fixtures/check-dist/robots");
+    rmSync(path.join(fixture, "robots.txt"));
+    writeFileSync(path.join(fixture, "unrelated.png"), "fixture");
+    const result = runScannerInputCheck(root);
+    expect(result.status).toBe(1);
+    expect(result.text).toContain("scanner input kind robots-txt fixture test/lint-fixtures/check-dist/robots has no regular witness");
+  });
+});
+
+it("rejects a scanner input fixture that no longer fails", () => {
+  withFixtureCopy((root) => {
+    writeFileSync(path.join(root, "test/lint-fixtures/check-dist/inline-script/index.html"), "<!doctype html><script>const value = 1;</script>");
+    const result = runScannerInputCheck(root);
+    expect(result.status).toBe(1);
+    expect(result.text).toContain("scanner input kind script-classic fixture test/lint-fixtures/check-dist/inline-script does not exit 1");
+  });
+});
+
+it("rejects a scanner input fixture that fails for a different reason", () => {
+  withFixtureCopy((root) => {
+    writeFileSync(path.join(root, "test/lint-fixtures/check-dist/inline-script/index.html"), "<!doctype html><!-- x --><script>const value = 1;</script>");
+    const result = runScannerInputCheck(root);
+    expect(result.status).toBe(1);
+    expect(result.text).toContain("scanner input kind script-classic fixture test/lint-fixtures/check-dist/inline-script does not exit 1");
+  });
 });

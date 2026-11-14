@@ -34,5 +34,10 @@
 {"id":"M33","file":"scripts/check-dist.ts","search":"return [parserFinding(root, \"root-stat\", errorReason(error))];","replace":"return [];","kills":"test/parser-failures.test.ts > reports a root stat failure"},
 {"id":"M34","file":"scripts/check-dist.ts","search":"findings.push(parserFinding(relative, \"file-read\", errorReason(error)));","replace":"void 0;","kills":"test/parser-failures.test.ts > reports a file read failure"},
 {"id":"M35","file":"scripts/check-dist.ts","search":"return [parserFinding(root, \"directory-read\", errorReason(error))];","replace":"return [];","kills":"test/parser-failures.test.ts > reports a directory read failure"},
-{"id":"M36","file":"scripts/check-dist.ts","search":"  if (reason === undefined) return [staticFinding(file, \"parse-error\")];","replace":"  if (reason === undefined) return [];","kills":"test/parser-failures.test.ts > reports the JavaScript fallback when no parser attempt provides a reason"}
+{"id":"M36","file":"scripts/check-dist.ts","search":"  if (reason === undefined) return [staticFinding(file, \"parse-error\")];","replace":"  if (reason === undefined) return [];","kills":"test/parser-failures.test.ts > reports the JavaScript fallback when no parser attempt provides a reason"},
+{"id":"M37","file":"scripts/check-scanner-inputs.ts","search":"if (!hasSkipWitness(fixturePath, kind)) {","replace":"if (false) {","kills":"test/scanner-inputs.test.ts > rejects missing skip witnesses"},
+{"id":"M38","file":"scripts/check-scanner-inputs.ts","search":"entry.name === kind.name","replace":"true","kills":"test/scanner-inputs.test.ts > requires the declared root-skip filename"},
+{"id":"M39","file":"scripts/check-scanner-inputs.ts","search":"path.extname(entry.name).toLowerCase() === kind.extension","replace":"true","kills":"test/scanner-inputs.test.ts > requires a regular witness for each opaque extension"},
+{"id":"M40","file":"scripts/check-scanner-inputs.ts","search":"entry.isFile() &&","replace":"true &&","kills":"test/scanner-inputs.test.ts > does not accept directories or symlinks as skip witnesses"},
+{"id":"M41","file":"scripts/check-scanner-inputs.ts","search":"    if (!result.text.includes(kind.needle)) {","replace":"    if (false) {","kills":"test/scanner-inputs.test.ts > rejects a scanner input fixture that fails for a different reason"}
 ]

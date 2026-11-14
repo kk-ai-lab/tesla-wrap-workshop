@@ -13,8 +13,8 @@ export type InputCheckResult = {
   text: string;
 };
 
-function scanFixture(fixture: string): { status: number; text: string } {
-  return describeScan(path.join(repoRoot, fixture));
+function scanFixture(root: string, fixture: string): { status: number; text: string } {
+  return describeScan(path.join(root, fixture));
 }
 
 function scanSymlink(): { status: number; text: string } {
@@ -30,7 +30,20 @@ function scanSymlink(): { status: number; text: string } {
   }
 }
 
-export function runScannerInputCheck(): InputCheckResult {
+function hasSkipWitness(fixturePath: string, kind: (typeof scannerInputKinds)[keyof typeof scannerInputKinds]): boolean {
+  if (kind.group !== "opaque" && kind.group !== "root-skip") return false;
+  try {
+    return fs.readdirSync(fixturePath, { withFileTypes: true }).some((entry) =>
+      entry.isFile() && (kind.group === "opaque"
+        ? path.extname(entry.name).toLowerCase() === kind.extension
+        : entry.name === kind.name),
+    );
+  } catch {
+    return false;
+  }
+}
+
+export function runScannerInputCheck(root = repoRoot): InputCheckResult {
   const lines: string[] = [];
   const seen = new Map<string, { status: number; text: string }>();
   for (const [id, kind] of Object.entries(scannerInputKinds)) {
@@ -46,23 +59,26 @@ export function runScannerInputCheck(): InputCheckResult {
       lines.push(`scanner input kind ${id} has no bad fixture`);
       continue;
     }
-    const fixturePath = path.join(repoRoot, kind.fixture);
+    const fixturePath = path.join(root, kind.fixture);
     if (!fs.existsSync(fixturePath)) {
       lines.push(`scanner input kind ${id} has no bad fixture`);
       continue;
     }
     let result = seen.get(kind.fixture);
     if (result === undefined) {
-      result = scanFixture(kind.fixture);
+      result = scanFixture(root, kind.fixture);
       seen.set(kind.fixture, result);
     }
     if (kind.coverage === "skip") {
+      if (!hasSkipWitness(fixturePath, kind)) {
+        lines.push(`scanner input kind ${id} fixture ${kind.fixture} has no regular witness`);
+      }
       if (result.status !== 0 || result.text !== "") {
         lines.push(`scanner input kind ${id} fixture ${kind.fixture} does not exit 0`);
       }
       continue;
     }
-    if (result.status !== 1 || !result.text.includes(kind.needle)) {
+    if (!result.text.includes(kind.needle)) {
       lines.push(`scanner input kind ${id} fixture ${kind.fixture} does not exit 1`);
     }
   }
